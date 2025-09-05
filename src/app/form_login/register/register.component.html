@@ -1,0 +1,47 @@
+<div class="container" id="container">
+
+  <div class="form-container sign-up-container">
+    <form #f="ngForm" (ngSubmit)="f.form.valid&&register()" novalidate>
+      <h1>Đăng kí</h1>
+      <div class="social-container">
+        <mat-error style="color: green">{{status}}</mat-error>
+      </div>
+<!--      <span>or use your email for registration</span>-->
+      <!--      name-->
+      <input name="name" #name="ngModel" [(ngModel)]="form.name" placeholder="Name" matInput required/>
+      <mat-error *ngIf="name.hasError('required')">Tên không được để trống!</mat-error>
+      <mat-error *ngIf="name.hasError('minlength')">Tên ít nhất 3 kí tự!</mat-error>
+      <!--      username-->
+      <input name="username" #username="ngModel" [(ngModel)]="form.username" placeholder="User Name" matInput required/>
+      <mat-error *ngIf="username.hasError('required')">The username is required!</mat-error>
+      <mat-error *ngIf="username.hasError('minlength')">The username must at least 3 character!</mat-error>
+      <!--      email-->
+      <input name="email" [(ngModel)]="form.email" matInput [formControl]="emailFormValidate" placeholder="Email"
+             required/>
+      <mat-error *ngIf="emailFormValidate.hasError('required')">Email không được để trống!</mat-error>
+      <mat-error *ngIf="emailFormValidate.hasError('pattern')">Email không hợp lệ! VD: abc@example.com</mat-error>
+      <!--      pass-->
+
+      <input #password="ngModel" [(ngModel)]="form.password" name="password" matInput
+             [type]="hide ? 'password' : 'text'" required minlength="6" maxlength="100" placeholder="Password"/>
+      <mat-icon style="color: #333333" (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide" color="accent">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+
+      <mat-error *ngIf="password.hasError('required')">Mật khẩu không được để trống!</mat-error>
+      <mat-error *ngIf="password.hasError('minlength')">Mật khẩu ít nhất 6 kí tự!
+      </mat-error>
+      <br>
+      <button type="submit">Đăng kí</button>
+    </form>
+  </div>
+
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-left">
+        <h1>Welcome Back!</h1>
+        <p>To keep connected with us please login with your personal info</p>
+        <button class="ghost" id="signIn"><a routerLink="login">Đăng nhập</a></button>
+      </div>
+    </div>
+  </div>
+</div>

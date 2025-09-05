@@ -1,0 +1,67 @@
+
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 600px;margin: auto;min-width: 600px">
+      <mat-card style="background: rgba(255,255,255,0.7)">
+        <h1
+          style="margin:auto;margin-top: 30px;margin-bottom:10px;font-weight: 600;color: #1E90FF;">
+          Cập nhật ca sĩ</h1>
+        <mat-error class="alert form-angular">{{status}}</mat-error>
+        <mat-dialog-content class="mat-typography">
+          <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && updateSinger()" novalidate>
+
+            <!--            name-->
+            <input name="name" #name="ngModel" value="{{singer.name}}" [(ngModel)]="singer.name" placeholder="Name" matInput required/>
+            <mat-error *ngIf="name.hasError('required')">The name is required!</mat-error>
+            <mat-error *ngIf="name.hasError('minlength')">The name must at least 3 character!</mat-error>
+
+            <!--            sex-->
+            <mat-label>Gender : </mat-label>
+            <br>
+            <mat-radio-group aria-label="Select an option" [(ngModel)]="singer.sex" name="sex">
+              <mat-radio-button value="Male">Nam</mat-radio-button>
+              <mat-radio-button value="Female">Nữ</mat-radio-button>
+              <mat-radio-button value="Other">Khác</mat-radio-button>
+            </mat-radio-group>
+
+            <!--            nation-->
+            <br>
+            <mat-label>Choose a Nation</mat-label>
+            <mat-form-field style="width: 100%">
+              <mat-label>Nation: {{singer.nation}}</mat-label>
+              <mat-select  [(ngModel)]="singer.nation" name="nation">
+                <mat-option  *ngFor="let nation of listNation"  [value]="nation">{{nation.name}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!--            birthday-->
+            <mat-label>Sinh nhật</mat-label>
+            <mat-form-field style="width: 100%">
+              <mat-label>Choose a date</mat-label>
+              <input matInput [matDatepicker]="picker" name="birthday" [(ngModel)]="singer.birthday">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <br>
+
+            <!--            description-->
+            <mat-label>Description</mat-label>
+            <mat-form-field style="width: 100%">
+              <textarea matInput name="description" #description="ngModel" [(ngModel)]="singer.description" required></textarea>
+            </mat-form-field>
+            <mat-error *ngIf="description.hasError('required')">The description is required!</mat-error>
+
+            <br>
+            <mat-label>Avatar</mat-label>
+
+            <app-upload-avatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>
+            <br>
+            <button style="margin:auto;width: 50%" mat-stroked-button class="mat-button-toggle-group">Cập nhật ca sĩ</button>
+            <button style="width: 50%" class="mat-raised-button" mat-raised-button [mat-dialog-close]="true" cdkFocusInitial>Xem danh sách</button>
+          </form>
+        </mat-dialog-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

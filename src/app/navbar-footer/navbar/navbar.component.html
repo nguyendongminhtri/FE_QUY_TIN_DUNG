@@ -1,0 +1,71 @@
+<header class="header">
+
+  <!-- PHẦN TRÊN: Logo + Tên + Slogan -->
+  <div class="header-top">
+    <a routerLink="" class="logo">
+      <img src="../../../assets/image/logo/logo.png" class="logo-img"/>
+    </a>
+    <div class="hero">
+      <h1 class="gov-gold-emblem">QUỸ TÍN DỤNG NHÂN DÂN THÁI HỌC</h1>
+      <h3 class="gov-gold-botton">Hợp tác cùng phát triển - Đồng hành cùng thành viên</h3>
+    </div>
+<!--    <div class="title-box">-->
+<!--      <h1 class="gov-gold-metallic">QUỸ TÍN DỤNG NHÂN DÂN THÁI HỌC</h1>-->
+
+<!--    </div>-->
+  </div>
+
+  <!-- PHẦN DƯỚI: Menu + Search + Đăng nhập/Người dùng -->
+  <div class="header-bottom">
+    <!-- Icon menu khi responsive -->
+    <i class="bx bx-menu" id="menu-icon" (click)="toggleMenu()"></i>
+
+    <ul #navbar class="navbar" [class.active]="isMenuOpen">
+
+<!--      <li><a routerLink="song">Giới Thiệu</a></li>-->
+<!--        <ul class="nav">-->
+          <li class="nav-item"><a href="#">TRANG CHỦ</a></li>
+          <li class="nav-item dropdown">
+            <a href="#">GIỚI THIỆU ▾</a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Giới thiệu chung</a></li>
+              <li><a href="#">Quản trị và điều hành</a></li>
+              <li><a href="#">Sơ đồ tổ chức</a></li>
+              <li><a href="#">Sứ mệnh và tầm nhìn chiến lược</a></li>
+              <li><a href="#">Mạng lưới hoạt động</a></li>
+              <li><a href="#">Thành tích</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a href="#">TIN TỨC – SỰ KIỆN</a></li>
+          <li class="nav-item"><a href="#">LIÊN HỆ</a></li>
+<!--        </ul>-->
+<!--      <li><a routerLink="album">Albums</a></li>-->
+<!--      <li><a routerLink="singer">Ca sĩ</a></li>-->
+<!--      <li><a routerLink='category'>Thể loại</a></li>-->
+<!--      <div class="searchBox">-->
+<!--        <input routerLink="search" type="text" placeholder="Search"-->
+<!--               [(ngModel)]="search" (input)="searchSong()">-->
+<!--        <div class="search">-->
+<!--          <span class="icon"><i class="fa-solid fa-magnifying-glass"></i></span>-->
+<!--        </div>-->
+<!--      </div>-->
+    </ul>
+
+    <!-- Login/Logout -->
+    <div class="main" *ngIf="!checkLogin">
+      <a routerLink="login" class="user">Đăng nhập</a>
+      <a routerLink="register">Đăng ký</a>
+    </div>
+
+    <div class="main" *ngIf="checkLogin">
+      <img [src]="avatar" width="45" height="45" class="avatar">
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <!-- menu user -->
+      </mat-menu>
+    </div>
+  </div>
+</header>
+<hr class="divider">

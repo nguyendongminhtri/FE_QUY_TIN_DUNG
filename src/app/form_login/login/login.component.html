@@ -1,0 +1,38 @@
+<div class="container" id="container">
+
+  <div class="form-container sign-in-container">
+    <form #f="ngForm" (ngSubmit)="f.form.valid && login()" novalidate>
+      <h1>Sign in</h1>
+      <div class="social-container">
+        <mat-error style="color: green">{{status}}</mat-error>
+      </div>
+      <span> Đăng nhập bằng tài khoản của bạn</span>
+      <input name="username" #username="ngModel" [(ngModel)]="form.username" placeholder="User Name" matInput required/>
+      <mat-error *ngIf="username.hasError('required')">Tên không được để trống!</mat-error>
+<!--      <mat-error *ngIf="username.hasError('minlength')">The username must at least 3 character!</mat-error>-->
+      <!--      pass-->
+
+      <input #password="ngModel" [(ngModel)]="form.password" name="password" matInput
+             [type]="hide ? 'password' : 'text'" required minlength="6" maxlength="100" placeholder="Password"/>
+      <mat-icon style="color: #333333" (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide" color="accent">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+
+      <mat-error *ngIf="password.hasError('required')">Mật khẩu không được để trống!</mat-error>
+<!--      <mat-error *ngIf="password.hasError('minlength')">The password must at least 6 character!-->
+<!--      </mat-error>-->
+      <a href="#">Quên mật khẩu?</a>
+      <button type="submit">Đăng nhập</button>
+    </form>
+  </div>
+
+  <div class="overlay-container">
+    <div class="overlay">
+
+      <div class="overlay-panel overlay-right">
+        <h1>Hello, Friend!</h1>
+        <p>Enter your personal details and start journey with us</p>
+        <button class="ghost" id="signUp" ><a routerLink="register">Đăng kí</a></button>
+      </div>
+    </div>
+  </div>
+</div>

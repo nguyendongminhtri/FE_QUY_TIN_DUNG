@@ -1,0 +1,16 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 600px;margin: auto;">
+      <mat-card style="padding: 20px;background: rgba(255,255,255,0.7)">
+
+        <h1 style="font-weight: 600;margin: auto;color: #333333;text-shadow: 0px 0px 10px #65a4ec">Cập nhật ảnh đại diện</h1>
+        <mat-error  class="alert form-angular">{{status}}</mat-error>
+        <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && updateAvatar()" novalidate>
+          <app-upload-avatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>
+          <br>
+          <button style="margin-left: 200px" mat-stroked-button class="mat-button-toggle-group">Cập nhật</button>
+        </form>
+      </mat-card>
+    </div>
+  </div>
+</div>

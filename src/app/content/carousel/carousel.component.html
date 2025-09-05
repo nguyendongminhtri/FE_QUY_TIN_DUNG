@@ -1,0 +1,12 @@
+<div class="container" style="height: 1000px">
+  <input type="radio" name="slider" id="item-1" checked>
+  <input type="radio" name="slider" id="item-2">
+  <input type="radio" name="slider" id="item-3">
+
+  <div class="cards" >
+    <label *ngFor="let song of listSongRandom; let i = index" class="card" for="item-{{i+1}}" id="song-{{i+1}}" [routerLink]="['/detail-song/',song.id]">
+      <img src="{{song.avatar}}"
+           alt="song">
+    </label>
+  </div>
+</div>

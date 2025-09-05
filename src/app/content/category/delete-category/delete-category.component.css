@@ -1,0 +1,25 @@
+.primary{
+  background: cornflowerblue;
+  color: white;
+}
+.primary:hover{
+  background: #ffffff;
+  color: #333333;
+}
+.warn:hover{
+  background: #ffffff;
+  color: #333333;
+}
+.warn{
+  background: firebrick;
+  color: white;
+}
+
+input {
+  background-color: #eee;
+  border: none;
+  padding: 12px 15px;
+  margin: 8px 0;
+  width: 100%;
+}
+

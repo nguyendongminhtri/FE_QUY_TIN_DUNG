@@ -1,0 +1,24 @@
+.mat-button-toggle-group{
+  background: cornflowerblue;
+  color: white;
+}
+.mat-button-toggle-group:hover{
+  background: #ffffff;
+  color: #333333;
+}
+.mat-raised-button:hover{
+  background: #ffffff;
+  color: #333333;
+}
+.mat-raised-button{
+  background: firebrick;
+  color: white;
+}
+
+input {
+  background-color: #eee;
+  border: none;
+  padding: 12px 15px;
+  margin: 8px 0;
+  width: 100%;
+}

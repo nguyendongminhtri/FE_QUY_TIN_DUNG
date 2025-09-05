@@ -1,0 +1,30 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 600px;margin: auto;min-width: 600px">
+      <mat-card style="background: rgba(255,255,255,0.7)">
+        <h1
+          style="margin:auto;margin-top: 30px;margin-bottom:10px;font-weight: 600;color: #1E90FF;">
+          Cập nhật thể loại</h1>
+        <mat-error class="alert form-angular">{{status}}</mat-error>
+        <mat-dialog-content class="mat-typography">
+          <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && updateAlbum()" novalidate>
+
+            <!--            name-->
+            <input name="name" #name="ngModel" [(ngModel)]="album.name" placeholder="Tên thể loại" matInput required/>
+            <mat-error *ngIf="name.hasError('required')">Tên thể loại đã tồn tại!</mat-error>
+            <!--            <mat-error *ngIf="name.hasError('minlength')">The name must at least 3 character!</mat-error>-->
+
+            <mat-label>Chọn ảnh</mat-label>
+            <!--            <img src="{{category.avatar}}"  width="50px" height="50px" alt="">-->
+            <br>
+            <app-upload-avatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>
+            <br>
+            <button style="margin:auto;width: 50%" mat-stroked-button class="mat-button-toggle-group" type="submit">Cập nhật</button>
+            <button mat-raised-button color="warn" style="width: 50%" class="mat-raised-button" [mat-dialog-close]="true" cdkFocusInitial>Xem danh sách
+            </button>
+          </form>
+        </mat-dialog-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

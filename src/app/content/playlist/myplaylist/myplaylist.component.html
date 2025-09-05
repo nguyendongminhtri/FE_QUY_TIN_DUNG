@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="content">
+    <h1 style="font-weight: 600">Playlist</h1>
+  </div>
+
+  <div class="gallery">
+    <div *ngFor="let pll of playlist" class="gallery-item col-lg-6" tabindex="0">
+      <a [routerLink]="['/detail-playlist/',pll.id]">
+        <img src="{{pll.avatar}}" width="205.6px"
+             height="205.6px"
+             class="gallery-image" alt="">
+      </a>
+      <div class="info">
+        <a [routerLink]="['/detail-playlist/',pll.id]"><h4>{{pll.name}}</h4></a>
+        <!--        <a href=""><span>Tên ca sĩ</span></a>-->
+      </div>
+    </div>
+
+  </div>
+  <div style="margin-bottom: 20px">
+    <button mat-button (click)="openDialogCreate()" type="submit">Create Playlist <mat-icon>add_circle</mat-icon></button>
+  </div>
+  <!--  <mat-paginator [length]="totalElements"-->
+  <!--                 (page)="nextPage($event)"-->
+  <!--                 [pageSizeOptions]="[5, 10, 15, 100]"-->
+  <!--                 aria-label="Select page">-->
+  <!--  </mat-paginator>-->
+</div>

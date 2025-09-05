@@ -1,0 +1,71 @@
+<div class="container">
+  <div class="content">
+    <a routerLink="">
+<!--      <mat-icon>arrow_back</mat-icon>-->
+    </a>
+    <h1 style="font-weight: 600">Thể loại</h1>
+  </div>
+  <div style="margin-bottom: 20px">
+    <button mat-button *ngIf="checkUserAdmin" (click)="openDialogCreate()" type="submit">Tạo thể loại<mat-icon>add_circle</mat-icon></button>
+  </div>
+  <div class="gallery">
+    <div *ngFor="let ctg of listCategory" class="gallery-item col-lg-6" tabindex="0">
+      <a [routerLink]="['/detail-category/',ctg.id]">
+        <img style="" src="{{ctg.avatar}}"
+             class="gallery-image" alt="" height="205.6px">
+      </a>
+      <div style="display: flex">
+        <div class="info" style="width: 80%">
+          <a href=""><h4>{{ctg.name}}</h4></a>
+        </div>
+
+        <div class="info" style="float: right;width: 10%;margin-top: 5px">
+
+          <mat-icon [matMenuTriggerFor]="menu" *ngIf="checkUserAdmin">pending</mat-icon>
+          <mat-menu #menu="matMenu">
+
+            <button mat-menu-item  *ngIf="checkUserAdmin" (click)="openDialogDelete(ctg.id)">
+              <mat-icon style="color: darkred">delete</mat-icon>
+            </button>
+            <button mat-menu-item  *ngIf="checkUserAdmin" (click)="openDialogUpdate(ctg.id)">
+              <mat-icon style="color: goldenrod">edit
+              </mat-icon>
+            </button>
+
+          </mat-menu>
+<!--          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">-->
+<!--            <mat-icon>more_vert</mat-icon>-->
+<!--          </button>-->
+<!--          <mat-menu #menu="matMenu">-->
+<!--            <button mat-menu-item>-->
+<!--              <mat-icon>dialpad</mat-icon>-->
+<!--              <span>Redial</span>-->
+<!--            </button>-->
+<!--            <button mat-menu-item disabled>-->
+<!--              <mat-icon>voicemail</mat-icon>-->
+<!--              <span>Check voice mail</span>-->
+<!--            </button>-->
+<!--            <button mat-menu-item>-->
+<!--              <mat-icon>notifications_off</mat-icon>-->
+<!--              <span>Disable alerts</span>-->
+<!--            </button>-->
+<!--          </mat-menu>-->
+
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+  <mat-paginator [length]="totalElements"
+                 (page)="nextPage($event)"
+                 [pageSizeOptions]="[5, 10, 15, 100]"
+                 aria-label="Select page">
+  </mat-paginator>
+</div>
+
+<!--<button (click)="openDialogCreate()" type="submit" mat-stroked-button color="accent"-->
+<!--        class="mat-button-toggle-group btn-outline-primary">-->
+<!--  Create Category-->
+<!--  <mat-icon color="accent" matSuffix>add_circle_outline</mat-icon>-->
+<!--</button>-->

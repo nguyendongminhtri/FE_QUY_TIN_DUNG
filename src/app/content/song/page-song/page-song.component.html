@@ -1,0 +1,62 @@
+<div class="container">
+  <div class="list-music" id="top10-content">
+    <div class="content">
+      <a routerLink="">
+<!--        <mat-icon>arrow_back</mat-icon>-->
+      </a>
+      <h1 style="font-weight: 600">Bài hát</h1>
+    </div>
+
+    <div style="margin-bottom: 20px">
+      <button mat-button (click)="openDialogCreate()" type="submit" *ngIf="checkUserAdmin">Tạo bài hát
+        <mat-icon>add_circle</mat-icon>
+      </button>
+    </div>
+    <div class="row top-trending">
+
+      <div class="col col-lg-4 songs" *ngFor="let song of listSong">
+        <div class="top-song">
+          <div class="top-song-img">
+            <a [routerLink]="['/detail-song/',song.id]"><img
+              src="{{song.avatar}}"
+              alt=""></a>
+
+          </div>
+          <div class="top-song-info">
+            <a href=""><h4>{{song.name}}</h4></a>
+            <div *ngFor="let singer of song.singerList">
+              <a [routerLink]="['/detail-singer/',singer.id]"><span>{{singer.name}}</span></a>
+            </div>
+            <div class="info" style="float: right;width: 20%;margin-top: 5px">
+
+              <mat-icon [matMenuTriggerFor]="menu" *ngIf="checkUserAdmin">pending</mat-icon>
+              <mat-menu #menu="matMenu">
+
+                <button mat-menu-item class="delete" *ngIf="checkUserAdmin" (click)="openDialogDelete(song?.id)">
+                  <mat-icon style="color: darkred">delete
+                  </mat-icon>
+                </button>
+                <button mat-menu-item class="edit" *ngIf="checkUserAdmin" (click)="openDialogUpdate(song?.id)">
+                  <mat-icon style="color: goldenrod">edit
+                  </mat-icon>
+                </button>
+              </mat-menu>
+
+            </div>
+
+          </div>
+        </div>
+
+
+      </div>
+
+
+    </div>
+  </div>
+
+  <mat-paginator [length]="totalElements"
+                 (page)="nextPage($event)"
+                 [pageSizeOptions]="[6, 12, 24, 120]"
+                 aria-label="Select page">
+  </mat-paginator>
+</div>

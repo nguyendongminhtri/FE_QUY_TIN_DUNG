@@ -1,0 +1,85 @@
+/*@import url('http://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800;900&display=swap');*/
+/**{*/
+/*  margin: 0;*/
+/*  padding: 0;*/
+/*  box-sizing: border-box;*/
+/*  font-family: 'Poppins', sans-serif;*/
+/*}*/
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  background-color: #f6f5f7;
+  color: black;
+  padding-bottom: 3rem;
+}
+
+.container {
+  max-width: 93.5rem;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+a {
+  text-decoration: none;
+}
+
+.top-song {
+  display: flex;
+  /*border: 2px solid;*/
+  padding: 5px;
+  width: 340px;
+  /*box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);*/
+  border-radius: 4px;
+}
+
+.top-song:hover {
+  background: rgba(255, 255, 255, 0.83);
+}
+
+.top-trending {
+  padding-top: 8px;
+
+}
+
+.top-song-info {
+  margin-left: 10px;
+}
+
+.top-song-info h4 {
+  color: black;
+  margin-top: 5px;
+  margin-left: 3px;
+}
+
+.top-song-info h4:hover {
+  color: cornflowerblue;
+  transition: all 0.2s linear;
+}
+
+.top-song-info span:hover {
+  color: cornflowerblue;
+  transition: all 0.2s linear;
+}
+
+.top-song-info span {
+  color: rgb(141, 141, 141);
+  margin-left: 2px;
+}
+
+.top-song-img img {
+  width: 80px;
+  height: 80px;
+  border-radius: 2px;
+}
+button:hover{
+  background: dimgrey;
+  color: #FFFFFF;
+}

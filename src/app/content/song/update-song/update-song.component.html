@@ -1,0 +1,65 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 600px;margin: auto;min-width: 600px">
+      <mat-card style="background: rgba(255,255,255,0.7)">
+        <h1
+          style="margin:auto;margin-top: 30px;margin-bottom:10px;font-weight: 600;color: #1E90FF;">
+          Cập nhật bài hát</h1>
+        <mat-error class="alert form-angular">{{status}}</mat-error>
+        <mat-dialog-content class="mat-typography">
+          <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && updateSong()" novalidate>
+
+            <!--            name-->
+            <input name="name" #name="ngModel" [(ngModel)]="song.name" placeholder="Name" matInput required/>
+            <mat-error *ngIf="name.hasError('required')">Tên bài hát đã tồn tại!</mat-error>
+<!--            <mat-error *ngIf="name.hasError('minlength')">The name must at least 3 character!</mat-error>-->
+
+            <br>
+            <!--            avatar-->
+            <mat-label>Chọn ảnh</mat-label>
+            <app-upload-avatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>
+            <br>
+
+            <!--            lyrics-->
+            <mat-label>Lời bài hát</mat-label>
+            <mat-form-field style="width: 100%">
+              <textarea matInput name="lyrics" #lyrics="ngModel" [(ngModel)]="song.lyrics"
+                        required></textarea>
+            </mat-form-field>
+<!--            <mat-error *ngIf="lyrics.hasError('required')">The lyrics is required!</mat-error>-->
+
+
+            <mat-label>Audio</mat-label>
+            <app-upload-file (giveURLtoCreate)="onUploadFile($event)"></app-upload-file>
+
+
+            <!--            category-->
+
+            <br>
+            <mat-label>Chọn thể loại</mat-label>
+            <mat-form-field style="width: 100%">
+              <mat-label>Thể loại</mat-label>
+              <mat-select [(ngModel)]="song.category" name="category">
+                <mat-option *ngFor="let category of listCategory" [value]="category">
+                  {{category.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!--            singer list-->
+            <br>
+            <mat-form-field  style="width: 100%">
+              <mat-label>Ca sĩ: {{song.singerList}}</mat-label>
+              <mat-select  multiple [(ngModel)]="song.singerList" name="singerList">
+                <mat-option *ngFor="let singer of singerList" [value]="singer">{{singer.name}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <br>
+            <button style="margin:auto;width: 50%" mat-stroked-button class="mat-button-toggle-group">Cập nhật</button>
+            <button style="width: 50%" class="mat-raised-button" mat-raised-button [mat-dialog-close]="true" cdkFocusInitial>Xem danh sách</button>
+          </form>
+        </mat-dialog-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
