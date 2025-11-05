@@ -1,0 +1,29 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 600px;margin: auto;min-width: 600px">
+      <mat-card style="background: rgba(255,255,255,0.7)">
+        <h1 style="margin:auto;margin-top: 50px;margin-bottom: 10px;font-weight: 600;color: #1E90FF;">Tạo Tin HOT</h1>
+        <mat-error  class="alert form-angular">{{status}}</mat-error>
+        <mat-dialog-content class="mat-typography">
+          <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && createCarousel()" novalidate>
+            <mat-form-field class="example-full-width">
+              <mat-label>Title</mat-label>
+              <input name="title" [(ngModel)]="form.title" matInput placeholder="Title" value="Title">
+            </mat-form-field>
+            <br>
+            <mat-form-field class="example-full-width">
+              <mat-label>Description</mat-label>
+              <input name="description" [(ngModel)]="form.description" matInput placeholder="Description" value="Description">
+            </mat-form-field>
+            <br>
+            <quill-editor [(ngModel)]="form.content" style="height: 300px;"></quill-editor>
+            <app-upload-avatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>
+            <br>
+            <button style="margin:auto;width: 50%" mat-stroked-button class="mat-button-toggle-group">Create Carousel</button>
+            <button style="width: 50%" class="mat-raised-button" mat-raised-button [mat-dialog-close]="true" cdkFocusInitial>Render list Carousel</button>
+          </form>
+        </mat-dialog-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

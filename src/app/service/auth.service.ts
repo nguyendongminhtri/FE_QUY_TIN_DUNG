@@ -11,13 +11,13 @@ import {ChangeAvatar} from "../model/ChangeAvatar";
   providedIn: 'root'
 })
 export class AuthService {
-  private API_SIGNUP = environment.API_SERVER + 'signup';
-  private API_SIGNIN = environment.API_SERVER + 'signin';
-  private API_UPDATE_AVATAR = environment.API_SERVER+'change-avatar';
+  // private API_SIGNUP = environment.API_SERVER + 'signup';
+  // private API_SIGNIN = environment.API_SERVER + 'signin';
+  // private API_UPDATE_AVATAR = environment.API_SERVER+'change-avatar';
 
-  // private API_SIGNUP = environment.API_LOCAL + 'signup';
-  // private API_SIGNIN = environment.API_LOCAL + 'signin';
-  // private API_UPDATE_AVATAR = environment.API_LOCAL+'change-avatar'
+  private API_SIGNUP = environment.API_LOCAL + 'auth/signup';
+  private API_SIGNIN = environment.API_LOCAL + 'auth/signin';
+  private API_UPDATE_AVATAR = environment.API_LOCAL+'auth/change-avatar'
 
   constructor(private httpClient: HttpClient) {
   }

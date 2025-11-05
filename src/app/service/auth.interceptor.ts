@@ -20,9 +20,7 @@ export class AuthInterceptor {
 
     console.log('token --->', token)
     if(token!=null){
-
       authRequest = request.clone({headers: request.headers.set(TOKEN_HEADER, 'Bearer'+token)})
-
     }
     return next.handle(authRequest);
   }

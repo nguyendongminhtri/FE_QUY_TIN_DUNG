@@ -1,0 +1,12 @@
+<div class="carousel-container" *ngIf="items.length">
+  <mat-card class="carousel-card">
+    <img [src]="items[activeIndex].imageUrl" alt="carousel image" />
+    <mat-card-actions *ngIf="isAdminRole">
+      <button routerLink="create-carousel" mat-button color="primary">Tạo Mới Tin HOT</button>
+    </mat-card-actions>
+  </mat-card>
+  <div class="carousel-controls">
+    <button mat-icon-button (click)="prev()"><mat-icon>chevron_left</mat-icon></button>
+    <button mat-icon-button (click)="next()"><mat-icon>chevron_right</mat-icon></button>
+  </div>
+</div>

@@ -17,5 +17,4 @@ export class CheckLogoutGuard implements CanActivate{
       this.router.navigate([''])
     }
   }
-
 }

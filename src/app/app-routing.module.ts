@@ -24,6 +24,7 @@ import {CreateAlbumComponent} from "./content/album/create-album/create-album.co
 import {DetailAlbumComponent} from "./content/album/detail-album/detail-album.component";
 import {DetailCategoryComponent} from "./content/category/detail-category/detail-category.component";
 import {CheckLogoutGuard} from "./service/CheckLogoutGuard";
+import {CreateComponent} from "./content/_carousel/create/create.component";
 
 
 const routes: Routes = [
@@ -55,6 +56,9 @@ const routes: Routes = [
   {path: 'album', component: PageAlbumComponent},
   {path: 'create-album', component: CreateAlbumComponent},
   {path: 'detail-album/:id', component: DetailAlbumComponent},
+
+  //Carousel
+  {path: 'create-carousel', component: CreateComponent}
 ];
 
 @NgModule({
