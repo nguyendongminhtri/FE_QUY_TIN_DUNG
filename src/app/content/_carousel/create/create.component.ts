@@ -1,6 +1,8 @@
-import {Component} from '@angular/core';
-import {CarouselItem} from "../../../model/CarouselItem";
-import {CarouselService} from "../../../service/carousel.service";
+import { Component, ViewChild } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
+import { CarouselItem } from '../../../model/CarouselItem';
+import { CarouselService } from '../../../service/carousel.service';
+import { ListCrouselComponent } from '../list-crousel/list-crousel.component';
 
 @Component({
   selector: 'app-create',
@@ -8,29 +10,34 @@ import {CarouselService} from "../../../service/carousel.service";
   styleUrls: ['./create.component.css']
 })
 export class CreateComponent {
-  constructor(private carouselService: CarouselService) {
-  }
+  @ViewChild('listCarousel') listCarousel!: ListCrouselComponent;
+
+  form = new FormGroup({
+    title: new FormControl(''),
+    description: new FormControl(''),
+    content: new FormControl(''),
+    imageUrl: new FormControl('')
+  });
+
   status = '';
-  form: any = {};
   carousel?: CarouselItem;
 
-  onUpload($event: string) {
-    this.form.imageUrl = $event;
-    console.log('imageUrl --> ', this.form.imageUrl);
+  constructor(private carouselService: CarouselService) {}
+
+  onUpload(imageUrl: string) {
+    this.form.get('imageUrl')?.setValue(imageUrl);
   }
 
   createCarousel() {
-      this.carousel = new CarouselItem(
-      this.form.title,
-      this.form.description,
-      this.form.content,
-      this.form.imageUrl,
-    )
-    console.log('this.carousel --> ', this.carousel)
-    this.carouselService.createCarousel(this.carousel).subscribe(data =>{
-      if(data.message === "success"){
+    this.carousel = this.form.value as CarouselItem;
+
+    console.log('this.carousel --> ', this.carousel);
+
+    this.carouselService.createCarousel(this.carousel).subscribe(data => {
+      if (data.message === 'success') {
         this.status = 'Thêm Tin Tức HOT thành công';
+        this.listCarousel.loadCarousel();
       }
-    })
+    });
   }
 }

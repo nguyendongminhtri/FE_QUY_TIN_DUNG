@@ -9,7 +9,7 @@ import {Singer} from "../model/Singer";
 })
 export class SingerService {
   // private API_SINGER = environment.API_LOCAL + 'singer';
-  private API_SINGER = environment.API_SERVER+'singer';
+  private API_SINGER = environment.API+'singer';
 
 
   constructor(private httpClient: HttpClient) {

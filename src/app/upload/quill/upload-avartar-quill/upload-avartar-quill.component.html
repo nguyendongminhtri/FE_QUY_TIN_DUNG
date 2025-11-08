@@ -1,0 +1,18 @@
+<div>
+  <!-- ✅ input ẩn để gọi từ bên ngoài -->
+  <input
+    type="file"
+    accept="image/*"
+    #fileInput
+    style="display: none"
+    (change)="onFileChanged($event)"
+  />
+
+  <!-- ✅ spinner khi đang upload -->
+  <mat-spinner *ngIf="checkUploadAvatar"></mat-spinner>
+
+<!--  &lt;!&ndash; ✅ hiển thị ảnh sau khi upload &ndash;&gt;-->
+<!--  <div *ngIf="downloadURL" style="margin: 10px auto; text-align: center">-->
+<!--    <img [src]="downloadURL" style="width: 200px; height: 200px; border-radius: 50%;">-->
+<!--  </div>-->
+</div>

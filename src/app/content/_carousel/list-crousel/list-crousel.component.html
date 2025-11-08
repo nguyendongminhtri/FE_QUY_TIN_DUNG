@@ -1,0 +1,45 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1200px;margin: auto;min-width: 500px; text-align: center">
+      <mat-card style="background: rgba(255,255,255,0.7)">
+        <h1>Danh sách Tin Tức HOT</h1>
+        <div class="mat-elevation-z8">
+          <table mat-table [dataSource]="dataSource">
+
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef> No. </th>
+              <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef> Title </th>
+              <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="imageUrl">
+              <th mat-header-cell *matHeaderCellDef> Image </th>
+              <td mat-cell *matCellDef="let element"> <img src="{{element.imageUrl}}" alt="" width="50" height="50"> </td>
+            </ng-container>
+            <ng-container matColumnDef="isShow">
+              <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
+              <td mat-cell *matCellDef="let element">
+                <mat-slide-toggle
+                  [checked]="element.isShow"
+                  (change)="toggleStatus(element)">
+                </mat-slide-toggle>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                         showFirstLastButtons
+                         aria-label="Select page of periodic elements">
+          </mat-paginator>
+        </div>
+
+      </mat-card>
+    </div>
+  </div>
+</div>

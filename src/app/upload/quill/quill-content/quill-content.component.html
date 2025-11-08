@@ -1,0 +1,16 @@
+
+
+  <quill-editor
+    #editor
+    [modules]="modules"
+    [style]="{ height: '300px' }">
+  </quill-editor>
+<app-upload-avartar-quill
+  #uploadAvatar
+  (giveURLtoCreate)="onUploadImage($event)"
+>
+</app-upload-avartar-quill>
+<app-upload-file-quill
+  #uploadFile
+  (giveURLtoCreate)="onUploadFile($event)">
+</app-upload-file-quill>

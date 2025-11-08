@@ -44,7 +44,8 @@ export class CarouselComponent implements OnInit, OnDestroy {
     //   }
     // ];
     this.crouselService.getListCarousel().subscribe(carouselList => {
-      this.items = carouselList;
+      this.items = carouselList.filter((item: CarouselItem) => item.isShow === true);
+      console.log('this.items', this.items);
     });
     this.intervalId = setInterval(() => {
       this.next();

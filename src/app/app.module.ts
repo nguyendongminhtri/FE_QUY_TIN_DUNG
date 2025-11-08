@@ -71,6 +71,11 @@ import {DetailCategoryComponent} from './content/category/detail-category/detail
 import {CdkDrag} from "@angular/cdk/drag-drop";
 import {CreateComponent} from './content/_carousel/create/create.component';
 import {QuillModule} from "ngx-quill";
+import { ListCrouselComponent } from './content/_carousel/list-crousel/list-crousel.component';
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import { UploadAvartarQuillComponent } from './upload/quill/upload-avartar-quill/upload-avartar-quill.component';
+import { UploadFileQuillComponent } from './upload/quill/upload-file-quill/upload-file-quill.component';
+import { QuillContentComponent } from './upload/quill/quill-content/quill-content.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -113,6 +118,10 @@ import {QuillModule} from "ngx-quill";
     DialogSuccessComponent,
     DetailCategoryComponent,
     CreateComponent,
+    ListCrouselComponent,
+    UploadAvartarQuillComponent,
+    UploadFileQuillComponent,
+    QuillContentComponent,
 
   ],
   imports: [
@@ -143,7 +152,11 @@ import {QuillModule} from "ngx-quill";
     MatDatepickerModule,
     MatNativeDateModule,
     MatExpansionModule,
-    CdkDrag
+    CdkDrag,
+    MatSlideToggleModule
+  ],
+  exports: [
+    QuillContentComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},

@@ -11,8 +11,7 @@ import {Category} from "../model/Category";
   providedIn: 'root'
 })
 export class AlbumService {
-  // private API_ALBUM = environment.API_LOCAL + 'album';
-  private API_ALBUM = environment.API_SERVER + 'album';
+  private API_ALBUM = environment.API + 'album';
   constructor(private httpClient: HttpClient) { }
   createAlbum(album: Album): Observable<any> {
     return this.httpClient.post(this.API_ALBUM, album);

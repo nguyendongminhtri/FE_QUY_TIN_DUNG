@@ -1,6 +1,6 @@
 export const environment = {
-  API_LOCAL: 'http://localhost:8080/',
-  API_SERVER: 'http://163.223.12.221/',
+  API: 'http://localhost:8080/',
+  // API: 'http://163.223.12.221:8080/quy_tin_dung/',
   firebaseConfig: {
     apiKey: "AIzaSyAHbXIdiO5i-nOweX-szmiNn4JSyrOjDi4",
     authDomain: "chinhbeo-18d3b.firebaseapp.com",

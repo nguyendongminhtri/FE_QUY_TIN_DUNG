@@ -1,0 +1,16 @@
+<div>
+  <input type="file" #fileInput (change)="onFileChanged($event)" style="display: none"><br>
+  <mat-progress-bar *ngIf="checkUploadFileMusic" mode="indeterminate"></mat-progress-bar>
+<!--  <div *ngIf="downloadURL && fileType === 'audio'" style="margin: 10px 0">-->
+<!--    <audio controls>-->
+<!--      <source [src]="downloadURL" type="audio/mpeg" />-->
+<!--      Trình duyệt không hỗ trợ audio.-->
+<!--    </audio>-->
+<!--  </div>-->
+<!--  <div *ngIf="downloadURL && fileType === 'video'" style="margin: 10px 0">-->
+<!--    <video width="400" controls>-->
+<!--      <source [src]="downloadURL" type="video/mp4" />-->
+<!--      Trình duyệt không hỗ trợ video.-->
+<!--    </video>-->
+<!--  </div>-->
+</div>
