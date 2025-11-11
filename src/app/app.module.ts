@@ -76,6 +76,8 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import { UploadAvartarQuillComponent } from './upload/quill/upload-avartar-quill/upload-avartar-quill.component';
 import { UploadFileQuillComponent } from './upload/quill/upload-file-quill/upload-file-quill.component';
 import { QuillContentComponent } from './upload/quill/quill-content/quill-content.component';
+import { DialogDeleteComponent } from './dialog/dialog-delete/dialog-delete.component';
+import { DetailCarouselComponent } from './content/_carousel/detail-carousel/detail-carousel.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -122,6 +124,8 @@ import { QuillContentComponent } from './upload/quill/quill-content/quill-conten
     UploadAvartarQuillComponent,
     UploadFileQuillComponent,
     QuillContentComponent,
+    DialogDeleteComponent,
+    DetailCarouselComponent,
 
   ],
   imports: [

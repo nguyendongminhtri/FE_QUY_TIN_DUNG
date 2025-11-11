@@ -2,6 +2,7 @@ import {Component, OnInit, OnDestroy } from '@angular/core';
 import { CarouselItem } from 'src/app/model/CarouselItem';
 import {TokenService} from "../../../service/token.service";
 import {CarouselService} from "../../../service/carousel.service";
+import { Router} from "@angular/router";
 
 @Component({
   selector: 'app-carousel',
@@ -14,35 +15,13 @@ export class CarouselComponent implements OnInit, OnDestroy {
   intervalId: any;
   isAdminRole: boolean = false;
   constructor(private tokenService: TokenService,
-              private crouselService: CarouselService,) {
+              private crouselService: CarouselService,
+              private router: Router) {
   }
   ngOnInit() {
     const roleUser = this.tokenService.getRole();
     this.isAdminRole = roleUser.includes('ADMIN');
     console.log('ISaDMIN', this.isAdminRole);
-    // this.items = [
-    //   {
-    //     id: 1,
-    //     title: 'Ảnh 1',
-    //     description: 'Mô tả cho ảnh 1',
-    //     imageUrl: 'https://picsum.photos/id/1015/600/300',
-    //     content: ''
-    //   },
-    //   {
-    //     id: 2,
-    //     title: 'Ảnh 2',
-    //     description: 'Mô tả cho ảnh 2',
-    //     imageUrl: 'https://picsum.photos/id/1016/600/300',
-    //     content: ''
-    //   },
-    //   {
-    //     id: 3,
-    //     title: 'Ảnh 3',
-    //     description: 'Mô tả cho ảnh 3',
-    //     imageUrl: 'https://picsum.photos/id/1018/600/300',
-    //     content: ''
-    //   }
-    // ];
     this.crouselService.getListCarousel().subscribe(carouselList => {
       this.items = carouselList.filter((item: CarouselItem) => item.isShow === true);
       console.log('this.items', this.items);
@@ -63,5 +42,8 @@ export class CarouselComponent implements OnInit, OnDestroy {
 
   prev() {
     this.activeIndex = (this.activeIndex - 1 + this.items.length) % this.items.length;
+  }
+  goToDetail(item: CarouselItem) {
+    this.router.navigate(['/carousel-detail', item.id]);
   }
 }

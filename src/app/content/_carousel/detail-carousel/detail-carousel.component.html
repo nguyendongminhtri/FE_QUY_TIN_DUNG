@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1200px; margin: auto; min-width: 600px; text-align: center">
+      <mat-card class="detail-card">
+        <h2><strong>Tiêu đề:</strong> {{ carouselItem.title }}</h2>
+        <p *ngIf="carouselItem.description"><strong>Mô tả:</strong> {{ carouselItem.description }}</p>
+        <div *ngIf="carouselItem.imageUrl">
+          <img [src]="carouselItem.imageUrl" alt="Ảnh đại diện" >
+        </div>
+        <div *ngIf="carouselItem.content" class="quill-content" [innerHTML]="carouselItem.content"></div>
+      </mat-card>
+    </div>
+  </div>
+</div>

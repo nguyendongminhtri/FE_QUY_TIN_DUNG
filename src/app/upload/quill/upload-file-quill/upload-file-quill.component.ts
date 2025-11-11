@@ -1,5 +1,5 @@
-import {Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
-import {AngularFireStorage, AngularFireStorageReference} from "@angular/fire/compat/storage";
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 
 @Component({
   selector: 'app-upload-file-quill',
@@ -8,20 +8,23 @@ import {AngularFireStorage, AngularFireStorageReference} from "@angular/fire/com
 })
 export class UploadFileQuillComponent {
   selectedFile?: File;
-  ref?: AngularFireStorageReference;
   downloadURL?: string;
   checkUploadFileMusic = false;
   fileType: 'audio' | 'video' | null = null;
 
   @Output()
-  giveURLtoCreate = new EventEmitter<{ url: string; type: 'audio' | 'video' }>();
+  giveFileInfo = new EventEmitter<{
+    downloadURL: string;
+    storagePath: string;
+    type: 'audio' | 'video';
+  }>();
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   constructor(private afStorage: AngularFireStorage) {}
 
   triggerUpload() {
-    this.fileInput.nativeElement.click();
+    this.fileInput?.nativeElement?.click();
   }
 
   onFileChanged(event: any) {
@@ -45,15 +48,19 @@ export class UploadFileQuillComponent {
     if (!this.selectedFile || !this.fileType) return;
 
     this.checkUploadFileMusic = true;
-    const id = Math.random().toString(36).substring(2); // Tạo tên file ngẫu nhiên
-    this.ref = this.afStorage.ref(id);
 
-    this.ref.put(this.selectedFile).then(snapshot => {
+    const timestamp = Date.now();
+    const uniqueName = `${timestamp}_${this.selectedFile.name}`;
+    const storagePath = `quill/${this.fileType}/${uniqueName}`;
+    const fileRef = this.afStorage.ref(storagePath);
+
+    fileRef.put(this.selectedFile).then(snapshot => {
       return snapshot.ref.getDownloadURL();
     }).then(downloadURL => {
       this.downloadURL = downloadURL;
-      this.giveURLtoCreate.emit({
-        url: this.downloadURL!,
+      this.giveFileInfo.emit({
+        downloadURL,
+        storagePath,
         type: this.fileType!
       });
       this.checkUploadFileMusic = false;

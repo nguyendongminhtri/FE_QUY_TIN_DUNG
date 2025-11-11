@@ -19,4 +19,11 @@ export class CarouselService {
   updateStatus(id: number, isShow: boolean): Observable<any> {
     return this.httpClient.put(`${this.API_CAROUSEL}/${id}/status`, { isShow });
   }
+  deleteCarousel(id: number): Observable<any> {
+    return this.httpClient.delete(this.API_CAROUSEL + '/' + id);
+  }
+  getCarouselById(id: number): Observable<CarouselItem> {
+    return this.httpClient.get<CarouselItem>(`${this.API_CAROUSEL}/${id}`);
+  }
+
 }

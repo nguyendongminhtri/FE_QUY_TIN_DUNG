@@ -1,5 +1,5 @@
 <div>
-  <input style="width: 100%;padding: 5px 5px;border-radius: 8px" type="file" (change)="onFileChanged($event)">
+  <input #fileInput style="width: 100%;padding: 5px 5px;border-radius: 8px" type="file" (change)="onFileChanged($event)">
   <br>
   <mat-spinner *ngIf="checkUploadAvatar"></mat-spinner>
   <!--    <button *ngIf="downloadURL?!selectedFile:selectedFile" mat-stroked-button color="accent" class="mat-button-toggle-group btn-outline-success"-->

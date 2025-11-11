@@ -6,7 +6,7 @@
         <h1 style="font-weight: 600;margin: auto;color: #333333;text-shadow: 0px 0px 10px #65a4ec">Cập nhật ảnh đại diện</h1>
         <mat-error  class="alert form-angular">{{status}}</mat-error>
         <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && updateAvatar()" novalidate>
-          <app-upload-avatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>
+<!--          <app-upload-avatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>-->
           <br>
           <button style="margin-left: 200px" mat-stroked-button class="mat-button-toggle-group">Cập nhật</button>
         </form>

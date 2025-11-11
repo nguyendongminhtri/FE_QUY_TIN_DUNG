@@ -27,7 +27,7 @@ export class QuillContentComponent implements AfterViewInit, ControlValueAccesso
   @ViewChild('editor') editor!: QuillEditorComponent;
   @ViewChild('uploadAvatar') uploadAvatar!: UploadAvartarQuillComponent;
   @ViewChild('uploadFile') uploadFile!: UploadFileQuillComponent;
-
+  contentStoragePaths: string[] = [];
   modules = {
     toolbar: {
       container: [
@@ -80,30 +80,48 @@ export class QuillContentComponent implements AfterViewInit, ControlValueAccesso
   }
 
 
-  onUploadImage(url: string) {
+  onUploadImage(file: { downloadURL: string; storagePath: string }) {
     const quill = this.editor.quillEditor as Quill;
     const range = quill.getSelection();
     const index = range ? range.index : quill.getLength();
 
-    quill.insertEmbed(index, 'image', url, 'user');
+    quill.insertEmbed(index, 'image', file.downloadURL, 'user');
     quill.insertText(index + 1, '\n', 'user');
     quill.setSelection(index + 2);
+
+    this.contentStoragePaths.push(file.storagePath);
   }
 
-  onUploadFile(file: { url: string; type: 'audio' | 'video' }) {
+  onUploadFile(file: {
+    downloadURL: string;
+    storagePath: string;
+    type: 'audio' | 'video';
+  }) {
     const quill = this.editor.quillEditor as Quill;
     const range = quill.getSelection();
     const index = range ? range.index : quill.getLength();
-    quill.insertEmbed(index, file.type, file.url, 'user');
+
+    quill.insertEmbed(index, file.type, file.downloadURL, 'user');
     quill.insertText(index + 1, '\n', 'user');
     quill.setSelection(index + 2);
-  }
 
+    this.contentStoragePaths.push(file.storagePath);
+  }
+  getStoragePaths(): string[] {
+    return this.contentStoragePaths;
+  }
   triggerImageUpload() {
     this.uploadAvatar.triggerUpload();
   }
 
   triggerFileUpload() {
     this.uploadFile.triggerUpload();
+  }
+  clearContent() {
+    const quill = this.editor?.quillEditor as Quill;
+    if (quill) {
+      quill.setText('');
+    }
+    this.contentStoragePaths = [];
   }
 }

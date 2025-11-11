@@ -1,0 +1,41 @@
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.quill-content {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+::ng-deep .quill-content img {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 12px !important;
+  object-fit: cover !important;
+  display: block;
+  margin: 12px auto;
+}
+
+
+
+.detail-card {
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background-color: #fff;
+}
+
+@media (max-width: 768px) {
+  .detail-card {
+    padding: 12px;
+  }
+
+  .quill-content {
+    font-size: 0.95rem;
+  }
+}

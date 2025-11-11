@@ -12,7 +12,7 @@ export class UploadAvartarQuillComponent {
   downloadURL?: string;
   checkUploadAvatar = false;
   @Output()
-  giveURLtoCreate = new EventEmitter<string>();
+  giveAvatarInfo = new EventEmitter<{ downloadURL: string; storagePath: string }>();
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   constructor(private afStorage: AngularFireStorage) {
   }
@@ -23,21 +23,27 @@ export class UploadAvartarQuillComponent {
     this.selectedFile  = $event.target.files[0];
     this.onUpload();
   }
-  onUpload(){
+  onUpload() {
     this.checkUploadAvatar = true;
-    const id = Math.random().toString(36).substring(2); //Tạo ra 1 name riêng cho mỗi DB firebase;
-    console.log('id ---> ', id);
-    this.ref = this.afStorage.ref(id);
-    this.ref.put(this.selectedFile).then(snapshot =>{
-      return snapshot.ref.getDownloadURL(); //Tra ve 1 chuoi sieu van ban tren FB.
-    }).then( downloadURL =>{ //chuyen giao link tu nhung component khac nhau khi su upload
+
+    const timestamp = Date.now();
+    const uniqueName = `${timestamp}_${this.selectedFile?.name}`;
+    const storagePath = `quill/${uniqueName}`;
+    const fileRef = this.afStorage.ref(storagePath);
+
+    fileRef.put(this.selectedFile!).then(snapshot => {
+      return snapshot.ref.getDownloadURL();
+    }).then(downloadURL => {
       this.downloadURL = downloadURL;
-      this.giveURLtoCreate.emit(this.downloadURL);
+      this.giveAvatarInfo.emit({
+        downloadURL,
+        storagePath
+      });
       this.checkUploadAvatar = false;
-      return downloadURL;
-    })
-      .catch(error =>{
-        console.log(`Failed to upload avatar and get link ${error}`);
-      })
+    }).catch(error => {
+      console.log(`Failed to upload file and get link ${error}`);
+      this.checkUploadAvatar = false;
+    });
   }
+
 }

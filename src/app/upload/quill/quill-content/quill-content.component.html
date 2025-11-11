@@ -7,10 +7,10 @@
   </quill-editor>
 <app-upload-avartar-quill
   #uploadAvatar
-  (giveURLtoCreate)="onUploadImage($event)"
+  (giveAvatarInfo)="onUploadImage($event)"
 >
 </app-upload-avartar-quill>
 <app-upload-file-quill
   #uploadFile
-  (giveURLtoCreate)="onUploadFile($event)">
+  (giveFileInfo)="onUploadFile($event)">
 </app-upload-file-quill>
