@@ -73,11 +73,16 @@ import {CreateComponent} from './content/_carousel/create/create.component';
 import {QuillModule} from "ngx-quill";
 import { ListCrouselComponent } from './content/_carousel/list-crousel/list-crousel.component';
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
-import { UploadAvartarQuillComponent } from './upload/quill/upload-avartar-quill/upload-avartar-quill.component';
 import { UploadFileQuillComponent } from './upload/quill/upload-file-quill/upload-file-quill.component';
 import { QuillContentComponent } from './upload/quill/quill-content/quill-content.component';
 import { DialogDeleteComponent } from './dialog/dialog-delete/dialog-delete.component';
 import { DetailCarouselComponent } from './content/_carousel/detail-carousel/detail-carousel.component';
+import { UpdateCarouselComponent } from './content/_carousel/update-carousel/update-carousel.component';
+import {UploadAvartarQuillComponent} from "./upload/quill/upload-avartar-quill/upload-avartar-quill.component";
+import { PageNewsComponent } from './content/news/page-news/page-news.component';
+import { CreateNewsComponent } from './content/news/create-news/create-news.component';
+import { ListNewsComponent } from './content/news/list-news/list-news.component';
+import { UpdateNewsComponent } from './content/news/update-news/update-news.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -126,6 +131,11 @@ import { DetailCarouselComponent } from './content/_carousel/detail-carousel/det
     QuillContentComponent,
     DialogDeleteComponent,
     DetailCarouselComponent,
+    UpdateCarouselComponent,
+    PageNewsComponent,
+    CreateNewsComponent,
+    ListNewsComponent,
+    UpdateNewsComponent,
 
   ],
   imports: [

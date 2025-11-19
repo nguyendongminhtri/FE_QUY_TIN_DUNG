@@ -26,7 +26,8 @@
             </mat-error>
             <app-upload-avatar #uploadAvatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>
             <br>
-            <button style="margin:auto; width: 50%; color: #0535f4" mat-stroked-button type="submit">
+            <mat-error>{{this.status}}</mat-error>
+            <button style="margin:auto; width: 50%; background-color: rgba(205,17,130,0.45); color: #0535f4" mat-stroked-button type="submit">
               Tạo Tin Hot
             </button>
           </form>

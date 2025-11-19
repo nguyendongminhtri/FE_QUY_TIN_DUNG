@@ -9,7 +9,6 @@ import {Observable} from "rxjs";
 })
 export class CategoryService {
 private API_CATEGORY = environment.API+'category';
-// private API_CATEGORY = environment.API_LOCAL+'category';
   constructor(private httpClient:HttpClient) { }
   createCategoryService(category: Category): Observable<any> {
     return this.httpClient.post<any>(this.API_CATEGORY, category);
@@ -21,7 +20,6 @@ private API_CATEGORY = environment.API+'category';
 
   getCategoryById(id: number): Observable<any> {
     return this.httpClient.get(this.API_CATEGORY + '/' + id);
-    // return this.httpClient.get(`${this.API_CATEGORY}/${id}`)
   }
 
   updateCategory(id: number, category: Category): Observable<any> {

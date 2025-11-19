@@ -28,24 +28,34 @@ export class UploadFileQuillComponent {
   }
 
   onFileChanged(event: any) {
-    this.selectedFile = event.target.files[0];
-    if (this.selectedFile) {
-      const mimeType = this.selectedFile.type;
-      if (mimeType.startsWith('audio/')) {
-        this.fileType = 'audio';
-      } else if (mimeType.startsWith('video/')) {
-        this.fileType = 'video';
-      } else {
-        this.fileType = null;
-        console.warn('Không hỗ trợ định dạng này:', mimeType);
-        return;
-      }
-      this.onUpload();
+    const file = event.target.files[0];
+    if (!file) {
+      console.warn('Chưa chọn file nào');
+      return;
     }
+
+    this.selectedFile = file;
+    const mimeType = file.type;
+
+    if (mimeType.startsWith('audio/')) {
+      this.fileType = 'audio';
+    } else if (mimeType.startsWith('video/')) {
+      this.fileType = 'video';
+    } else {
+      this.fileType = null;
+      console.warn('Không hỗ trợ định dạng này:', mimeType);
+      return;
+    }
+
+    this.onUpload();
   }
 
+
   onUpload() {
-    if (!this.selectedFile || !this.fileType) return;
+    if (!this.selectedFile || !this.fileType) {
+      console.warn('Không có file hợp lệ để upload');
+      return;
+    }
 
     this.checkUploadFileMusic = true;
 
@@ -69,4 +79,5 @@ export class UploadFileQuillComponent {
       this.checkUploadFileMusic = false;
     });
   }
+
 }

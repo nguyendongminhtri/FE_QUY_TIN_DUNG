@@ -7,13 +7,6 @@ import {Component, OnInit} from '@angular/core';
 })
 export class FooterComponent implements OnInit{
   ngOnInit(): void {
-    setInterval(() => {
-      const slider = document.querySelector('.row_footer');
-      // @ts-ignore
-      const firstItem = slider.firstElementChild;
-      // @ts-ignore
-      slider.appendChild(firstItem);
-    }, 2000);
   }
 
 }

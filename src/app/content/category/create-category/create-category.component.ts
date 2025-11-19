@@ -1,44 +1,41 @@
-import {Component} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {CategoryService} from "../../../service/category.service";
 import {Category} from "../../../model/Category";
+import {ListCrouselComponent} from "../../_carousel/list-crousel/list-crousel.component";
+import {ListCategoryComponent} from "../list-category/list-category.component";
 
 @Component({
   selector: 'app-create-category',
   templateUrl: './create-category.component.html',
   styleUrls: ['./create-category.component.css']
 })
-export class CreateCategoryComponent {
+export class CreateCategoryComponent implements OnInit {
   status = "";
   form: any = {};
   category? : Category;
-
+  @ViewChild('listCategory') listCategory!: ListCategoryComponent;
   constructor(private categoryService : CategoryService) {
   }
+  ngOnInit(): void {
 
-  protected readonly = onunload;
-  onUpload($event: string) {
-    this.form.avatar = $event;
   }
-
-  updateAvatar() {
-    return false;
+  onNameChange(value: string) {
+    if (value && value.trim().length > 0) {
+      this.status = '';
+    }
   }
 
   createCategory() {
     this.category = new  Category(
-      this.form.name,
-      this.form.avatar
+      this.form.name
     )
-    if (this.form.avatar == undefined){
-      this.status = "Avatar field cannot be empty!"
-    }else {
       this.categoryService.createCategoryService(this.category).subscribe(data =>{
         if (data.message=='name_exist'){
-          this.status = 'The name is exist'
+          this.status = 'Tên Thể loại đã tồn tại'
         }else {
-          this.status = 'Create success';
+          this.status = 'Tạo thể loại thành công';
+          this.listCategory.loadCategory();
         }
       })
     }
-  }
 }

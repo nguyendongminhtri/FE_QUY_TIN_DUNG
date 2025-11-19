@@ -1,3 +1,4 @@
+<div class="container">
 <header class="header">
 
   <!-- PHẦN TRÊN: Logo + Tên + Slogan -->
@@ -63,9 +64,14 @@
         <mat-icon>arrow_drop_down</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <!-- menu user -->
+        <!-- Các mục menu khác nếu có -->
+        <button mat-menu-item (click)="logOut()">
+          <mat-icon>logout</mat-icon>
+          <span>Đăng xuất</span>
+        </button>
       </mat-menu>
     </div>
   </div>
 </header>
 <hr class="divider">
+</div>

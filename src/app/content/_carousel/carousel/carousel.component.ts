@@ -19,8 +19,7 @@ export class CarouselComponent implements OnInit, OnDestroy {
               private router: Router) {
   }
   ngOnInit() {
-    const roleUser = this.tokenService.getRole();
-    this.isAdminRole = roleUser.includes('ADMIN');
+    this.isAdminRole = this.tokenService.getAdminRole();
     console.log('ISaDMIN', this.isAdminRole);
     this.crouselService.getListCarousel().subscribe(carouselList => {
       this.items = carouselList.filter((item: CarouselItem) => item.isShow === true);

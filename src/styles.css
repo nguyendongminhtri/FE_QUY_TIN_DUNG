@@ -1,3 +1,19 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+
+  .navbar li,
+  .searchBox {
+    margin: 10px 12px;
+  }
+
+  ::ng-deep .quill-content {
+    padding: 0 12px;
+  }
+}

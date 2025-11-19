@@ -1,3 +1,57 @@
-.row_footer {
-  transition: transform 0.3s ease-in-out;
+.map-link {
+  text-decoration: none;
+  color: #333333;
+  transition: color 0.3s ease;
+  position: relative;
+  padding-left: 20px;
+}
+
+.map-link::before {
+  content: "📍";
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.map-link:hover {
+  color: #007BFF; /* Màu xanh khi hover */
+  text-decoration: underline;
+}
+.zalo-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.zalo-link:hover {
+  color: #0088FF;
+}
+
+.zalo-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  object-fit: contain;
+}
+.messenger-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.messenger-link:hover {
+  color: #0084FF; /* Màu Messenger */
+}
+
+.messenger-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  object-fit: contain;
 }

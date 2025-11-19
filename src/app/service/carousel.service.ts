@@ -25,5 +25,7 @@ export class CarouselService {
   getCarouselById(id: number): Observable<CarouselItem> {
     return this.httpClient.get<CarouselItem>(`${this.API_CAROUSEL}/${id}`);
   }
-
+  updateCarousel(id: string, data: any): Observable<any> {
+    return this.httpClient.put(`${this.API_CAROUSEL}/${id}`, data);
+  }
 }

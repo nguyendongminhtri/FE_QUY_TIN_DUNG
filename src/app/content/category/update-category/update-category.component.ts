@@ -1,8 +1,9 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {Category} from "../../../model/Category";
 import {ActivatedRoute} from "@angular/router";
 import {CategoryService} from "../../../service/category.service";
-import {MAT_DIALOG_DATA} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {ListCategoryComponent} from "../list-category/list-category.component";
 
 @Component({
   selector: 'app-update-category',
@@ -13,28 +14,22 @@ export class UpdateCategoryComponent implements OnInit{
   status = '';
   // @ts-ignore
   category = new Category();
-
-  constructor(private actRouter: ActivatedRoute,
-              private categoryService: CategoryService,
+@ViewChild('listCategory') listCategory?: ListCategoryComponent;
+  constructor(private categoryService: CategoryService,
+              public dialogRef: MatDialogRef<UpdateCategoryComponent>,
               @Inject(MAT_DIALOG_DATA)
               public data: any) {
   }
   updateCategory() {
-    // @ts-ignore
-    this.categoryService.updateCategory(this.category?.id, this.category).subscribe(data =>{
+    this.categoryService.updateCategory(this.category?.id?? 0, this.category).subscribe(data =>{
       console.log('data UPDATE ========================>', data)
-      if(data.message=='no_change'){
-        this.status = 'No change';
-      } else if(data.message == 'name_existed'){
-        this.status ='Name existed!'
+      if(data.message == 'name_exist'){
+        this.status ='Tên thể loại đã tồn tại!'
       } else if(data.message == 'update_success'){
-        this.status = 'Update success!!!'
+        this.status = 'Cập nhật Thể Loại thành công!'
+        // this.dialogRef.close('updated');
       }
     })
-  }
-
-  onUpload($event: string) {
-    this.category.avatar = $event
   }
 
   ngOnInit(): void {
@@ -43,15 +38,5 @@ export class UpdateCategoryComponent implements OnInit{
       this.category = data;
       console.log('category OLD -------------------- --->', this.category)
     })
-    // this.actRouter.paramMap.subscribe(categoryId => {
-    //   console.log('categoryId ---->', categoryId)
-    //   // @ts-ignore
-    //   const id = +categoryId.get('id');
-    //   console.log('id ---->', id)
-    //   this.categoryService.getCategoryById(id).subscribe(data => {
-    //     this.category = data;
-    //     console.log('category --->', this.category)
-    //   })
-    // })
   }
 }

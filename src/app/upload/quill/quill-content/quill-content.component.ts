@@ -2,7 +2,9 @@ import {
   Component,
   ViewChild,
   AfterViewInit,
-  forwardRef
+  forwardRef,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import { QuillEditorComponent } from 'ngx-quill';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
@@ -27,7 +29,11 @@ export class QuillContentComponent implements AfterViewInit, ControlValueAccesso
   @ViewChild('editor') editor!: QuillEditorComponent;
   @ViewChild('uploadAvatar') uploadAvatar!: UploadAvartarQuillComponent;
   @ViewChild('uploadFile') uploadFile!: UploadFileQuillComponent;
-  contentStoragePaths: string[] = [];
+
+  @Output() storagePathsChange = new EventEmitter<{ downloadURL: string; storagePath: string }[]>();
+
+  contentStoragePaths: { downloadURL: string; storagePath: string }[] = [];
+
   modules = {
     toolbar: {
       container: [
@@ -74,11 +80,14 @@ export class QuillContentComponent implements AfterViewInit, ControlValueAccesso
       if (!quill) return;
       quill.on('text-change', () => {
         const html = quill.root.innerHTML;
-        this.onChange(html);
+        this.onChange(html); // cập nhật nội dung HTML vào form
+
+        // Đồng bộ lại danh sách file từ HTML
+        this.contentStoragePaths = this.extractStoragePathsFromHtml(html);
+        this.storagePathsChange.emit(this.contentStoragePaths);
       });
     }, 0);
   }
-
 
   onUploadImage(file: { downloadURL: string; storagePath: string }) {
     const quill = this.editor.quillEditor as Quill;
@@ -89,14 +98,12 @@ export class QuillContentComponent implements AfterViewInit, ControlValueAccesso
     quill.insertText(index + 1, '\n', 'user');
     quill.setSelection(index + 2);
 
-    this.contentStoragePaths.push(file.storagePath);
+    this.contentStoragePaths.push(file);
+    this.onChange(this.getCurrentContentHTML()); // cập nhật HTML
+    this.storagePathsChange.emit(this.contentStoragePaths); // phát danh sách file ra ngoài
   }
 
-  onUploadFile(file: {
-    downloadURL: string;
-    storagePath: string;
-    type: 'audio' | 'video';
-  }) {
+  onUploadFile(file: { downloadURL: string; storagePath: string; type: 'audio' | 'video' }) {
     const quill = this.editor.quillEditor as Quill;
     const range = quill.getSelection();
     const index = range ? range.index : quill.getLength();
@@ -105,11 +112,20 @@ export class QuillContentComponent implements AfterViewInit, ControlValueAccesso
     quill.insertText(index + 1, '\n', 'user');
     quill.setSelection(index + 2);
 
-    this.contentStoragePaths.push(file.storagePath);
+    this.contentStoragePaths.push(file);
+    this.onChange(this.getCurrentContentHTML()); // cập nhật HTML
+    this.storagePathsChange.emit(this.contentStoragePaths); // phát danh sách file ra ngoài
   }
-  getStoragePaths(): string[] {
+
+  getStoragePaths(): { downloadURL: string; storagePath: string }[] {
     return this.contentStoragePaths;
   }
+
+  getCurrentContentHTML(): string {
+    const quill = this.editor?.quillEditor as Quill;
+    return quill.root?.innerHTML ?? '';
+  }
+
   triggerImageUpload() {
     this.uploadAvatar.triggerUpload();
   }
@@ -117,11 +133,37 @@ export class QuillContentComponent implements AfterViewInit, ControlValueAccesso
   triggerFileUpload() {
     this.uploadFile.triggerUpload();
   }
+
   clearContent() {
     const quill = this.editor?.quillEditor as Quill;
     if (quill) {
       quill.setText('');
     }
     this.contentStoragePaths = [];
+    this.storagePathsChange.emit(this.contentStoragePaths); // phát ra ngoài để form biết đã clear
+  }
+
+// Thêm hàm parse HTML để lấy storagePath
+  extractStoragePathsFromHtml(html: string): { downloadURL: string; storagePath: string }[] {
+    const paths: { downloadURL: string; storagePath: string }[] = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    doc.querySelectorAll('img, video, audio').forEach(el => {
+      const src = el.getAttribute('src');
+      if (src && src.includes('firebasestorage.googleapis.com')) {
+        const storagePath = this.extractPathFromUrl(src);
+        if (storagePath) {
+          paths.push({ downloadURL: src, storagePath });
+        }
+      }
+    });
+
+    return paths;
+  }
+
+  extractPathFromUrl(url: string): string | null {
+    const match = url.match(/\/o\/(.*?)\?/);
+    return match && match[1] ? decodeURIComponent(match[1]) : null;
   }
 }

@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1200px; margin: auto;  text-align: center">
+      <mat-card>
+        <DIV *ngIf="isAdminRole" style="background-color: #899a9a">
+          <h1>Trình quản lí dành cho ADMIN</h1>
+          <button routerLink="create-carousel" mat-raised-button color="accent"
+                  style="width: 30%" class="mat-raised-button" >
+            Màn Quản Lý Tin HOT
+          </button>
+          <button routerLink="create-category" mat-raised-button color="primary"
+                  style="width: 30%" class="mat-raised-button" >
+            Màn Quản Lý Thể Loại Tin Tức
+          </button>
+          <button routerLink="create-news" mat-raised-button color="warn"
+                  style="width: 30%" class="mat-raised-button" >
+            Màn Quản Lý Tin Tức
+          </button>
+        </DIV>
+
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,17 +1,24 @@
+/* Áp dụng cho hình ảnh trong nội dung Quill */
 img {
   max-width: 100%;
   height: auto;
   border-radius: 12px;
   object-fit: cover;
 }
-.quill-content {
+
+/* Nội dung Quill cơ bản */
+::ng-deep .quill-content {
   word-wrap: break-word;
   overflow-wrap: break-word;
   font-size: 1rem;
   line-height: 1.6;
   text-align: left;
+  max-width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
+/* Hình ảnh trong nội dung Quill */
 ::ng-deep .quill-content img {
   max-width: 100% !important;
   height: auto !important;
@@ -21,21 +28,74 @@ img {
   margin: 12px auto;
 }
 
-
-
+/* Card hiển thị nội dung */
 .detail-card {
   padding: 16px;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   background-color: #fff;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
+/* Responsive cho màn hình nhỏ */
 @media (max-width: 768px) {
   .detail-card {
     padding: 12px;
   }
 
-  .quill-content {
+  ::ng-deep .quill-content {
     font-size: 0.95rem;
+    padding: 0 12px;
+  }
+
+  ::ng-deep .quill-content img {
+    margin: 8px auto;
+  }
+}
+/* Căn giữa và mở rộng video */
+::ng-deep .quill-content video {
+  display: block;
+  margin: 16px auto;
+  width: 100%;
+  max-width: 720px; /* Giới hạn chiều rộng tối đa trên desktop */
+  height: auto;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+
+/* Căn giữa audio mà không làm mất thanh điều khiển */
+::ng-deep .quill-content audio {
+  display: block;
+  margin: 16px auto;
+  width: 100%;
+  max-width: 480px; /* Giới hạn chiều rộng để không quá to trên desktop */
+}
+
+
+@media (max-width: 768px) {
+  ::ng-deep .quill-content {
+    font-size: 0.95rem;
+    padding: 0 12px;
+  }
+
+  ::ng-deep .quill-content video,
+  ::ng-deep .quill-content audio {
+    max-width: 100%;
+    margin: 12px auto;
+  }
+}
+
+@media (max-width: 350px) {
+  ::ng-deep .quill-content {
+    font-size: 0.9rem;
+    padding: 0 8px;
+  }
+
+  ::ng-deep .quill-content video,
+  ::ng-deep .quill-content audio {
+    max-width: 100%;
+    margin: 8px auto;
   }
 }

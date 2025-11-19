@@ -48,4 +48,8 @@ export class TokenService {
     }
     return this.roles;
   }
+  public getAdminRole(): boolean {
+    const isAminRole = this.getRole().includes('ADMIN')? true : false;
+    return isAminRole;
+  }
 }

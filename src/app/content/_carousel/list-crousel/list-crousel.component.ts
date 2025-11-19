@@ -6,6 +6,7 @@ import {CarouselService} from "../../../service/carousel.service";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
 import {FirebaseStorageService} from "../../../service/firebase-storage.service";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-crousel',
@@ -14,12 +15,13 @@ import {FirebaseStorageService} from "../../../service/firebase-storage.service"
 })
 export class ListCrouselComponent implements OnInit {
   listCarousel: CarouselItem[] = [];
-  displayedColumns: string[] = ['id', 'title', 'imageUrl', 'isShow', 'delete'];
+  displayedColumns: string[] = ['id', 'title', 'imageUrl', 'isShow', 'update','delete'];
   dataSource: any;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
 
   constructor(private carouselService: CarouselService,
               private dialog: MatDialog,
+              private router: Router,
               private firebaseStorageService: FirebaseStorageService) {
   }
 
@@ -95,5 +97,7 @@ export class ListCrouselComponent implements OnInit {
       }
     });
   }
-
+  goToEdit(element: any) {
+    this.router.navigate(['/carousel-update', element.id]);
+  }
 }

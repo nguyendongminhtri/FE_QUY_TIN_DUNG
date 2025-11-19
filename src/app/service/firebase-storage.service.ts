@@ -14,11 +14,10 @@ export class FirebaseStorageService {
     return deleteObject(fileRef);
   }
 
-  deleteMultipleFilesByPaths(paths: string[]): Promise<void[]> {
-    if (!paths || paths.length === 0) return Promise.resolve([]);
+  deleteMultipleFilesByPaths(paths: string[]): Promise<void> {
+    if (!paths || paths.length === 0) return Promise.resolve();
 
     const storage = getStorage();
-
     const deletePromises = paths.map(path => {
       if (!path || path === 'undefined') return Promise.resolve();
 
@@ -37,8 +36,9 @@ export class FirebaseStorageService {
       }
     });
 
-    return Promise.all(deletePromises);
+    return Promise.all(deletePromises).then(() => {}); // trả về void
   }
+
 
   extractStoragePathsFromHtml(html: string): string[] {
     const paths: string[] = [];
