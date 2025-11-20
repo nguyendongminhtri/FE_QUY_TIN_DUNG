@@ -1,31 +1,33 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
+import { MatDialog } from "@angular/material/dialog";
 import { CarouselService } from "../../../service/carousel.service";
-import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { QuillContentComponent } from "../../../upload/quill/quill-content/quill-content.component";
-import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
-import {MatDialog} from "@angular/material/dialog";
+import { DialogDeleteComponent } from "../../../dialog/dialog-delete/dialog-delete.component";
+import { CarouselItem } from "../../../model/CarouselItem";
+import { FirebaseStorageService } from "../../../service/firebase-storage.service";
 
 @Component({
   selector: 'app-update-carousel',
   templateUrl: './update-carousel.component.html',
   styleUrls: ['./update-carousel.component.css']
 })
-export class UpdateCarouselComponent implements OnInit {
+export class UpdateCarouselComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   currentImageUrl: string = '';
   carouselId!: string;
-
+  private isUpdated = false;
   @ViewChild('quillContent') quillContent!: QuillContentComponent;
+  oldCarousel?: CarouselItem;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private carouselService: CarouselService,
-    private afStorage: AngularFireStorage,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private firebaseStorageService: FirebaseStorageService
   ) {}
 
   ngOnInit(): void {
@@ -42,108 +44,143 @@ export class UpdateCarouselComponent implements OnInit {
 
     if (this.carouselId) {
       this.carouselService.getCarouselById(+this.carouselId).subscribe(data => {
-        this.form.patchValue(data);
+        this.form.patchValue({
+          title: data.title,
+          description: data.description,
+          content: data.content,
+          imageUrl: data.imageUrl,
+          imageStoragePath: data.imageStoragePath
+        });
+        this.oldCarousel = data;
         this.currentImageUrl = data.imageUrl ?? '';
       });
     }
   }
 
-  onUpload(fileInfo: { downloadURL: string; storagePath: string }) {
-    const oldPath = this.form.get('imageStoragePath')?.value;
-    if (oldPath && oldPath !== fileInfo.storagePath) {
-      this.afStorage.ref(oldPath).delete().subscribe({
-        next: () => console.log('Deleted old image:', oldPath),
-        error: err => console.warn('Failed to delete old image:', err)
-      });
-    }
-
+  onUpload(event: { downloadURL: string; storagePath: string }) {
     this.form.patchValue({
-      imageUrl: fileInfo.downloadURL,
-      imageStoragePath: fileInfo.storagePath
+      imageUrl: event.downloadURL,
+      imageStoragePath: event.storagePath
     });
-
-    this.currentImageUrl = fileInfo.downloadURL;
+    this.currentImageUrl = event.downloadURL;
   }
 
-  onUpdate(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+  onUpdate() {
+    this.isUpdated = true;
 
-    // Bước 1: Parse danh sách file cũ từ form
-    let oldFiles: { downloadURL: string; storagePath: string }[] = [];
-    const raw = this.form.get('contentStoragePathsJson')?.value;
+    // Lấy danh sách file từ Quill editor (mới)
+    const newQuillPaths = this.quillContent.getStoragePaths();
+    this.form.get('contentStoragePathsJson')?.setValue(JSON.stringify(newQuillPaths));
 
+    const formValue = this.form.value;
+    const updatedCarousel: CarouselItem = {
+      id: this.oldCarousel?.id,
+      title: formValue.title,
+      description: formValue.description,
+      content: formValue.content,
+      imageUrl: formValue.imageUrl,
+      imageStoragePath: formValue.imageStoragePath,
+      contentStoragePathsJson: formValue.contentStoragePathsJson
+    };
+
+    // Parse danh sách file cũ
+    let oldPathsRaw = this.oldCarousel?.contentStoragePathsJson || '[]';
+    let parsed: any;
     try {
-      const parsed = JSON.parse(raw || '[]');
-      oldFiles = Array.isArray(parsed) ? parsed : [];
+      parsed = JSON.parse(oldPathsRaw);
+      if (typeof parsed === 'string') {
+        parsed = JSON.parse(parsed);
+      }
     } catch (e) {
-      console.warn('Invalid JSON in contentStoragePathsJson:', raw);
+      parsed = [];
     }
 
-    // Bước 2: Lấy nội dung HTML hiện tại từ Quill
-    const currentHTML = this.quillContent?.getCurrentContentHTML() ?? '';
+    let oldPaths: string[] = Array.isArray(parsed)
+      ? parsed.map((item: any) => item.storagePath)
+      : [];
 
-    // Bước 3: Trích xuất và giải mã URL từ HTML
-    const rawURLs = Array.from(currentHTML.matchAll(/https?:\/\/[^\s"'>)]+/g)).map(m => m[0]);
-    const decodedURLs = rawURLs.map(url => decodeURIComponent(url.replace(/&amp;/g, '&')));
+    // Chuẩn hóa newPaths thành string[]
+    let newPaths: string[] = Array.isArray(newQuillPaths)
+      ? newQuillPaths.map((item: any) => item.storagePath)
+      : [];
 
-    // Bước 4: Trích xuất storagePath từ URL đã giải mã
-    const usedStoragePaths = decodedURLs
-      .map(url => {
-        const match = url.match(/\/o\/([^?]+)\?/);
-        return match ? match[1] : null;
-      })
-      .filter((path): path is string => !!path);
+    // Tìm file cần xóa
+    const filesToDelete = oldPaths.filter(p => !newPaths.includes(p));
 
-    // Bước 5: Lấy danh sách file mới từ QuillContentComponent
-    const newFiles = this.quillContent?.getStoragePaths() ?? [];
+    // Kiểm tra avatar ngoài có thay đổi không
+    const imageChanged = this.oldCarousel?.imageStoragePath !== updatedCarousel.imageStoragePath;
 
-    // Bước 6: Xác định các file đã bị xóa khỏi nội dung
-    const deletedFiles = oldFiles.filter(file =>
-      !usedStoragePaths.includes(file.storagePath)
-    );
+    const deletePromises: Promise<void>[] = [];
+    if (imageChanged && this.oldCarousel?.imageStoragePath) {
+      deletePromises.push(this.firebaseStorageService.deleteFileByPath(this.oldCarousel.imageStoragePath));
+    }
+    if (filesToDelete.length > 0) {
+      deletePromises.push(this.firebaseStorageService.deleteMultipleFilesByPaths(filesToDelete));
+    }
 
-    // Bước 7: Xóa các file không còn được sử dụng
-    deletedFiles.forEach(file => {
-      this.afStorage.ref(file.storagePath).delete().subscribe({
-        next: () => console.log('Deleted unused file:', file.storagePath),
-        error: err => console.warn('Failed to delete file:', file.storagePath, err)
+    // Sau khi xóa file cũ thì gọi API update
+    Promise.all(deletePromises).then(() => {
+      this.carouselService.updateCarousel(updatedCarousel.id!, updatedCarousel).subscribe({
+        next: (res) => {
+          if (res.message === 'update_success') {
+            const dialogRef = this.dialog.open(DialogDeleteComponent, {
+              width: '400px',
+              data: {
+                message: 'Bạn đã cập nhật bản ghi thành công! Bạn có muốn quay về trang quản lý không?',
+                color: 'blue'
+              }
+            });
+            dialogRef.afterClosed().subscribe(result => {
+              if (result) {
+                this.router.navigate(['/create-carousel']);
+              }
+            });
+          }
+        },
+        error: () => console.error('Update failed!')
       });
     });
-
-    // Bước 8: Cập nhật lại danh sách file mới vào form
-    this.form.get('contentStoragePathsJson')?.setValue(JSON.stringify(newFiles));
-
-    // Bước 9: Gửi dữ liệu cập nhật
-    const updatedCarousel = this.form.value;
-
-    this.carouselService.updateCarousel(this.carouselId, updatedCarousel).subscribe({
-      next: (res) => {
-        if (res.message === 'update_success') {
-          const dialogRef = this.dialog.open(DialogDeleteComponent, {
-            width: '400px',
-            data: {
-              message: 'Bạn đã cập nhật bản ghi thành công! Bạn có muốn quay về trang quản lý không?',
-              color: 'blue'
-            }
-          });
-
-          dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-              this.router.navigate(['/create-carousel'])
-            }
-          });
-        }
-      },
-      error: err => {
-        console.error('Update failed', err);
-      }
-    });
   }
 
-  comeBackManage() {
-    this.router.navigate(['/create-carousel'])
+  onCancel() {
+    if (!this.isUpdated) {
+      const uploadedPaths = [
+        ...this.quillContent.getStoragePaths().map(f => f.storagePath),
+      ];
+
+      const newAvatarPath = this.form.get('imageStoragePath')?.value;
+      if (newAvatarPath && newAvatarPath !== this.oldCarousel?.imageStoragePath) {
+        uploadedPaths.push(newAvatarPath);
+      }
+
+      if (uploadedPaths.length > 0) {
+        this.firebaseStorageService.deleteMultipleFilesByPaths(uploadedPaths)
+          .then(() => {
+            this.router.navigate(['/create-carousel']);
+          });
+      } else {
+        this.router.navigate(['/create-carousel']);
+      }
+    } else {
+      this.router.navigate(['/create-carousel']);
+    }
+  }
+
+  ngOnDestroy() {
+    if (!this.isUpdated) {
+      const uploadedPaths = [
+        ...this.quillContent.getStoragePaths().map(f => f.storagePath),
+      ];
+
+      const newAvatarPath = this.form.get('imageStoragePath')?.value;
+      if (newAvatarPath && newAvatarPath !== this.oldCarousel?.imageStoragePath) {
+        uploadedPaths.push(newAvatarPath);
+      }
+
+      if (uploadedPaths.length > 0) {
+        this.firebaseStorageService.deleteMultipleFilesByPaths(uploadedPaths)
+          .then(() => console.log('Đã dọn file chưa dùng khi thoát component'));
+      }
+    }
   }
 }

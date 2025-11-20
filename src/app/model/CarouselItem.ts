@@ -5,9 +5,9 @@ export class CarouselItem {
   content?: string;
   imageUrl?: string;
   imageStoragePath?: string;
-  contentStoragePathsJson?: string [];
+  contentStoragePathsJson?: string;
   isShow?: boolean;
-  constructor(title?: string, description?: string, content?: string, imageUrl?: string, imageStoragePath?: string, contentStoragePathsJson?: string []) {
+  constructor(title?: string, description?: string, content?: string, imageUrl?: string, imageStoragePath?: string, contentStoragePathsJson?: string) {
     this.title = title;
     this.description = description;
     this.content = content;
