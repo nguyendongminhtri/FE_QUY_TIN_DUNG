@@ -17,6 +17,24 @@
             Màn Quản Lý Tin Tức
           </button>
         </DIV>
+        <div *ngFor="let ctg of listCategories">
+          <mat-card>
+            <h1 class="category-title">{{ctg.name}}</h1>
+            <div class="gallery">
+              <div *ngFor="let news of categoryNewsMap[ctg.id || 0]" style="text-align: center">
+                <a [routerLink]="['/news-detail/',news.id]">
+                <img src="{{news.imageUrl}}" alt="" >
+                </a>
+                <h4>{{news.title}}</h4>
+              </div>
+            </div>
+            <mat-paginator [length]="categoryTotalMap[ctg.id!] || 0"
+                           (page)="nextPage(ctg.id,$event)"
+                           [pageSizeOptions]="[5, 10, 15, 100]">
+            </mat-paginator>
+            <hr>
+          </mat-card>
+        </div>
 
       </mat-card>
     </div>

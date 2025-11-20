@@ -27,9 +27,9 @@ import {CheckLogoutGuard} from "./service/CheckLogoutGuard";
 import {CreateComponent} from "./content/_carousel/create/create.component";
 import {DetailCarouselComponent} from "./content/_carousel/detail-carousel/detail-carousel.component";
 import {UpdateCarouselComponent} from "./content/_carousel/update-carousel/update-carousel.component";
-import {UpdateCategoryComponent} from "./content/category/update-category/update-category.component";
 import {CreateNewsComponent} from "./content/news/create-news/create-news.component";
 import {UpdateNewsComponent} from "./content/news/update-news/update-news.component";
+import {DetailNewsComponent} from "./content/news/detail-news/detail-news.component";
 
 
 const routes: Routes = [
@@ -68,7 +68,8 @@ const routes: Routes = [
   {path: 'carousel-update/:id', component: UpdateCarouselComponent},
 
   {path: 'create-news', component: CreateNewsComponent},
-  {path: 'news-update/:id', component: UpdateNewsComponent}
+  {path: 'news-update/:id', component: UpdateNewsComponent},
+  {path: 'news-detail/:id', component: DetailNewsComponent}
 ];
 
 @NgModule({

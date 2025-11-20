@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {CarouselItem} from '../../../model/CarouselItem';
 import {CarouselService} from '../../../service/carousel.service';
@@ -7,13 +7,15 @@ import {QuillContentComponent} from "../../../upload/quill/quill-content/quill-c
 import {MatDialog} from "@angular/material/dialog";
 import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
 import {UploadAvatarComponent} from "../../../upload/upload-avatar/upload-avatar.component";
+import {FirebaseStorageService} from "../../../service/firebase-storage.service";
+import {ResetOnDestroy} from "../../../config/ResetOnDestroy";
 
 @Component({
   selector: 'app-create',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css']
 })
-export class CreateComponent implements OnInit {
+export class CreateComponent implements OnInit, OnDestroy {
   @ViewChild('uploadAvatar', {static: false}) uploadAvatar!: UploadAvatarComponent;
   @ViewChild('listCarousel') listCarousel!: ListCrouselComponent;
   @ViewChild('quillContent') quillContent!: QuillContentComponent;
@@ -28,9 +30,10 @@ export class CreateComponent implements OnInit {
   status = '';
   carousel?: CarouselItem;
   contentStoragePathsJson: string[] = [];
-
+  isCreated = false;
   constructor(private carouselService: CarouselService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private resetOnDestroy: ResetOnDestroy) {
   }
 
   ngOnInit(): void {
@@ -55,6 +58,7 @@ export class CreateComponent implements OnInit {
   }
 
   createCarousel() {
+    this.isCreated = true;
     const quillPaths = this.quillContent.getStoragePaths();
     this.form.get('contentStoragePathsJson')?.setValue(JSON.stringify(quillPaths));
     this.carousel = this.form.value as CarouselItem;
@@ -94,6 +98,24 @@ export class CreateComponent implements OnInit {
     this.form.get('content')?.setValue('');
     this.quillContent.clearContent();
     this.uploadAvatar.reset();
+  }
+  ngOnDestroy() {
+    // if (!this.isCreated) {
+    //   const uploadedPaths = [
+    //     ...this.quillContent.getStoragePaths().map(f => f.storagePath),
+    //   ];
+    //
+    //   const newAvatarPath = this.form.get('imageStoragePath')?.value;
+    //   if (newAvatarPath) {
+    //     uploadedPaths.push(newAvatarPath);
+    //   }
+    //
+    //   if (uploadedPaths.length > 0) {
+    //     this.firebaseStorageService.deleteMultipleFilesByPaths(uploadedPaths)
+    //       .then(() => console.log('Đã dọn file chưa dùng khi thoát CreateNewsComponent'));
+    //   }
+    // }
+    this.resetOnDestroy.cleanupUnusedFiles(this.isCreated, this.quillContent, this.form);
   }
 
 }

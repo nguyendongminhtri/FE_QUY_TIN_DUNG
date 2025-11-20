@@ -29,4 +29,10 @@ export class NewsService {
   updateNews(id: number, data: any): Observable<any> {
     return this.http.put(`${this.API_NEWS}/${id}`, data);
   }
+  getPageNewsByCategoryId(categoryId: number, request: any): Observable<any> {
+    return this.http.get(
+      `${this.API_NEWS}/by-category/${categoryId}`,
+      { params: request }
+    );
+  }
 }

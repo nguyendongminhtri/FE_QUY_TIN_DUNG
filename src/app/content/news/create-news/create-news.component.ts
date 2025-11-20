@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Category} from "../../../model/Category";
 import {CategoryService} from "../../../service/category.service";
@@ -9,19 +9,23 @@ import {MatDialog} from "@angular/material/dialog";
 import {News} from "../../../model/News";
 import {NewsService} from "../../../service/news.service";
 import {ListNewsComponent} from "../list-news/list-news.component";
+import {FirebaseStorageService} from "../../../service/firebase-storage.service";
+import {ResetOnDestroy} from "../../../config/ResetOnDestroy";
 
 @Component({
   selector: 'app-create-news',
   templateUrl: './create-news.component.html',
   styleUrls: ['./create-news.component.css']
 })
-export class CreateNewsComponent implements OnInit {
+export class CreateNewsComponent implements OnInit, OnDestroy {
   @ViewChild('uploadAvatar', {static: false}) uploadAvatar!: UploadAvatarComponent;
   @ViewChild('listNews') listNews!: ListNewsComponent;
   @ViewChild('quillContent') quillContent!: QuillContentComponent;
   constructor(private categoryService: CategoryService,
               private dialog: MatDialog,
-              private newsService: NewsService,) {
+              private newsService: NewsService,
+              private firebaseStorageService: FirebaseStorageService,
+              private resetOnDestroy: ResetOnDestroy,) {
   }
 
   form = new FormGroup({
@@ -36,7 +40,9 @@ export class CreateNewsComponent implements OnInit {
   status = '';
   listCategories: Category[] = [];
   news?: News;
+  isCreated = false;
   createNews() {
+    this.isCreated = true;
     const quillPaths = this.quillContent.getStoragePaths();
     this.form.get('contentStoragePathsJson')?.setValue(JSON.stringify(quillPaths));
     const formValue = this.form.value;
@@ -112,5 +118,9 @@ export class CreateNewsComponent implements OnInit {
     this.form.get('content')?.setValue('');
     this.quillContent.clearContent();
     this.uploadAvatar.reset();
+  }
+  // 👇 cleanup logic giống Update
+  ngOnDestroy() {
+    this.resetOnDestroy.cleanupUnusedFiles(this.isCreated, this.quillContent, this.form);
   }
 }

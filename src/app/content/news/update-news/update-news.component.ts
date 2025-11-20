@@ -10,6 +10,7 @@
   import { CategoryService } from "../../../service/category.service";
   import {News} from "../../../model/News";
   import {FirebaseStorageService} from "../../../service/firebase-storage.service";
+  import {ResetOnDestroy} from "../../../config/ResetOnDestroy";
 
   @Component({
     selector: 'app-update-news',
@@ -31,7 +32,8 @@
       private newService: NewsService,
       private dialog: MatDialog,
       private categoryService: CategoryService,
-      private firebaseStorageService: FirebaseStorageService
+      private firebaseStorageService: FirebaseStorageService,
+      private resetOnDestroy: ResetOnDestroy
     ) {}
 
     ngOnInit(): void {
@@ -198,21 +200,7 @@
 
 
     ngOnDestroy() {
-      if (!this.isUpdated) {
-        const uploadedPaths = [
-          ...this.quillContent.getStoragePaths().map(f => f.storagePath),
-        ];
-
-        const newAvatarPath = this.form.get('imageStoragePath')?.value;
-        if (newAvatarPath && newAvatarPath !== this.oldNews?.imageStoragePath) {
-          uploadedPaths.push(newAvatarPath);
-        }
-
-        if (uploadedPaths.length > 0) {
-          this.firebaseStorageService.deleteMultipleFilesByPaths(uploadedPaths)
-            .then(() => console.log('Đã dọn file chưa dùng khi thoát component'));
-        }
-      }
+      this.resetOnDestroy.cleanupUnusedFiles(this.isUpdated, this.quillContent, this.form);
     }
   }
   interface StorageFile {

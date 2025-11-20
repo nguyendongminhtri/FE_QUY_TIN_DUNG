@@ -83,6 +83,9 @@ import { PageNewsComponent } from './content/news/page-news/page-news.component'
 import { CreateNewsComponent } from './content/news/create-news/create-news.component';
 import { ListNewsComponent } from './content/news/list-news/list-news.component';
 import { UpdateNewsComponent } from './content/news/update-news/update-news.component';
+import {NoReuseStrategy} from "./config/NoReuseStrategy";
+import {RouteReuseStrategy} from "@angular/router";
+import { DetailNewsComponent } from './content/news/detail-news/detail-news.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -136,7 +139,7 @@ import { UpdateNewsComponent } from './content/news/update-news/update-news.comp
     CreateNewsComponent,
     ListNewsComponent,
     UpdateNewsComponent,
-
+    DetailNewsComponent,
   ],
   imports: [
     QuillModule.forRoot(),
@@ -174,6 +177,7 @@ import { UpdateNewsComponent } from './content/news/update-news/update-news.comp
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    { provide: RouteReuseStrategy, useClass: NoReuseStrategy },
     CheckLoginGuard
   ],
   bootstrap: [AppComponent]

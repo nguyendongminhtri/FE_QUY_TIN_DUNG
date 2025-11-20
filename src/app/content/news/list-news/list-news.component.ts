@@ -16,7 +16,7 @@ import {Router} from "@angular/router";
 })
 export class ListNewsComponent implements OnInit{
   listNews: News[] = [];
-  displayedColumns: string[] = ['id', 'title', 'imageUrl','isShow', 'delete', 'update'];
+  displayedColumns: string[] = ['id', 'title', 'imageUrl','category','isShow', 'delete', 'update'];
   dataSource: any;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   constructor(private newsService: NewsService,

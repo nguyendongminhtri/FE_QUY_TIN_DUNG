@@ -7,6 +7,7 @@ import { QuillContentComponent } from "../../../upload/quill/quill-content/quill
 import { DialogDeleteComponent } from "../../../dialog/dialog-delete/dialog-delete.component";
 import { CarouselItem } from "../../../model/CarouselItem";
 import { FirebaseStorageService } from "../../../service/firebase-storage.service";
+import {ResetOnDestroy} from "../../../config/ResetOnDestroy";
 
 @Component({
   selector: 'app-update-carousel',
@@ -27,7 +28,8 @@ export class UpdateCarouselComponent implements OnInit, OnDestroy {
     private router: Router,
     private carouselService: CarouselService,
     private dialog: MatDialog,
-    private firebaseStorageService: FirebaseStorageService
+    private firebaseStorageService: FirebaseStorageService,
+    private resetOnDestroy: ResetOnDestroy
   ) {}
 
   ngOnInit(): void {
@@ -167,20 +169,6 @@ export class UpdateCarouselComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (!this.isUpdated) {
-      const uploadedPaths = [
-        ...this.quillContent.getStoragePaths().map(f => f.storagePath),
-      ];
-
-      const newAvatarPath = this.form.get('imageStoragePath')?.value;
-      if (newAvatarPath && newAvatarPath !== this.oldCarousel?.imageStoragePath) {
-        uploadedPaths.push(newAvatarPath);
-      }
-
-      if (uploadedPaths.length > 0) {
-        this.firebaseStorageService.deleteMultipleFilesByPaths(uploadedPaths)
-          .then(() => console.log('Đã dọn file chưa dùng khi thoát component'));
-      }
-    }
+    this.resetOnDestroy.cleanupUnusedFiles(this.isUpdated, this.quillContent, this.form);
   }
 }
