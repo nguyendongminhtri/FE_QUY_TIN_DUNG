@@ -1,11 +1,13 @@
 .carousel-container {
-  width: 50vw;
+  width: 100%;
+  max-width: 1200px;
   margin: auto;
   position: relative;
 }
+
 .carousel-card {
   width: 100%;
-  height: 60vh;
+  max-height: 75vh;   /* khung cao tối đa 75% viewport */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,80 +17,36 @@
 }
 
 .carousel-card img {
-  max-height: 100%;     /* Giới hạn chiều cao bằng carousel */
-  width: auto;          /* Tự động giãn chiều rộng theo tỷ lệ */
-  object-fit: contain;  /* Hiển thị đầy đủ ảnh, không crop */
+  max-height: 100%;   /* ảnh không vượt quá khung */
+  max-width: 100%;    /* giữ nguyên tỷ lệ ngang */
+  height: auto;       /* tự co theo tỷ lệ gốc */
+  width: auto;
+  object-fit: contain;/* đảm bảo hiển thị toàn bộ ảnh */
   object-position: center;
   display: block;
   border-radius: 5%;
 }
-
-/* Các phần nội dung */
-mat-card-content {
-  position: absolute;
-  bottom: 70px;
-  left: 20px;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 12px;
-  border-radius: 10px;
-  max-width: 55%;
-  z-index: 2;
-}
-
-mat-card-actions {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  z-index: 2;
-}
-
 .carousel-controls {
   position: absolute;
   top: 50%;
-  width: 100%;
+  left: 0;
+  right: 0;              /* phủ toàn bộ chiều ngang */
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* nút trái/phải */
+  align-items: center;
   transform: translateY(-50%);
-  padding: 0 16px;
+  padding: 0 20px;       /* khoảng cách so với mép */
   z-index: 3;
 }
 
 .carousel-controls button {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(3, 238, 250, 0.8);
   color: white;
   border: none;
+  border-radius: 50%;    /* nút tròn đẹp hơn */
+  width: 50px;
+  height: 50px;
 }
 
-/* Mobile layout */
-@media (max-width: 768px) {
-  .carousel-container {
-    width: 90vw;
-  }
 
-  .carousel-card {
-    height: 50vh;
-    border-radius: 12px;
-  }
 
-  mat-card-content {
-    bottom: 60px;
-    left: 10px;
-    max-width: 80%;
-    padding: 8px;
-    font-size: 14px;
-  }
-
-  mat-card-actions {
-    bottom: 10px;
-    left: 10px;
-  }
-
-  .carousel-controls {
-    padding: 0 10px;
-  }
-
-  .carousel-controls button {
-    font-size: 18px;
-  }
-}

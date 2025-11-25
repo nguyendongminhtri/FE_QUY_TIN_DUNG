@@ -35,4 +35,11 @@ export class NewsService {
       { params: request }
     );
   }
+  searchNewsByCategory(categoryId: number, request: any): Observable<any> {
+    return this.http.get(
+      `${this.API_NEWS}/by-category/${categoryId}/search`,
+      { params: request }
+    );
+  }
+
 }

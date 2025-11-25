@@ -38,34 +38,13 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatListModule} from "@angular/material/list";
 import {NavbarComponent} from "./navbar-footer/navbar/navbar.component";
 import {MatMenuModule} from "@angular/material/menu";
-import {CreateSingerComponent} from './content/singer/create-singer/create-singer.component';
-import {PageSingerComponent} from './content/singer/page-singer/page-singer.component';
-import {PageSongComponent} from './content/song/page-song/page-song.component';
-import {CreateSongComponent} from './content/song/create-song/create-song.component';
-import {MAT_RADIO_DEFAULT_OPTIONS, MatRadioModule} from "@angular/material/radio";
+import {MatRadioModule} from "@angular/material/radio";
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatNativeDateModule} from "@angular/material/core";
-import {DetailSongComponent} from './content/song/detail-song/detail-song.component';
-import {DetailSingerComponent} from './content/singer/detail-singer/detail-singer.component';
 import {TextComponent} from './content/text/text.component';
-import {CreatePlaylistComponent} from './content/playlist/create-playlist/create-playlist.component';
-import {MyplaylistComponent} from './content/playlist/myplaylist/myplaylist.component';
-import {DetailPlaylistComponent} from './content/playlist/detail-playlist/detail-playlist.component';
-import {ListSongComponent} from './content/song/list-song/list-song.component';
-import {UpdateSingerComponent} from './content/singer/update-singer/update-singer.component';
-import {DeleteSingerComponent} from './content/singer/delete-singer/delete-singer.component';
-import {DeleteSongComponent} from './content/song/delete-song/delete-song.component';
-import {UpdateSongComponent} from './content/song/update-song/update-song.component';
 import {CarouselComponent} from './content/_carousel/carousel/carousel.component';
 import {MatExpansionModule} from "@angular/material/expansion";
-import {PageSearchComponent} from './content/page-search/page-search.component';
-import {TopTrendingComponent} from './content/song/top-trending/top-trending.component';
 import {CheckLoginGuard} from "./service/CheckLoginGuard";
-import {PageAlbumComponent} from './content/album/page-album/page-album.component';
-import {CreateAlbumComponent} from './content/album/create-album/create-album.component';
-import {DetailAlbumComponent} from './content/album/detail-album/detail-album.component';
-import {UpdateAlbumComponent} from './content/album/update-album/update-album.component';
-import {DeleteAlbumComponent} from './content/album/delete-album/delete-album.component';
 import {DialogSuccessComponent} from './dialog/dialog-success/dialog-success.component';
 import {DetailCategoryComponent} from './content/category/detail-category/detail-category.component';
 import {CdkDrag} from "@angular/cdk/drag-drop";
@@ -86,6 +65,10 @@ import { UpdateNewsComponent } from './content/news/update-news/update-news.comp
 import {NoReuseStrategy} from "./config/NoReuseStrategy";
 import {RouteReuseStrategy} from "@angular/router";
 import { DetailNewsComponent } from './content/news/detail-news/detail-news.component';
+import { CreateIntroduceComponent } from './content/introduce/create-introduce/create-introduce.component';
+import { ListIntroduceComponent } from './content/introduce/list-introduce/list-introduce.component';
+import { UpdateIntroduceComponent } from './content/introduce/update-introduce/update-introduce.component';
+import { DetailIntroduceComponent } from './content/introduce/detail-introduce/detail-introduce.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -102,29 +85,8 @@ import { DetailNewsComponent } from './content/news/detail-news/detail-news.comp
     DeleteCategoryComponent,
     PageCategoryComponent,
     UploadFileComponent,
-    CreateSingerComponent,
-    PageSingerComponent,
-    PageSongComponent,
-    CreateSongComponent,
-    DetailSongComponent,
-    DetailSingerComponent,
     TextComponent,
-    CreatePlaylistComponent,
-    MyplaylistComponent,
-    DetailPlaylistComponent,
-    ListSongComponent,
-    UpdateSingerComponent,
-    DeleteSingerComponent,
-    DeleteSongComponent,
-    UpdateSongComponent,
     CarouselComponent,
-    PageSearchComponent,
-    TopTrendingComponent,
-    PageAlbumComponent,
-    CreateAlbumComponent,
-    DetailAlbumComponent,
-    UpdateAlbumComponent,
-    DeleteAlbumComponent,
     DialogSuccessComponent,
     DetailCategoryComponent,
     CreateComponent,
@@ -140,6 +102,10 @@ import { DetailNewsComponent } from './content/news/detail-news/detail-news.comp
     ListNewsComponent,
     UpdateNewsComponent,
     DetailNewsComponent,
+    CreateIntroduceComponent,
+    ListIntroduceComponent,
+    UpdateIntroduceComponent,
+    DetailIntroduceComponent,
   ],
   imports: [
     QuillModule.forRoot(),

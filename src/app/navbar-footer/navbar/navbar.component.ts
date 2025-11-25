@@ -1,26 +1,28 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {TokenService} from "../../service/token.service";
-import {SongService} from "../../service/song.service";
-interface Food {
-  value: string;
-  viewValue: string;
-}
-
+import {CategoryService} from "../../service/category.service";
+import {Category} from "../../model/Category";
+import {IntroduceService} from "../../service/introduce.service";
+import {Introduce} from "../../model/Introduce";
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
+  // @ts-ignore
+  @ViewChild('menuIcon') menuIcon: ElementRef;
+  // @ts-ignore
+  @ViewChild('navbar') navbar: ElementRef;
   name = '';
   avatar = '';
   checkLogin = false;
-  search ?: string;
   isMenuOpen = false;
-
-
+  listCategories?: Category[];
+  listIntroduce?: Introduce[];
   constructor(private tokenService: TokenService,
-              private songService: SongService) {
+              private introduceService: IntroduceService,
+              private categoryService: CategoryService,) {
   }
 
   ngOnInit(): void {
@@ -29,22 +31,17 @@ export class NavbarComponent {
       this.avatar = this.tokenService.getAvatar();
       this.checkLogin = true;
     }
+    this.categoryService.getListCategoryService().subscribe(data=>{
+      this.listCategories = data;
+    })
+    this.introduceService.getListIntroduce().subscribe(data=>{
+      this.listIntroduce = data;
+    })
   }
-  foods: Food[] = [
-    {value: 'steak-0', viewValue: 'Steak'},
-    {value: 'pizza-1', viewValue: 'Pizza'},
-    {value: 'tacos-2', viewValue: 'Tacos'},
-  ];
-  selectedFood = this.foods[2].value;
   logOut() {
     sessionStorage.clear();
     window.location.reload();
   }
-
-  // @ts-ignore
-  @ViewChild('menuIcon') menuIcon: ElementRef;
-  // @ts-ignore
-  @ViewChild('navbar') navbar: ElementRef;
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -52,9 +49,4 @@ export class NavbarComponent {
     this.navbar.nativeElement.classList.toggle('open');
   }
 
-  searchSong() {
-    console.log("this search     -->", this.search)
-    // @ts-ignore
-    this.songService.setValue(this.search)
-  }
 }

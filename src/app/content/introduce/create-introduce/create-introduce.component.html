@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1200px; margin: auto;  text-align: center">
+      <mat-card>
+        <h1 style="margin:auto;margin-top: 50px;margin-bottom: 10px;font-weight: 600;color: #1E90FF;">Màn Giới Thiệu QTDND Thái Học</h1>
+        <mat-dialog-content class="mat-typography">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+            <mat-form-field class="example-full-width">
+              <mat-label>Title</mat-label>
+              <input formControlName="title" matInput placeholder="Tiêu đề">
+              <mat-error *ngIf="form.get('title')?.hasError('required') && form.get('title')?.touched">
+                Vui lòng nhập tiêu đề
+              </mat-error>
+            </mat-form-field>
+            <br>
+            <app-quill-content #quillContent formControlName="content"></app-quill-content>
+            <br>
+            <mat-error>{{this.status}}</mat-error>
+            <button style="margin:auto; width: 50%; background-color: rgba(205,17,130,0.45); color: #0535f4" mat-stroked-button type="submit">
+              Tạo Introduce
+            </button>
+          </form>
+        </mat-dialog-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+<app-list-introduce #listIntroduce></app-list-introduce>

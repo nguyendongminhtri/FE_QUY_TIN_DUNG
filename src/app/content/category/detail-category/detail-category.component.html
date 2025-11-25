@@ -1,34 +1,28 @@
-<!--<section class="container" style="margin-top: -100px">-->
-
-<!--  <div class="container">-->
-<!--    <a routerLink="/singer">-->
-<!--      <mat-icon>arrow_back</mat-icon>-->
-<!--    </a>-->
-<!--    <div class="row">-->
-<!--      <div class="col-lg-12 mb-4 mb-sm-5">-->
-<!--        <div class="card card-style1 border-0">-->
-<!--          <div class="card-body p-1-9 p-sm-2-3 p-md-6 p-lg-7">-->
-<!--            <div class="row align-items-center">-->
-<!--              <div class="col-lg-6 mb-4 mb-lg-0">-->
-<!--                <img style="border-radius: 50%;margin-left: 50px" src="{{category?.avatar}}" alt="..." width="300px" height="300px">-->
-<!--              </div>-->
-<!--              <div class="col-lg-6 px-xl-10">-->
-<!--                <div class="">-->
-<!--                  <h1 class="h2 mb-0" style="font-weight: 600; font-size: 30px">{{category?.name}}</h1>-->
-
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div class="col-lg-12 mb-4 mb-sm-5">-->
-<!--        <div>-->
-<!--          &lt;!&ndash;          <h2 class="section-title  mb-3 mb-sm-4">Album:</h2>&ndash;&gt;-->
-<!--          &lt;!&ndash;          <p style="font-size: 16px"></p>&ndash;&gt;-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--</section>-->
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1200px; margin: auto;  text-align: center">
+      <mat-card>
+        <h1 class="category-title">   <img style="border-radius: 50%" src="../../../../assets/image/logo/logo.png" height="30" width="30"/>{{category?.name}}</h1>
+        <mat-form-field  appearance="outline" style="width: 100%; margin-bottom: 20px;">
+          <mat-label>Tìm kiếm tin tức</mat-label>
+          <input matInput (keyup.enter)="searchNews(searchInput.value)" #searchInput>
+          <button mat-icon-button matSuffix (click)="searchNews(searchInput.value)">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+        <div class="gallery">
+          <div *ngFor="let news of categoryNewsMap[category?.id || 0]" style="text-align: center">
+            <a [routerLink]="['/news-detail/',news.id]">
+              <img src="{{news.imageUrl}}" alt="" >
+            </a>
+            <h4>{{news.title}}</h4>
+          </div>
+        </div>
+        <mat-paginator [length]="categoryTotalMap[category?.id!] || 0"
+                       (page)="nextPage(category?.id,$event)"
+                       [pageSizeOptions]="[3, 6, 9, 15, 99]">
+        </mat-paginator>
+      </mat-card>
+    </div>
+  </div>
+</div>

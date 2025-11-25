@@ -1,0 +1,13 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1200px; margin: auto;  text-align: center">
+      <mat-card class="detail-card">
+        <DIV *ngIf="introduce">
+          <h2>{{introduce.title }}</h2>
+          <div *ngIf="introduce.content" class="quill-content" [innerHTML]="introduce.content"></div>
+        </DIV>
+
+      </mat-card>
+    </div>
+  </div>
+</div>

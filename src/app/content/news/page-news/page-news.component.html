@@ -5,32 +5,47 @@
         <DIV *ngIf="isAdminRole" style="background-color: #899a9a">
           <h1>Trình quản lí dành cho ADMIN</h1>
           <button routerLink="create-carousel" mat-raised-button color="accent"
-                  style="width: 30%" class="mat-raised-button" >
+                  style="width: 25%" class="mat-raised-button">
             Màn Quản Lý Tin HOT
           </button>
           <button routerLink="create-category" mat-raised-button color="primary"
-                  style="width: 30%" class="mat-raised-button" >
+                  style="width: 25%" class="mat-raised-button">
             Màn Quản Lý Thể Loại Tin Tức
           </button>
           <button routerLink="create-news" mat-raised-button color="warn"
-                  style="width: 30%" class="mat-raised-button" >
+                  style="width: 25%" class="mat-raised-button">
             Màn Quản Lý Tin Tức
           </button>
+          <button routerLink="create-introduce" mat-raised-button color="accent"
+                  style="width: 25%" class="mat-raised-button">
+            Màn Quản Lý Giới Thiệu QTD
+          </button>
         </DIV>
+        <mat-form-field *ngIf="showSearch" appearance="outline" style="width: 100%; margin-bottom: 20px;">
+          <mat-label>Tìm kiếm tin tức</mat-label>
+          <input matInput (keyup.enter)="searchAll(searchInput.value)" #searchInput>
+          <button mat-icon-button matSuffix (click)="searchAll(searchInput.value)">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
         <div *ngFor="let ctg of listCategories">
           <mat-card>
-            <h1 class="category-title">{{ctg.name}}</h1>
+            <h1 [routerLink]="['/detail-category/',ctg.id]" class="category-title">
+              <img style="border-radius: 50%" src="../../../../assets/image/logo/logo.png" height="30" width="30"/>
+              {{ ctg.name }}</h1>
+            <!-- Search box -->
             <div class="gallery">
               <div *ngFor="let news of categoryNewsMap[ctg.id || 0]" style="text-align: center">
                 <a [routerLink]="['/news-detail/',news.id]">
-                <img src="{{news.imageUrl}}" alt="" >
+                  <img src="{{news.imageUrl}}" alt="">
                 </a>
-                <h4>{{news.title}}</h4>
+                <h3>{{ news.title }}</h3>
+                <h5>{{ news.description }}</h5>
               </div>
             </div>
             <mat-paginator [length]="categoryTotalMap[ctg.id!] || 0"
                            (page)="nextPage(ctg.id,$event)"
-                           [pageSizeOptions]="[5, 10, 15, 100]">
+                           [pageSizeOptions]="[3, 6, 9, 12,15, 99]">
             </mat-paginator>
             <hr>
           </mat-card>
