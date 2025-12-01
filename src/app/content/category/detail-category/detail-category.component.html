@@ -27,6 +27,14 @@
             <h4>{{ storySuccess.title }}</h4>
           </div>
         </div>
+        <div class="gallery" *ngIf="category?.type==='product'">
+          <div *ngFor="let product of categoryProductMap[category?.id || 0]" style="text-align: center">
+            <a [routerLink]="['/detail-product/',product.id]">
+              <img src="{{product.imageUrl}}" alt="">
+            </a>
+            <h4>{{ product.title }}</h4>
+          </div>
+        </div>
         <mat-paginator [length]="categoryTotalMap[category?.id!] || 0"
                        (page)="nextPage(category?.id,$event)"
                        [pageSizeOptions]="[3, 6, 9, 15, 99]">

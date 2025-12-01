@@ -8,22 +8,23 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Category} from "../../../model/Category";
 import {News} from "../../../model/News";
 import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
-import {ListStorySuccessComponent} from "../list-story-success/list-story-success.component";
-import {StorySuccessService} from "../../../service/story-success.service";
-import {StorySuccess} from "../../../model/StorySuccess";
+import {ListProductComponent} from "../list-product/list-product.component";
+import {ProductService} from "../../../service/product.service";
+import {Product} from "../../../model/Product";
 
 @Component({
-  selector: 'app-create-story-success',
-  templateUrl: './create-story-success.component.html',
-  styleUrls: ['./create-story-success.component.css']
+  selector: 'app-create-product',
+  templateUrl: './create-product.component.html',
+  styleUrls: ['./create-product.component.css']
 })
-export class CreateStorySuccessComponent implements OnInit, OnDestroy {
+export class CreateProductComponent implements OnInit, OnDestroy  {
   @ViewChild('uploadAvatar', {static: false}) uploadAvatar!: UploadAvatarComponent;
-  @ViewChild('listStorySuccess') listStorySuccess!: ListStorySuccessComponent;
+  @ViewChild('listProduct') listProduct!: ListProductComponent;
   @ViewChild('quillContent') quillContent!: QuillContentComponent;
+
   constructor(private categoryService: CategoryService,
               private dialog: MatDialog,
-              private storySuccessService: StorySuccessService,
+              private productService: ProductService,
               private resetOnDestroy: ResetOnDestroy,) {
   }
 
@@ -38,30 +39,32 @@ export class CreateStorySuccessComponent implements OnInit, OnDestroy {
   });
   status = '';
   listCategories: Category[] = [];
-  storySuccess?: StorySuccess;
+  product?: Product;
   isCreated = false;
-  createNews() {
+
+  createProduct() {
     this.isCreated = true;
     const quillPaths = this.quillContent.getStoragePaths();
     this.form.get('contentStoragePathsJson')?.setValue(JSON.stringify(quillPaths));
     const formValue = this.form.value;
-    this.storySuccess = {
+    this.product = {
       title: formValue.title,
       description: formValue.description,
       content: formValue.content,
       imageUrl: formValue.imageUrl,
       imageStoragePath: formValue.imageStoragePath,
       contentStoragePathsJson: formValue.contentStoragePathsJson,
-      category: { id: formValue.categoryId }   // 👈 sửa chỗ này
+      category: {id: formValue.categoryId}   // 👈 sửa chỗ này
     } as News;
-    console.log('this.news --> ', this.storySuccess);
-    this.storySuccessService.createStorySuccess(this.storySuccess).subscribe(data => {
+    console.log('this.news --> ', this.product);
+    this.productService.createProduct(this.product).subscribe(data => {
       if (data.message === 'create_success') {
-        this.status = 'Thêm mới Câu chuyện thành công!'
-        this.listStorySuccess.loadStorySuccess();
+        this.status = 'Thêm mới Sản phẩm - Dịch vụ thành công!'
+        this.listProduct.loadProduct();
       }
     });
   }
+
   onSubmit() {
     if (!this.form.valid) {
       this.form.markAllAsTouched();
@@ -77,12 +80,11 @@ export class CreateStorySuccessComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.createNews();
+        this.createProduct();
         this.resetForm();
       }
     });
   }
-
   onUpload(fileInfo: { downloadURL: string; storagePath: string }) {
     this.form.get('imageUrl')?.setValue(fileInfo.downloadURL);
     this.form.get('imageStoragePath')?.setValue(fileInfo.storagePath);
@@ -91,7 +93,7 @@ export class CreateStorySuccessComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.categoryService.getListCategoryService().subscribe(data => {
       this.listCategories = data;
-      this.listCategories = this.listCategories.filter(c => c.type === 'story');
+      this.listCategories = this.listCategories.filter(c => c.type === 'product');
     })
     // Lắng nghe thay đổi của title
     this.form.get('title')?.valueChanges.subscribe(value => {

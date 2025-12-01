@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1200px; margin: auto; ">
+      <mat-card class="detail-card">
+        <h2>{{ product.title }}</h2>
+        <!--        <p *ngIf="storySuccess.description"> {{ storySuccess.description }}</p>-->
+        <!--        <div *ngIf="news.imageUrl">-->
+        <!--          <img [src]="news.imageUrl" alt="Ảnh đại diện" >-->
+        <!--        </div>-->
+        <div *ngIf="product.content" class="quill-content" [innerHTML]="product.content"></div>
+      </mat-card>
+    </div>
+  </div>
+</div>

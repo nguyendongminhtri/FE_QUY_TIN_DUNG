@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="margin: auto; text-align: center">
+      <mat-card style="background: rgba(255,255,255,0.7)">
+        <div
+          class="running-text-container"
+          [style.background-color]="backgroundColor"
+          (mouseenter)="pauseText()"
+          (mouseleave)="resumeText()"
+        >
+          <div class="running-text" [class.paused]="isPaused">
+
+            <span *ngFor="let item of listCategories">
+              <span [routerLink]="['/detail-category/', item.id]">{{item.name}}</span>
+            </span>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

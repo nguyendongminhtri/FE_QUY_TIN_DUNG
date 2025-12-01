@@ -74,6 +74,12 @@ import { CreateStorySuccessComponent } from './content/storySuccess/create-story
 import { UpdateStorySuccessComponent } from './content/storySuccess/update-story-success/update-story-success.component';
 import { ListStorySuccessComponent } from './content/storySuccess/list-story-success/list-story-success.component';
 import { DetailStorySuccessComponent } from './content/storySuccess/detail-story-success/detail-story-success.component';
+import { CreateProductComponent } from './content/product/create-product/create-product.component';
+import { DetailProductComponent } from './content/product/detail-product/detail-product.component';
+import { UpdateProductComponent } from './content/product/update-product/update-product.component';
+import { PageProductComponent } from './content/product/page-product/page-product.component';
+import { ListProductComponent } from './content/product/list-product/list-product.component';
+import { RunningTextComponent } from './content/product/running-text/running-text.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -116,6 +122,12 @@ import { DetailStorySuccessComponent } from './content/storySuccess/detail-story
     UpdateStorySuccessComponent,
     ListStorySuccessComponent,
     DetailStorySuccessComponent,
+    CreateProductComponent,
+    DetailProductComponent,
+    UpdateProductComponent,
+    PageProductComponent,
+    ListProductComponent,
+    RunningTextComponent,
   ],
   imports: [
     QuillModule.forRoot(),

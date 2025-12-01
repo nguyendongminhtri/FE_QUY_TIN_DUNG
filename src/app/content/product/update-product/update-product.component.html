@@ -1,0 +1,78 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1200px; margin: auto; min-width: 600px; text-align: center">
+      <mat-card style="background: rgba(255,255,255,0.7)">
+        <h1 style="margin:auto; margin-top: 50px; margin-bottom: 10px; font-weight: 600; color: #1E90FF;">
+          Cập nhật Sản phẩm - Dịch vụ
+        </h1>
+        <mat-dialog-content class="mat-typography">
+          <form [formGroup]="form" (ngSubmit)="onUpdate()" novalidate>
+            <mat-form-field class="example-full-width">
+              <mat-label>Title</mat-label>
+              <textarea formControlName="title" matInput placeholder="Title"></textarea>
+              <mat-error *ngIf="form.get('title')?.hasError('required') && form.get('title')?.touched">
+                Vui lòng nhập tiêu đề
+              </mat-error>
+            </mat-form-field>
+            <br>
+
+            <mat-form-field class="example-full-width">
+              <mat-label>Description</mat-label>
+              <textarea formControlName="description" matInput placeholder="Description"></textarea>
+              <mat-error *ngIf="form.get('description')?.hasError('required') && form.get('description')?.touched">
+                Vui lòng nhập mô tả
+              </mat-error>
+            </mat-form-field>
+            <br>
+            <app-quill-content formControlName="content"
+                               (storagePathsChange)="onStoragePathsChange($event)"
+                               #quillContent>
+            </app-quill-content>
+            <mat-error *ngIf="form.get('content')?.hasError('required') && form.get('content')?.touched">
+              Vui lòng nhập nội dung
+            </mat-error>
+            <mat-form-field class="example-full-width">
+              <mat-label>Chọn Thể Loại</mat-label>
+              <mat-select formControlName="categoryId">
+                <mat-option *ngFor="let ctg of listCategories" [value]="ctg.id">
+                  {{ ctg.name }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.get('categoryId')?.hasError('required') && form.get('categoryId')?.touched">
+                Vui lòng chọn thể loại
+              </mat-error>
+            </mat-form-field>
+
+            <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top: 12px;">
+              <div style="text-align:left;">
+                <label style="display:block; font-weight:500; margin-bottom:6px;">Ảnh hiện tại</label>
+                <img *ngIf="currentImageUrl" [src]="currentImageUrl" alt="preview" width="150" height="150" style="border-radius:8px; object-fit:cover;">
+                <div *ngIf="!currentImageUrl" style="color: #888">Chưa có ảnh</div>
+              </div>
+
+              <div style="text-align:left;">
+                <label style="display:block; font-weight:500; margin-bottom:6px;">Thay ảnh</label>
+                <app-upload-avatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>
+                <mat-error *ngIf="form.get('imageUrl')?.hasError('required') && form.get('imageUrl')?.touched">
+                  Vui lòng upload ảnh đại diện
+                </mat-error>
+              </div>
+            </div>
+
+            <br>
+
+            <div style="display:flex; gap:16px; justify-content:center; margin-bottom: 30px;">
+              <button mat-stroked-button color="primary" type="submit" style="background-color: rgba(156,232,23,0.49); width: 40%; color: #0535f4">
+                Cập nhật Sản phẩm - Dịch vụ
+              </button>
+            </div>
+          </form>
+          <button (click)="onCancel()"  mat-stroked-button color="primary" type="submit" style="background-color: rgba(63,152,154,0.49); width: 40%; color: #9c07b3">
+            Quay Lại Trang Quản Lý
+          </button>
+        </mat-dialog-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+

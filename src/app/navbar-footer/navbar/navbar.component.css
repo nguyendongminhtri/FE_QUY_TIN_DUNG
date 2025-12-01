@@ -342,3 +342,12 @@
     margin-right: 15px;
   }
 }
+@media (max-width: 400px) {
+  .gov-gold-emblem {
+    font-size: clamp(0.8rem, 4vw, 1.5rem); /* chữ nhỏ lại */
+  }
+
+  .gov-gold-botton {
+    font-size: clamp(0.6rem, 2vw, 1.2rem);
+  }
+}

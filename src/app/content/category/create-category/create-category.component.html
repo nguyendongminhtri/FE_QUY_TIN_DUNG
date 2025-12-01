@@ -18,6 +18,7 @@
               <mat-select name="type" #type="ngModel" [(ngModel)]="form.type" required>
                 <mat-option value="news">News</mat-option>
                 <mat-option value="story">Story</mat-option>
+                <mat-option value="product">Product</mat-option>
               </mat-select>
               <mat-error *ngIf="type.hasError('required')">Bạn phải chọn một thể loại!</mat-error>
             </mat-form-field>

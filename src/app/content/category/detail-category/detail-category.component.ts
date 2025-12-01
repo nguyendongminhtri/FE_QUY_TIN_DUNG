@@ -7,6 +7,8 @@ import {NewsService} from "../../../service/news.service";
 import {News} from "../../../model/News";
 import {StorySuccessService} from "../../../service/story-success.service";
 import {StorySuccess} from "../../../model/StorySuccess";
+import {ProductService} from "../../../service/product.service";
+import {Product} from "../../../model/Product";
 
 @Component({
   selector: 'app-detail-category',
@@ -18,12 +20,14 @@ export class DetailCategoryComponent implements OnInit {
   categoryNewsMap: { [key: number]: News[] } = {};
   categoryTotalMap: { [key: number]: number } = {};
   categoryStorySuccessMap: { [key: number]: StorySuccess[] } = {};
+  categoryProductMap: { [key: number]: Product[] } = {};
   isSearch = false;
 
   constructor(private act: ActivatedRoute,
               private categoryService: CategoryService,
               private newsService: NewsService,
               private storySuccessService: StorySuccessService,
+              private productService: ProductService,
   ) {
   }
 
@@ -41,6 +45,8 @@ export class DetailCategoryComponent implements OnInit {
           this.getPageRequestNews(this.category?.id, {page: 0, size});
         } else if (this.category?.type === 'story') {
           this.getPageRequestStorySuccess(this.category?.id, {page: 0, size});
+        } else if (this.category?.type === 'product') {
+          this.getPageRequestProduct(this.category?.id, {page: 0, size});
         }
       })
     })
@@ -60,6 +66,12 @@ export class DetailCategoryComponent implements OnInit {
       this.categoryTotalMap[categoryId] = data['totalElements'];
     });
   }
+  getPageRequestProduct(categoryId: any, request: any) {
+    this.productService.getPageProductByCategoryId(categoryId, request).subscribe(data => {
+      this.categoryProductMap[categoryId] = data['content'];
+      this.categoryTotalMap[categoryId] = data['totalElements'];
+    });
+  }
 
   nextPage(categoryId: any, $event: PageEvent) {
     const request = {
@@ -70,6 +82,8 @@ export class DetailCategoryComponent implements OnInit {
       (this.isSearch) ? this.getPageSearchNews(categoryId, request) : this.getPageRequestNews(categoryId, request);
     } else if (this.category?.type === 'story') {
       (this.isSearch) ? this.getPageSearchStorySuccess(categoryId, request) : this.getPageRequestStorySuccess(categoryId, request);
+    } else if(this.category?.type === 'product') {
+      (this.isSearch) ? this.getPageSearchProduct(categoryId, request) : this.getPageRequestProduct(categoryId, request);
     }
   }
 
@@ -83,6 +97,8 @@ export class DetailCategoryComponent implements OnInit {
         this.getPageRequestNews(this.category?.id, {page: 0, size});
       } else if (this.category?.type === 'story') {
         this.getPageRequestStorySuccess(this.category?.id, {page: 0, size});
+      } else if (this.category?.type === 'product') {
+        this.getPageRequestProduct(this.category?.id, {page: 0, size});
       }
       return;
     }
@@ -93,6 +109,8 @@ export class DetailCategoryComponent implements OnInit {
       this.getPageSearchNews(this.category?.id, request);
     } else if (this.category?.type === 'story') {
       this.getPageSearchStorySuccess(this.category?.id, request);
+    } else if (this.category?.type === 'product') {
+      this.getPageRequestProduct(this.category?.id, request);
     }
   }
 
@@ -106,6 +124,13 @@ export class DetailCategoryComponent implements OnInit {
 
   getPageSearchStorySuccess(categoryId: any, request: any) {
     this.storySuccessService.searchStorySuccessByCategory(categoryId, request).subscribe(data => {
+      this.isSearch = true;
+      this.categoryStorySuccessMap[categoryId] = data['content'];
+      this.categoryTotalMap[categoryId] = data['totalElements'];
+    });
+  }
+  getPageSearchProduct(categoryId: any, request: any) {
+    this.productService.searchProductByCategory(categoryId, request).subscribe(data => {
       this.isSearch = true;
       this.categoryStorySuccessMap[categoryId] = data['content'];
       this.categoryTotalMap[categoryId] = data['totalElements'];
