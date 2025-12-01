@@ -2,7 +2,6 @@
   import { FormBuilder, FormGroup, Validators } from "@angular/forms";
   import { QuillContentComponent } from "../../../upload/quill/quill-content/quill-content.component";
   import { ActivatedRoute, Router } from "@angular/router";
-  import { AngularFireStorage } from "@angular/fire/compat/storage";
   import { MatDialog } from "@angular/material/dialog";
   import { NewsService } from "../../../service/news.service";
   import { DialogDeleteComponent } from "../../../dialog/dialog-delete/dialog-delete.component";
@@ -184,15 +183,6 @@
       }
       this.router.navigate(['/create-news']);
     }
-
-
-
-
-    // comeBackManage() {
-    //   this.onCancel();
-    //   this.router.navigate(['/create-news']);
-    // }
-
     onStoragePathsChange(paths: { downloadURL: string; storagePath: string }[]) {
       console.log('get storage paths:', paths);
       this.form.get('contentStoragePathsJson')?.setValue(JSON.stringify(paths));
@@ -203,8 +193,4 @@
       this.resetOnDestroy.cleanupUnusedFiles(this.isUpdated, this.quillContent, this.form);
     }
   }
-  interface StorageFile {
-    downloadURL: string;
-    storagePath: string;
-    type?: string;
-  }
+

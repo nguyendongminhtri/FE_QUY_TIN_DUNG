@@ -2,20 +2,29 @@
   <div class="row">
     <div class="col-12" style="max-width: 1200px; margin: auto;  text-align: center">
       <mat-card>
-        <h1 class="category-title">   <img style="border-radius: 50%" src="../../../../assets/image/logo/logo.png" height="30" width="30"/>{{category?.name}}</h1>
-        <mat-form-field  appearance="outline" style="width: 100%; margin-bottom: 20px;">
+        <h1 class="category-title"><img style="border-radius: 50%" src="../../../../assets/image/logo/logo.png"
+                                        height="30" width="30"/>{{ category?.name }}</h1>
+        <mat-form-field appearance="outline" style="width: 100%; margin-bottom: 20px;">
           <mat-label>Tìm kiếm tin tức</mat-label>
           <input matInput (keyup.enter)="searchNews(searchInput.value)" #searchInput>
           <button mat-icon-button matSuffix (click)="searchNews(searchInput.value)">
             <mat-icon>search</mat-icon>
           </button>
         </mat-form-field>
-        <div class="gallery">
+        <div class="gallery" *ngIf="category?.type==='news'">
           <div *ngFor="let news of categoryNewsMap[category?.id || 0]" style="text-align: center">
             <a [routerLink]="['/news-detail/',news.id]">
-              <img src="{{news.imageUrl}}" alt="" >
+              <img src="{{news.imageUrl}}" alt="">
             </a>
-            <h4>{{news.title}}</h4>
+            <h4>{{ news.title }}</h4>
+          </div>
+        </div>
+        <div class="gallery" *ngIf="category?.type==='story'">
+          <div *ngFor="let storySuccess of categoryStorySuccessMap[category?.id || 0]" style="text-align: center">
+            <a [routerLink]="['/detail-story-success/',storySuccess.id]">
+              <img src="{{storySuccess.imageUrl}}" alt="">
+            </a>
+            <h4>{{ storySuccess.title }}</h4>
           </div>
         </div>
         <mat-paginator [length]="categoryTotalMap[category?.id!] || 0"

@@ -60,10 +60,11 @@
 }
 .category-title {
   text-align: left;          /* căn lề trái */
-  background-color: rgba(132, 124, 170, 0.53); /* màu nền (có thể đổi) */
+  background-color: #0d4ded; /* màu nền (có thể đổi) */
   padding: 10px 15px;        /* khoảng cách trong */
   border-radius: 6px;        /* bo góc nhẹ */
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 15px;       /* cách phần dưới */
+  margin-bottom: 15px;
+  color: yellow;
 }

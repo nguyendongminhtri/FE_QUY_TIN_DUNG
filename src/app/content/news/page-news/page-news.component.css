@@ -60,10 +60,40 @@
 }
 .category-title {
   text-align: left;          /* căn lề trái */
-  background-color: rgba(132, 124, 170, 0.53); /* màu nền (có thể đổi) */
+  background-color: #0d4ded; /* màu nền (có thể đổi) */
   padding: 10px 15px;        /* khoảng cách trong */
   border-radius: 6px;        /* bo góc nhẹ */
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 15px;       /* cách phần dưới */
+  margin-bottom: 15px;
+  color: yellow;/* cách phần dưới */
 }
+/* Áp dụng cho tất cả button trong khối admin */
+div[ngif="isAdminRole"] button {
+  width: 100%;               /* full chiều ngang trên mobile */
+  font-size: 1.2vw;          /* chữ co giãn theo màn hình */
+  font-weight: 600;
+  padding: 10px 15px;
+  white-space: normal;       /* cho phép xuống dòng nếu chữ dài */
+  word-break: break-word;    /* ngắt từ nếu quá dài */
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+  div[ngif="isAdminRole"] button {
+    font-size: 4vw;
+    padding: 12px 20px;
+  }
+}
+
+/* Responsive cho màn hình rất nhỏ */
+@media (max-width: 480px) {
+  div[ngif="isAdminRole"] button {
+    font-size: 5vw;
+    padding: 14px 25px;
+  }
+}
+
+

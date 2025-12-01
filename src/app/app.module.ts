@@ -69,6 +69,11 @@ import { CreateIntroduceComponent } from './content/introduce/create-introduce/c
 import { ListIntroduceComponent } from './content/introduce/list-introduce/list-introduce.component';
 import { UpdateIntroduceComponent } from './content/introduce/update-introduce/update-introduce.component';
 import { DetailIntroduceComponent } from './content/introduce/detail-introduce/detail-introduce.component';
+import { ScrollTextComponent } from './content/scroll_text/scroll-text/scroll-text.component';
+import { CreateStorySuccessComponent } from './content/storySuccess/create-story-success/create-story-success.component';
+import { UpdateStorySuccessComponent } from './content/storySuccess/update-story-success/update-story-success.component';
+import { ListStorySuccessComponent } from './content/storySuccess/list-story-success/list-story-success.component';
+import { DetailStorySuccessComponent } from './content/storySuccess/detail-story-success/detail-story-success.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -106,6 +111,11 @@ import { DetailIntroduceComponent } from './content/introduce/detail-introduce/d
     ListIntroduceComponent,
     UpdateIntroduceComponent,
     DetailIntroduceComponent,
+    ScrollTextComponent,
+    CreateStorySuccessComponent,
+    UpdateStorySuccessComponent,
+    ListStorySuccessComponent,
+    DetailStorySuccessComponent,
   ],
   imports: [
     QuillModule.forRoot(),

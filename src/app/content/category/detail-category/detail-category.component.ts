@@ -5,6 +5,8 @@ import {Category} from "../../../model/Category";
 import {CategoryService} from "../../../service/category.service";
 import {NewsService} from "../../../service/news.service";
 import {News} from "../../../model/News";
+import {StorySuccessService} from "../../../service/story-success.service";
+import {StorySuccess} from "../../../model/StorySuccess";
 
 @Component({
   selector: 'app-detail-category',
@@ -15,76 +17,97 @@ export class DetailCategoryComponent implements OnInit {
   category?: Category;
   categoryNewsMap: { [key: number]: News[] } = {};
   categoryTotalMap: { [key: number]: number } = {};
+  categoryStorySuccessMap: { [key: number]: StorySuccess[] } = {};
   isSearch = false;
+
   constructor(private act: ActivatedRoute,
-              private categoryService:CategoryService,
-              private newsService:NewsService
+              private categoryService: CategoryService,
+              private newsService: NewsService,
+              private storySuccessService: StorySuccessService,
   ) {
   }
+
   @ViewChild(MatPaginator) paginator?: MatPaginator;
+
   ngOnInit(): void {
-    this.act.paramMap.subscribe(categoryId =>{
+    this.act.paramMap.subscribe(categoryId => {
       // @ts-ignore
       const id = +categoryId.get('id');
       // lấy pageSize từ paginator nếu có, mặc định 3
       const size = this.paginator?.pageSize || 3;
-      this.categoryService.getCategoryById(id).subscribe(data =>{
+      this.categoryService.getCategoryById(id).subscribe(data => {
         this.category = data;
-        this.getPageRequest( this.category?.id, {page:0, size});
+        if (this.category?.type === 'news') {
+          this.getPageRequestNews(this.category?.id, {page: 0, size});
+        } else if (this.category?.type === 'story') {
+          this.getPageRequestStorySuccess(this.category?.id, {page: 0, size});
+        }
       })
     })
   }
-  getPageRequest(categoryId: any, request: any) {
+
+  getPageRequestNews(categoryId: any, request: any) {
     this.newsService.getPageNewsByCategoryId(categoryId, request).subscribe(data => {
       this.categoryNewsMap[categoryId] = data['content'];
       this.categoryTotalMap[categoryId] = data['totalElements'];
     });
   }
-  // searchNews(keyword: string) {
-  //   if (!keyword || !this.category?.id) {
-  //     // Nếu không nhập gì thì load lại mặc định
-  //     this.getPageRequest(this.category?.id, {page:0, size:5});
-  //     return;
-  //   }
-  //
-  //   const request = { page: 0, size: 3, keyword: keyword };
-  //   this.newsService.searchNews({
-  //     keyword: keyword,
-  //    request
-  //   }).subscribe(data => {
-  //     if (this.category && this.category.id) {
-  //       this.categoryNewsMap[this.category.id] = data['content'];
-  //       this.categoryTotalMap[this.category.id] = data['totalElements'];
-  //     }
-  //   });
-  // }
 
+  getPageRequestStorySuccess(categoryId: any, request: any) {
+    this.storySuccessService.getPageStorySuccessByCategoryId(categoryId, request).subscribe(data => {
+      this.categoryStorySuccessMap[categoryId] = data['content'];
+      console.log('this.categoryStorySuccessMap[categoryId]', this.categoryStorySuccessMap[categoryId].length);
+      this.categoryTotalMap[categoryId] = data['totalElements'];
+    });
+  }
 
   nextPage(categoryId: any, $event: PageEvent) {
     const request = {
       page: $event.pageIndex,
       size: $event.pageSize
     };
-    (this.isSearch)? this.getPageSearch(categoryId, request): this.getPageRequest(categoryId,request);
+    if (this.category?.type === 'news') {
+      (this.isSearch) ? this.getPageSearchNews(categoryId, request) : this.getPageRequestNews(categoryId, request);
+    } else if (this.category?.type === 'story') {
+      (this.isSearch) ? this.getPageSearchStorySuccess(categoryId, request) : this.getPageRequestStorySuccess(categoryId, request);
+    }
   }
 
   searchNews(keyword: string) {
     const size = this.paginator?.pageSize || 3;
     if (!keyword) {
       this.isSearch = false;
+      console.log('this.type --->', this.category?.type)
       // Nếu không nhập gì thì load lại mặc định
-        this.getPageRequest(this.category?.id, {page: 0, size});
+      if (this.category?.type === 'news') {
+        this.getPageRequestNews(this.category?.id, {page: 0, size});
+      } else if (this.category?.type === 'story') {
+        this.getPageRequestStorySuccess(this.category?.id, {page: 0, size});
+      }
       return;
     }
     // lấy pageSize từ paginator nếu có, mặc định 3
 
-      const request = {page: 0, size, keyword: keyword};
-      this.getPageSearch(this.category?.id, request);
+    const request = {page: 0, size, keyword: keyword};
+    if (this.category?.type === 'news') {
+      this.getPageSearchNews(this.category?.id, request);
+    } else if (this.category?.type === 'story') {
+      this.getPageSearchStorySuccess(this.category?.id, request);
+    }
   }
-  getPageSearch(categoryId: any, request: any) {
+
+  getPageSearchNews(categoryId: any, request: any) {
     this.newsService.searchNewsByCategory(categoryId, request).subscribe(data => {
       this.isSearch = true;
       this.categoryNewsMap[categoryId] = data['content'];
+      this.categoryTotalMap[categoryId] = data['totalElements'];
+    });
+  }
+
+  getPageSearchStorySuccess(categoryId: any, request: any) {
+    this.storySuccessService.searchStorySuccessByCategory(categoryId, request).subscribe(data => {
+      this.isSearch = true;
+      this.categoryStorySuccessMap[categoryId] = data['content'];
       this.categoryTotalMap[categoryId] = data['totalElements'];
     });
   }

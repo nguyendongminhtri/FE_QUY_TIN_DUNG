@@ -5,14 +5,26 @@
         <h1 style="margin:auto;margin-top: 50px;margin-bottom: 10px;font-weight: 600;color: #1E90FF;">Tạo Thể loại cho Tin Tức</h1>
         <mat-error  class="alert form-angular">{{status}}</mat-error>
         <mat-dialog-content class="mat-typography">
-        <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && createCategory()" novalidate>
+          <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && createCategory()" novalidate>
 
-          <input name="name" #name="ngModel" [(ngModel)]="form.name" (ngModelChange)="onNameChange($event)"  placeholder="Name" matInput required minlength="3"/>
-          <mat-error *ngIf="name.hasError('required')">Tên thể loại không được để trống!</mat-error>
-          <mat-error *ngIf="name.hasError('minlength')">Tên thể loại phải từ 3 kí tự chở lên!</mat-error>
-          <br>
-          <button style=" margin:auto;width: 50%" mat-stroked-button class="mat-button-toggle-group">Create Category</button>
-        </form>
+            <input name="name" #name="ngModel" [(ngModel)]="form.name"
+                   (ngModelChange)="onNameChange($event)"
+                   placeholder="Name" matInput required minlength="3"/>
+            <mat-error *ngIf="name.hasError('required')">Tên thể loại không được để trống!</mat-error>
+            <mat-error *ngIf="name.hasError('minlength')">Tên thể loại phải từ 3 kí tự trở lên!</mat-error>
+
+            <mat-form-field class="example-full-width">
+              <mat-label>Select an option</mat-label>
+              <mat-select name="type" #type="ngModel" [(ngModel)]="form.type" required>
+                <mat-option value="news">News</mat-option>
+                <mat-option value="story">Story</mat-option>
+              </mat-select>
+              <mat-error *ngIf="type.hasError('required')">Bạn phải chọn một thể loại!</mat-error>
+            </mat-form-field>
+
+            <br>
+            <button style="margin:auto;width: 50%" mat-stroked-button>Create Category</button>
+          </form>
         </mat-dialog-content>
       </mat-card>
     </div>

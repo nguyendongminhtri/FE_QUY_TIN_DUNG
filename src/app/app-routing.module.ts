@@ -19,6 +19,9 @@ import {PageNewsComponent} from "./content/news/page-news/page-news.component";
 import {CreateIntroduceComponent} from "./content/introduce/create-introduce/create-introduce.component";
 import {DetailIntroduceComponent} from "./content/introduce/detail-introduce/detail-introduce.component";
 import {UpdateIntroduceComponent} from "./content/introduce/update-introduce/update-introduce.component";
+import {CreateStorySuccessComponent} from "./content/storySuccess/create-story-success/create-story-success.component";
+import {UpdateStorySuccessComponent} from "./content/storySuccess/update-story-success/update-story-success.component";
+import {DetailStorySuccessComponent} from "./content/storySuccess/detail-story-success/detail-story-success.component";
 
 
 const routes: Routes = [
@@ -46,6 +49,11 @@ const routes: Routes = [
   {path: 'create-introduce', component: CreateIntroduceComponent},
   {path:'detail-introduce/:id',component:DetailIntroduceComponent},
   {path: 'update-introduce/:id', component: UpdateIntroduceComponent},
+
+  //Story Success
+  {path: 'create-story-success', component: CreateStorySuccessComponent},
+  {path: 'update-story-success/:id', component: UpdateStorySuccessComponent},
+  {path: 'detail-story-success/:id', component: DetailStorySuccessComponent},
 ];
 
 @NgModule({

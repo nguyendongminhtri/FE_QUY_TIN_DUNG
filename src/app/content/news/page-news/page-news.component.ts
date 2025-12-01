@@ -34,6 +34,7 @@ export class PageNewsComponent implements OnInit {
     this.showSearch = this.router.url.includes('/page-news');
     this.categoryService.getListCategoryService().subscribe(categoryList => {
       this.listCategories = categoryList;
+      this.listCategories = this.listCategories.filter(c => c.type === 'news');
       this.listCategories.forEach(ctg => {
         this.getPageRequest(ctg.id, {page: 0, size});
       });

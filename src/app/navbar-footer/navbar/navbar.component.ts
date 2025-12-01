@@ -18,7 +18,8 @@ export class NavbarComponent implements OnInit {
   avatar = '';
   checkLogin = false;
   isMenuOpen = false;
-  listCategories?: Category[];
+  listCategoriesNews: Category[] | undefined;
+  listCategoriesStorySuccess: Category[] | undefined;
   listIntroduce?: Introduce[];
   constructor(private tokenService: TokenService,
               private introduceService: IntroduceService,
@@ -32,7 +33,9 @@ export class NavbarComponent implements OnInit {
       this.checkLogin = true;
     }
     this.categoryService.getListCategoryService().subscribe(data=>{
-      this.listCategories = data;
+      // @ts-ignore
+      this.listCategoriesNews = data.filter(c => c.type === 'news');      // @ts-ignore
+      this.listCategoriesStorySuccess = data.filter(c => c.type === 'story');
     })
     this.introduceService.getListIntroduce().subscribe(data=>{
       this.listIntroduce = data;

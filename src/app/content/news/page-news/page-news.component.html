@@ -5,20 +5,24 @@
         <DIV *ngIf="isAdminRole" style="background-color: #899a9a">
           <h1>Trình quản lí dành cho ADMIN</h1>
           <button routerLink="create-carousel" mat-raised-button color="accent"
-                  style="width: 25%" class="mat-raised-button">
+                  style="width: 20%" class="mat-raised-button">
             Màn Quản Lý Tin HOT
           </button>
           <button routerLink="create-category" mat-raised-button color="primary"
-                  style="width: 25%" class="mat-raised-button">
+                  style="width: 20%" class="mat-raised-button">
             Màn Quản Lý Thể Loại Tin Tức
           </button>
           <button routerLink="create-news" mat-raised-button color="warn"
-                  style="width: 25%" class="mat-raised-button">
+                  style="width: 20%" class="mat-raised-button">
             Màn Quản Lý Tin Tức
           </button>
           <button routerLink="create-introduce" mat-raised-button color="accent"
-                  style="width: 25%" class="mat-raised-button">
+                  style="width: 20%" class="mat-raised-button">
             Màn Quản Lý Giới Thiệu QTD
+          </button>
+          <button routerLink="create-story-success" mat-raised-button color="primary"
+                  style="width: 20%" class="mat-raised-button">
+            Màn Quản Lý Câu Chuyện Thành Công
           </button>
         </DIV>
         <mat-form-field *ngIf="showSearch" appearance="outline" style="width: 100%; margin-bottom: 20px;">

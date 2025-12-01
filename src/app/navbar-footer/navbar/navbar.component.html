@@ -33,13 +33,20 @@
         <li class="nav-item dropdown">
           <a routerLink="/page-news" routerLinkActive="active">TIN TỨC – SỰ KIỆN ▾</a>
           <ul class="dropdown-menu">
-            <li *ngFor="let ctg of listCategories">
+            <li *ngFor="let ctg of listCategoriesNews">
               <a [routerLink]="['/detail-category/', ctg.id]">{{ctg.name}}</a>
             </li>
           </ul>
         </li>
         <li class="nav-item"><a href="#">SẢN PHẨM - DỊCH VỤ ▾</a></li>
-        <li class="nav-item"><a href="#">CÂU CHUYỆN THÀNH CÔNG</a></li>
+        <li class="nav-item dropdown">
+          <a routerLink="/page-news" routerLinkActive="active">CÂU CHUYỆN THÀNH CÔNG ▾</a>
+          <ul class="dropdown-menu">
+            <li *ngFor="let ctg of listCategoriesStorySuccess">
+              <a [routerLink]="['/detail-category/', ctg.id]">{{ctg.name}}</a>
+            </li>
+          </ul>
+        </li>
         <li class="nav-item"><a href="#">HỎI - ĐÁP</a></li>
       </ul>
 

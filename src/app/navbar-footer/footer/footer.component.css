@@ -1,6 +1,6 @@
 .map-link {
   text-decoration: none;
-  color: #333333;
+  color: #ffffff;
   transition: color 0.3s ease;
   position: relative;
   padding-left: 20px;
@@ -21,13 +21,33 @@
   display: inline-flex;
   align-items: center;
   text-decoration: none;
-  color: #333;
+  color: #ffffff;
   font-size: 16px;
   transition: color 0.3s ease;
 }
 
 .zalo-link:hover {
   color: #0088FF;
+}
+footer {
+  color: yellow !important; /* toàn bộ chữ trong footer thành màu trắng */
+}
+
+footer a {
+  color: yellow !important; /* các link cũng thành màu trắng */
+  /*text-decoration: none;     !* bỏ gạch chân nếu muốn *!*/
+}
+
+footer h5 {
+  color: yellow !important; /* tiêu đề trong footer màu trắng */
+}
+
+footer p {
+  color: yellow !important; /* đoạn văn trong footer màu trắng */
+}
+
+footer li {
+  color: yellow !important; /* danh sách trong footer màu trắng */
 }
 
 .zalo-icon {
@@ -40,7 +60,7 @@
   display: inline-flex;
   align-items: center;
   text-decoration: none;
-  color: #333;
+  color: #ffffff;
   font-size: 16px;
   transition: color 0.3s ease;
 }

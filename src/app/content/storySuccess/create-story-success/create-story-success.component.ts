@@ -1,29 +1,28 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {Category} from "../../../model/Category";
-import {CategoryService} from "../../../service/category.service";
 import {UploadAvatarComponent} from "../../../upload/upload-avatar/upload-avatar.component";
 import {QuillContentComponent} from "../../../upload/quill/quill-content/quill-content.component";
-import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
+import {CategoryService} from "../../../service/category.service";
 import {MatDialog} from "@angular/material/dialog";
-import {News} from "../../../model/News";
-import {NewsService} from "../../../service/news.service";
-import {ListNewsComponent} from "../list-news/list-news.component";
-import {FirebaseStorageService} from "../../../service/firebase-storage.service";
 import {ResetOnDestroy} from "../../../config/ResetOnDestroy";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {Category} from "../../../model/Category";
+import {News} from "../../../model/News";
+import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
+import {ListStorySuccessComponent} from "../list-story-success/list-story-success.component";
+import {StorySuccessService} from "../../../service/story-success.service";
 
 @Component({
-  selector: 'app-create-news',
-  templateUrl: './create-news.component.html',
-  styleUrls: ['./create-news.component.css']
+  selector: 'app-create-story-success',
+  templateUrl: './create-story-success.component.html',
+  styleUrls: ['./create-story-success.component.css']
 })
-export class CreateNewsComponent implements OnInit, OnDestroy {
+export class CreateStorySuccessComponent implements OnInit, OnDestroy {
   @ViewChild('uploadAvatar', {static: false}) uploadAvatar!: UploadAvatarComponent;
-  @ViewChild('listNews') listNews!: ListNewsComponent;
+  @ViewChild('listStorySuccess') listStorySuccess!: ListStorySuccessComponent;
   @ViewChild('quillContent') quillContent!: QuillContentComponent;
   constructor(private categoryService: CategoryService,
               private dialog: MatDialog,
-              private newsService: NewsService,
+              private storySuccessService: StorySuccessService,
               private resetOnDestroy: ResetOnDestroy,) {
   }
 
@@ -55,10 +54,10 @@ export class CreateNewsComponent implements OnInit, OnDestroy {
       category: { id: formValue.categoryId }   // 👈 sửa chỗ này
     } as News;
     console.log('this.news --> ', this.news);
-    this.newsService.createNews(this.news).subscribe(data => {
+    this.storySuccessService.createStorySuccess(this.news).subscribe(data => {
       if (data.message === 'create_success') {
-        this.status = 'Thêm mới tin tức thành công!'
-        this.listNews.loadNews();
+        this.status = 'Thêm mới Câu chuyện thành công!'
+        this.listStorySuccess.loadStorySuccess();
       }
     });
   }
@@ -91,7 +90,7 @@ export class CreateNewsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.categoryService.getListCategoryService().subscribe(data => {
       this.listCategories = data;
-      this.listCategories = this.listCategories.filter(c => c.type === 'news');
+      this.listCategories = this.listCategories.filter(c => c.type === 'story');
     })
     // Lắng nghe thay đổi của title
     this.form.get('title')?.valueChanges.subscribe(value => {

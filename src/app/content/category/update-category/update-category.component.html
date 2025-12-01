@@ -10,6 +10,13 @@
           <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && updateCategory()" novalidate>
             <input name="name" #name="ngModel" [(ngModel)]="category.name" placeholder="Tên thể loại" matInput required/>
             <mat-error *ngIf="name.hasError('required')">Tên thể loại đã tồn tại!</mat-error>
+            <mat-form-field class="example-full-width">
+              <mat-label>Select an option</mat-label>
+              <mat-select name="type"  [(ngModel)]="category.type" required>
+                <mat-option value="news">News</mat-option>
+                <mat-option value="story">Story</mat-option>
+              </mat-select>
+            </mat-form-field>
             <button style="margin:auto;width: 50%" mat-stroked-button class="mat-button-toggle-group" type="submit">Cập nhật</button>
             <button mat-raised-button color="warn" style="width: 50%" class="mat-raised-button" [mat-dialog-close]="true" cdkFocusInitial>Xem danh sách
             </button>

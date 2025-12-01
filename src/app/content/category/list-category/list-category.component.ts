@@ -16,7 +16,7 @@ import {UpdateCategoryComponent} from "../update-category/update-category.compon
 })
 export class ListCategoryComponent implements OnInit {
   listCategory: Category[] = [];
-  displayedColumns: string[] = ['id', 'name', 'update', 'delete'];
+  displayedColumns: string[] = ['id', 'name', 'type', 'update', 'delete'];
   dataSource: any;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
 

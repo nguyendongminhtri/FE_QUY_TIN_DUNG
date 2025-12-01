@@ -1,0 +1,52 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1200px; margin: auto;  text-align: center">
+      <mat-card>
+        <h1 style="margin:auto;margin-top: 50px;margin-bottom: 10px;font-weight: 600;color: #1E90FF;">Danh sách Câu Chuyện Thành Công</h1>
+        <mat-dialog-content class="mat-typography">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+            <mat-form-field class="example-full-width">
+              <mat-label>Title</mat-label>
+              <input formControlName="title" matInput placeholder="Tiêu đề">
+              <mat-error *ngIf="form.get('title')?.hasError('required') && form.get('title')?.touched">
+                Vui lòng nhập tiêu đề
+              </mat-error>
+            </mat-form-field>
+            <br>
+
+            <mat-form-field class="example-full-width">
+              <mat-label>Description</mat-label>
+              <input formControlName="description" matInput placeholder="Description">
+              <mat-error *ngIf="form.get('description')?.hasError('required') && form.get('description')?.touched">
+                Vui lòng nhập mô tả
+              </mat-error>
+            </mat-form-field>
+            <br>
+            <app-quill-content #quillContent formControlName="content"></app-quill-content>
+            <mat-form-field class="example-full-width">
+              <mat-label>Chọn Thể Loại </mat-label>
+              <mat-select formControlName="categoryId">
+                <mat-option *ngFor="let ctg of listCategories" [value]="ctg.id">
+                  {{ ctg.name }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.get('categoryId')?.hasError('required') && form.get('categoryId')?.touched">
+                Vui lòng chọn thể loại
+              </mat-error>
+            </mat-form-field>
+            <mat-error *ngIf="form.get('imageUrl')?.hasError('required') && form.get('imageUrl')?.touched">
+              Vui lòng upload ảnh đại diện
+            </mat-error>
+            <app-upload-avatar #uploadAvatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>
+            <br>
+            <mat-error>{{this.status}}</mat-error>
+            <button style="margin:auto; width: 50%; background-color: rgba(205,17,130,0.45); color: #0535f4" mat-stroked-button type="submit">
+              Tạo Tin Hot
+            </button>
+          </form>
+        </mat-dialog-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+<app-list-story-success #listStorySuccess></app-list-story-success>

@@ -1,36 +1,37 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
+import {News} from "../../../model/News";
 import {MatPaginator} from "@angular/material/paginator";
 import {NewsService} from "../../../service/news.service";
-import {News} from "../../../model/News";
-import {MatTableDataSource} from "@angular/material/table";
-import {CarouselItem} from "../../../model/CarouselItem";
-import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
 import {MatDialog} from "@angular/material/dialog";
 import {FirebaseStorageService} from "../../../service/firebase-storage.service";
 import {Router} from "@angular/router";
+import {MatTableDataSource} from "@angular/material/table";
+import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
+import {StorySuccess} from "../../../model/StorySuccess";
+import {StorySuccessService} from "../../../service/story-success.service";
 
 @Component({
-  selector: 'app-list-news',
-  templateUrl: './list-news.component.html',
-  styleUrls: ['./list-news.component.css']
+  selector: 'app-list-story-success',
+  templateUrl: './list-story-success.component.html',
+  styleUrls: ['./list-story-success.component.css']
 })
-export class ListNewsComponent implements OnInit{
-  listNews: News[] = [];
-  displayedColumns: string[] = ['id', 'title', 'imageUrl','category','isShow', 'delete', 'update'];
+export class ListStorySuccessComponent implements OnInit {
+  listStorySuccess: StorySuccess[] = [];
+  displayedColumns: string[] = ['id', 'title', 'imageUrl','category', 'isShow', 'update', 'delete'];
   dataSource: any;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
-  constructor(private newsService: NewsService,
+  constructor(private storySuccessService: StorySuccessService,
               private dialog: MatDialog,
               private firebaseStorageService: FirebaseStorageService,
               private router: Router,) {
   }
   ngOnInit(): void {
-    this.loadNews();
+    this.loadStorySuccess();
   }
-  loadNews(): void {
-    this.newsService.getListNews().subscribe(data => {
-      this.listNews = data;
-      this.dataSource = new MatTableDataSource<News>(this.listNews);
+  loadStorySuccess(): void {
+    this.storySuccessService.getListStorySuccess().subscribe(data => {
+      this.listStorySuccess = data;
+      this.dataSource = new MatTableDataSource<News>(this.listStorySuccess);
       this.dataSource.paginator = this.paginator;
     });
   }
@@ -38,7 +39,7 @@ export class ListNewsComponent implements OnInit{
   toggleStatus(element: any) {
     const newStatus = !element.isShow;
     console.log('element', element);
-    this.newsService.updateStatus(element.id, newStatus).subscribe({
+    this.storySuccessService.updateStatus(element.id, newStatus).subscribe({
       next: () => {
         element.isShow = newStatus;
       },
@@ -48,7 +49,7 @@ export class ListNewsComponent implements OnInit{
     });
   }
 
-  deleteNews(element: News): void {
+  deleteStorySuccess(element: News): void {
     const dialogRef = this.dialog.open(DialogDeleteComponent, {
       width: '400px',
       data: {message: 'Bạn có chắc chắn muốn xóa mục này?', color: 'red'}
@@ -81,10 +82,10 @@ export class ListNewsComponent implements OnInit{
         this.firebaseStorageService.deleteFileByPath(imagePath)
           .then(() => this.firebaseStorageService.deleteMultipleFilesByPaths(contentPaths))
           .then(() => {
-            this.newsService.deleteNews(element.id!).subscribe({
+            this.storySuccessService.deleteStorySuccess(element.id!).subscribe({
               next: () => {
-                this.listNews = this.listNews.filter(item => item.id !== element.id);
-                this.dataSource.data = this.listNews;
+                this.listStorySuccess = this.listStorySuccess.filter(item => item.id !== element.id);
+                this.dataSource.data = this.listStorySuccess;
               },
               error: () => {
                 console.log('Delete failed!');
@@ -96,6 +97,6 @@ export class ListNewsComponent implements OnInit{
     });
   }
   goToEdit(element: any) {
-    this.router.navigate(['/news-update', element.id]);
+    this.router.navigate(['/update-story-success', element.id]);
   }
 }

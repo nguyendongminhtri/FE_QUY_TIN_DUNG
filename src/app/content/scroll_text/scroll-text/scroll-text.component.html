@@ -1,0 +1,18 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12" style="max-width: 1800px; margin: auto; text-align: center">
+      <mat-card>
+        <!-- Background chung cho toàn bộ text -->
+        <div class="scroll-container">
+          <div class="scroll-text"
+               *ngFor="let item of linesWithEmoji; let i = index"
+               [class.show]="visibleLines[i]"
+               [style.transitionDelay]="(i * 2) + 's'">
+            <span class="emoji" [style.color]="item.color">{{ item.emoji }}</span>
+            {{ item.text }}
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

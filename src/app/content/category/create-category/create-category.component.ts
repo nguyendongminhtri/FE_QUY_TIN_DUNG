@@ -27,7 +27,8 @@ export class CreateCategoryComponent implements OnInit {
 
   createCategory() {
     this.category = new  Category(
-      this.form.name
+      this.form.name,
+      this.form.type
     )
       this.categoryService.createCategoryService(this.category).subscribe(data =>{
         if (data.message=='name_exist'){

@@ -1,0 +1,79 @@
+:host {
+  display: block;
+  width: 100vw;
+  /* bỏ height cố định, để auto theo nội dung */
+  height: auto;
+  overflow: hidden;
+  margin-bottom: 2vh; /* tạo khoảng cách hợp lý với component dưới */
+}
+
+.scroll-container {
+  width: 100%;
+  min-height: 30vh; /* đảm bảo tối thiểu vẫn đẹp */
+  background-image: url('/assets/image/logo/anh_nen_scroll_text.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px 10px; /* thêm padding nhẹ để chữ không dính mép */
+  box-sizing: border-box;
+
+  border-radius: 20px;
+}
+
+/* Dòng chữ */
+.scroll-text {
+  opacity: 0;
+  transform: translateX(100px);
+  transition: all 1s ease-out;
+  font-family: 'Dancing Script', cursive;
+  font-size: 2.5vw; /* giảm nhẹ để tránh tràn khi landscape */
+  font-weight: 600;
+  color: #0535f4;
+  margin: 1vw 0; /* giảm margin để khoảng cách gọn hơn */
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+/* Hiện khi scroll */
+.scroll-text.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Emoji */
+.emoji {
+  margin-right: 0.8vw;
+  font-size: 3vw;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .scroll-text {
+    font-size: 5.5vw;
+    margin: 2vw 0; /* tăng nhẹ margin để chữ thoáng hơn */
+  }
+  .emoji {
+    font-size: 6vw;
+  }
+}
+
+/* Responsive cho màn hình ngang (landscape) */
+@media (orientation: landscape) {
+  .scroll-container {
+    min-height: 40vh; /* tăng chiều cao để không bị che chữ */
+    padding: 30px 15px;
+  }
+  .scroll-text {
+    font-size: 3vw;
+  }
+  .emoji {
+    font-size: 2.5vw;
+  }
+}
