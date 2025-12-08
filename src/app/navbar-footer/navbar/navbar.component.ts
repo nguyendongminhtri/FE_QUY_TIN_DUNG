@@ -20,6 +20,7 @@ export class NavbarComponent implements OnInit {
   isMenuOpen = false;
   listCategoriesNews: Category[] | undefined;
   listCategoriesStorySuccess: Category[] | undefined;
+  listCategoriesProduct: Category[] | undefined;
   listIntroduce?: Introduce[];
   constructor(private tokenService: TokenService,
               private introduceService: IntroduceService,
@@ -33,9 +34,10 @@ export class NavbarComponent implements OnInit {
       this.checkLogin = true;
     }
     this.categoryService.getListCategoryService().subscribe(data=>{
-      // @ts-ignore
-      this.listCategoriesNews = data.filter(c => c.type === 'news');      // @ts-ignore
-      this.listCategoriesStorySuccess = data.filter(c => c.type === 'story');
+      this.listCategoriesNews = data.filter((c: Category) => c.type === 'news');
+      this.listCategoriesStorySuccess = data.filter((c: Category) => c.type === 'story');
+      this.listCategoriesProduct = data.filter((c: Category) => c.type === 'product');
+      console.log('product', this.listCategoriesProduct)
     })
     this.introduceService.getListIntroduce().subscribe(data=>{
       this.listIntroduce = data;

@@ -80,6 +80,10 @@ import { UpdateProductComponent } from './content/product/update-product/update-
 import { PageProductComponent } from './content/product/page-product/page-product.component';
 import { ListProductComponent } from './content/product/list-product/list-product.component';
 import { RunningTextComponent } from './content/product/running-text/running-text.component';
+import { PageStorySuccessComponent } from './content/storySuccess/page-story-success/page-story-success.component';
+import { ProfileComponent } from './form_login/profile/profile.component';
+import { CreateCreditContractComponent } from './content/credit-contract/create-credit-contract/create-credit-contract.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
 @NgModule({
   declarations: [
     AppComponent,
@@ -128,6 +132,9 @@ import { RunningTextComponent } from './content/product/running-text/running-tex
     PageProductComponent,
     ListProductComponent,
     RunningTextComponent,
+    PageStorySuccessComponent,
+    ProfileComponent,
+    CreateCreditContractComponent,
   ],
   imports: [
     QuillModule.forRoot(),
@@ -158,7 +165,8 @@ import { RunningTextComponent } from './content/product/running-text/running-tex
     MatNativeDateModule,
     MatExpansionModule,
     CdkDrag,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatCheckboxModule
   ],
   exports: [
     QuillContentComponent

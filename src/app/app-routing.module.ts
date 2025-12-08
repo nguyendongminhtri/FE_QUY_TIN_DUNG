@@ -25,6 +25,12 @@ import {DetailStorySuccessComponent} from "./content/storySuccess/detail-story-s
 import {CreateProductComponent} from "./content/product/create-product/create-product.component";
 import {UpdateProductComponent} from "./content/product/update-product/update-product.component";
 import {DetailProductComponent} from "./content/product/detail-product/detail-product.component";
+import {PageStorySuccessComponent} from "./content/storySuccess/page-story-success/page-story-success.component";
+import {PageProductComponent} from "./content/product/page-product/page-product.component";
+import {ProfileComponent} from "./form_login/profile/profile.component";
+import {
+  CreateCreditContractComponent
+} from "./content/credit-contract/create-credit-contract/create-credit-contract.component";
 
 
 const routes: Routes = [
@@ -32,6 +38,7 @@ const routes: Routes = [
   {path: 'register' ,component: RegisterComponent, canActivate:[CheckLoginGuard]},
   {path: 'login' ,component:LoginComponent, canActivate:[CheckLoginGuard]},
   {path:'change-avatar',component:ChangeAvatarComponent, canActivate:[CheckLogoutGuard] },
+  {path: 'profile', component: ProfileComponent, canActivate:[CheckLogoutGuard] },
 
   {path:'category',component:PageCategoryComponent},
   {path:'create-category',component:CreateCategoryComponent},
@@ -57,11 +64,17 @@ const routes: Routes = [
   {path: 'create-story-success', component: CreateStorySuccessComponent},
   {path: 'update-story-success/:id', component: UpdateStorySuccessComponent},
   {path: 'detail-story-success/:id', component: DetailStorySuccessComponent},
+  {path: 'page-story-success', component: PageStorySuccessComponent},
 
   //Product
   {path: 'create-product', component: CreateProductComponent},
   {path: 'update-product/:id', component: UpdateProductComponent},
   {path: 'detail-product/:id', component: DetailProductComponent},
+  {path: 'page-product', component: PageProductComponent},
+
+  //credit-contract
+  {path: 'create-credit-contract', component: CreateCreditContractComponent},
+
 ];
 
 @NgModule({

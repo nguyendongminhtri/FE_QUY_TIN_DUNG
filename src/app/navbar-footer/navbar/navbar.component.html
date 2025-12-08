@@ -38,9 +38,16 @@
             </li>
           </ul>
         </li>
-        <li class="nav-item"><a href="#">SẢN PHẨM - DỊCH VỤ ▾</a></li>
         <li class="nav-item dropdown">
-          <a routerLink="/page-news" routerLinkActive="active">CÂU CHUYỆN THÀNH CÔNG ▾</a>
+          <a routerLink="/page-product">SẢN PHẨM - DỊCH VỤ ▾</a>
+          <ul class="dropdown-menu">
+            <li *ngFor="let ctg of listCategoriesProduct">
+              <a [routerLink]="['/detail-category/', ctg.id]">{{ctg.name}}</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a routerLink="/page-story-success" routerLinkActive="active">CÂU CHUYỆN THÀNH CÔNG ▾</a>
           <ul class="dropdown-menu">
             <li *ngFor="let ctg of listCategoriesStorySuccess">
               <a [routerLink]="['/detail-category/', ctg.id]">{{ctg.name}}</a>
@@ -61,6 +68,10 @@
           <mat-icon>arrow_drop_down</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
+          <button mat-menu-item [routerLink]="'/profile'">
+            <mat-icon>person</mat-icon>
+            <span>Trang cá nhân</span>
+          </button>
           <button mat-menu-item (click)="logOut()">
             <mat-icon>logout</mat-icon>
             <span>Đăng xuất</span>

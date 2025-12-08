@@ -3,7 +3,7 @@
     <div class="col-12" style="max-width: 1200px; margin: auto;  text-align: center">
       <mat-card>
         <mat-form-field *ngIf="showSearch" appearance="outline" style="width: 100%; margin-bottom: 20px;">
-          <mat-label>Tìm kiếm Sản phẩm - Dịch vụ</mat-label>
+          <mat-label>Tìm kiếm Câu chuyện thành công</mat-label>
           <input matInput (keyup.enter)="searchAll(searchInput.value)" #searchInput>
           <button mat-icon-button matSuffix (click)="searchAll(searchInput.value)">
             <mat-icon>search</mat-icon>
@@ -16,12 +16,12 @@
               {{ ctg.name }}</h1>
             <!-- Search box -->
             <div class="gallery">
-              <div *ngFor="let product of categoryNewsMap[ctg.id || 0]" style="text-align: center">
-                <a [routerLink]="['/detail-product/',product.id]">
-                  <img src="{{product.imageUrl}}" alt="">
+              <div *ngFor="let storySuccess of categoryNewsMap[ctg.id || 0]" style="text-align: center">
+                <a [routerLink]="['/detail-story-success/',storySuccess.id]">
+                  <img src="{{storySuccess.imageUrl}}" alt="">
                 </a>
-                <h3>{{ product.title }}</h3>
-                <h5>{{ product.description }}</h5>
+                <h3>{{ storySuccess.title }}</h3>
+                <h5>{{ storySuccess.description }}</h5>
               </div>
             </div>
             <mat-paginator [length]="categoryTotalMap[ctg.id!] || 0"

@@ -15,12 +15,21 @@
   /* Border phát sáng */
   border: 2px solid #FFD700;
   box-shadow: 0 0 10px #FFD700, 0 0 20px #FFA500, 0 0 30px #FF69B4;
+
+  /* Hiệu ứng lấp lánh */
+  animation: sparkle 3s infinite alternate;
 }
 
 /* ===== Nội dung chữ chạy ===== */
 .running-text {
   display: inline-block;
   white-space: nowrap;
+  transform: translateX(100%);
+  will-change: transform;
+}
+
+.running-text.start {
+  -webkit-animation: scroll-left 20s linear infinite;
   animation: scroll-left 20s linear infinite;
 }
 
@@ -28,33 +37,33 @@
   animation-play-state: paused;
 }
 
-.running-text span {
+.running-item {
   margin-right: 50px;
   font-size: 20px;
   font-weight: bold;
   color: #ffffff;
-  text-shadow: 0 0 5px #fff, 0 0 10px #FFD700, 0 0 20px #FF69B4; /* chữ lấp lánh */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 }
 
 /* ===== Hiệu ứng chạy ngang ===== */
 @keyframes scroll-left {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(-100%);
-  }
+  from { transform: translateX(100%) translateZ(0); }
+  to   { transform: translateX(-100%) translateZ(0); }
+}
+
+@-webkit-keyframes scroll-left {
+  from { transform: translateX(100%) translateZ(0); }
+  to   { transform: translateX(-100%) translateZ(0); }
 }
 
 /* ===== Hiệu ứng lấp lánh sao ===== */
 @keyframes sparkle {
-  0% { box-shadow: 0 0 5px #FFD700, 0 0 10px #FFA500; }
-  50% { box-shadow: 0 0 15px #FF69B4, 0 0 30px #FFD700; }
+  0%   { box-shadow: 0 0 5px #FFD700, 0 0 10px #FFA500; }
+  50%  { box-shadow: 0 0 15px #FF69B4, 0 0 30px #FFD700; }
   100% { box-shadow: 0 0 5px #FFD700, 0 0 10px #FFA500; }
-}
-
-.running-text-container {
-  animation: sparkle 3s infinite alternate;
 }
 
 /* ===== Responsive: Mobile ===== */
@@ -64,7 +73,7 @@
     padding: 0 5px;
   }
 
-  .running-text span {
+  .running-item {
     font-size: 14px;
     margin-right: 30px;
   }
@@ -76,7 +85,7 @@
     min-height: 35px;
   }
 
-  .running-text span {
+  .running-item {
     font-size: 12px;
     margin-right: 20px;
   }

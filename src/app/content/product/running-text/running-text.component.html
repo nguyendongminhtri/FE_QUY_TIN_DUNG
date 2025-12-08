@@ -9,9 +9,13 @@
           (mouseleave)="resumeText()"
         >
           <div class="running-text" [class.paused]="isPaused">
-
-            <span *ngFor="let item of listCategories">
-              <span [routerLink]="['/detail-category/', item.id]">{{item.name}}</span>
+            <span *ngFor="let item of listCategories" class="running-item" [routerLink]="['/detail-category/', item.id]">
+              {{item.emoji}}
+<!--              <img src="assets/image/logo/logo_title.png"-->
+<!--                   style="border-radius: 50%"-->
+<!--                   height="32"-->
+<!--                   width="32"/>-->
+              {{item.name}}
             </span>
           </div>
         </div>

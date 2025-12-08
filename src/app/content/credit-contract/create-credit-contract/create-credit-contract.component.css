@@ -1,0 +1,63 @@
+.example-full-width {
+  min-width: 100%;
+}
+.section-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px; /* khoảng cách giữa 2 khối lớn */
+}
+
+.section-col {
+  flex: 1;
+  min-width: 400px; /* mỗi khối Khách Hàng / Người Thân */
+}
+
+.form-row-3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px; /* khoảng cách giữa các cột nhỏ */
+}
+
+.form-col-3 {
+  flex: 1;
+  min-width: 200px; /* mỗi cột nhỏ */
+}
+
+mat-form-field {
+  width: 100%;
+}
+.form-row {
+  display: flex;
+  flex-wrap: wrap;   /* tự động xuống dòng khi màn hình nhỏ */
+  gap: 16px;         /* khoảng cách giữa 2 cột */
+}
+
+.form-col {
+  flex: 1;           /* chia đều chiều rộng */
+  min-width: 300px;  /* giới hạn nhỏ nhất để không bị quá hẹp */
+}
+
+mat-form-field {
+  width: 100%;       /* form-field chiếm hết chiều rộng cột */
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px; /* khoảng cách giữa các cột */
+}
+
+.form-col {
+  flex: 1;
+  min-width: 250px; /* độ rộng tối thiểu mỗi cột */
+}
+
+.checkbox-input-col {
+  display: flex;
+  align-items: flex-start; /* checkbox nằm trên cùng */
+  gap: 8px; /* khoảng cách giữa checkbox và input */
+}
+
+.checkbox-input-col mat-checkbox {
+  margin-top: 8px; /* căn chỉnh checkbox với label input */
+}

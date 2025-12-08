@@ -5,14 +5,14 @@ import {News} from "../../../model/News";
 import {TokenService} from "../../../service/token.service";
 import {CategoryService} from "../../../service/category.service";
 import {Router} from "@angular/router";
-import {ProductService} from "../../../service/product.service";
+import {StorySuccessService} from "../../../service/story-success.service";
 
 @Component({
-  selector: 'app-page-product',
-  templateUrl: './page-product.component.html',
-  styleUrls: ['./page-product.component.css']
+  selector: 'app-page-story-success',
+  templateUrl: './page-story-success.component.html',
+  styleUrls: ['./page-story-success.component.css']
 })
-export class PageProductComponent implements OnInit {
+export class PageStorySuccessComponent implements OnInit{
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   isAdminRole: boolean = false;
   listCategories: Category[] = [];
@@ -24,17 +24,17 @@ export class PageProductComponent implements OnInit {
 
   constructor(private tokenService: TokenService,
               private categoryService: CategoryService,
-              private productService: ProductService,
+              private storySuccessService: StorySuccessService,
               private router: Router,) {
   }
 
   ngOnInit(): void {
     const size = this.paginator?.pageSize || 3;
     this.isAdminRole = this.tokenService.getAdminRole();
-    this.showSearch = this.router.url.includes('/page-product');
+    this.showSearch = this.router.url.includes('/page-story-success');
     this.categoryService.getListCategoryService().subscribe(categoryList => {
       this.listCategories = categoryList;
-      this.listCategories = this.listCategories.filter(c => c.type === 'product');
+      this.listCategories = this.listCategories.filter(c => c.type === 'story');
       this.listCategories.forEach(ctg => {
         this.getPageRequest(ctg.id, {page: 0, size});
       });
@@ -42,7 +42,7 @@ export class PageProductComponent implements OnInit {
   }
 
   getPageRequest(categoryId: any, request: any) {
-    this.productService.getPageProductByCategoryId(categoryId, request).subscribe(data => {
+    this.storySuccessService.getPageStorySuccessByCategoryId(categoryId, request).subscribe(data => {
       this.categoryNewsMap[categoryId] = data['content'];
       this.categoryTotalMap[categoryId] = data['totalElements'];
     });
@@ -66,7 +66,7 @@ export class PageProductComponent implements OnInit {
   }
 
   getPageSearch(categoryId: any, request: any) {
-    this.productService.searchProductByCategory(categoryId, request).subscribe(data => {
+    this.storySuccessService.searchStorySuccessByCategory(categoryId, request).subscribe(data => {
       this.isSearch = true;
       this.categoryNewsMap[categoryId] = data['content'];
       this.categoryTotalMap[categoryId] = data['totalElements'];

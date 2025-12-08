@@ -6,7 +6,7 @@
 }
 
 .gallery div {
-  background: rgba(38, 244, 5, 0.55);
+  background: rgba(205, 113, 168, 0.55);
   padding: 10px;
   border-radius: 8px;
   text-align: center;
@@ -60,7 +60,7 @@
 }
 .category-title {
   text-align: left;          /* căn lề trái */
-  background-color: #24af05; /* màu nền (có thể đổi) */
+  background-color: rgb(205, 17, 130); /* màu nền (có thể đổi) */
   padding: 10px 15px;        /* khoảng cách trong */
   border-radius: 6px;        /* bo góc nhẹ */
   font-size: 20px;
