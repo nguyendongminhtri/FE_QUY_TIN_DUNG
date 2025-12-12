@@ -31,6 +31,12 @@ import {ProfileComponent} from "./form_login/profile/profile.component";
 import {
   CreateCreditContractComponent
 } from "./content/credit-contract/create-credit-contract/create-credit-contract.component";
+import {
+  ListCreditContractComponent
+} from "./content/credit-contract/list-credit-contract/list-credit-contract.component";
+import {
+  DetailCreaditContractComponent
+} from "./content/credit-contract/detail-creadit-contract/detail-creadit-contract.component";
 
 
 const routes: Routes = [
@@ -74,6 +80,8 @@ const routes: Routes = [
 
   //credit-contract
   {path: 'create-credit-contract', component: CreateCreditContractComponent},
+  {path: 'list-credit-contract', component: ListCreditContractComponent},
+  {path: 'credit-contract-update/:id', component: DetailCreaditContractComponent}
 
 ];
 

@@ -1,5 +1,7 @@
+import {FileMetadataEntity} from "./FileMetadataEntity";
+
 export class CreditContract {
-  public id?: number;
+  id?: number;
   contractDate: string;
   nguoiDaiDien?: string;
   tenKhachHang?: string;
@@ -41,8 +43,9 @@ export class CreditContract {
   noiDungThoaThuan?: string;
   nguonGocSuDung?: string;
   ghiChu?: string
+  fileAvatarUrls?: FileMetadataEntity[] = [];
 
-  constructor(contractDate: string, nguoiDaiDien: string, tenKhachHang?: string,
+  constructor(contractDate: string, nguoiDaiDien?: string, tenKhachHang?: string,
               namSinhKhachHang?: string, sdtKhachHang?: string, sttvKhachHang?: string,
               cccdKhachHang?: string, ngayCapCCCDKhachHang?: string,
               diaChiThuongChuKhachHang?: string, tenNguoiThan?: string,
@@ -54,9 +57,8 @@ export class CreditContract {
               soThuaDat?: string, soBanDo?: string, diaChiThuaDat?: string, dienTichDatSo?: string,
               dienTichDatChu?: string, hinhThucSuDung?: string, muchDichSuDung?: string,
               thoiHanSuDung?: string, soBienBanDinhGia?: string, noiDungThoaThuan?: string,
-              gtkh?: string, gtnt?: string, nguonGocSuDung?: string, ghiChu?: string) {
+              gtkh?: string, gtnt?: string, nguonGocSuDung?: string, ghiChu?: string, fileAvatarUrls?: FileMetadataEntity[]) {
     this.contractDate = contractDate;
-    this.nguoiDaiDien = nguoiDaiDien;
     this.nguoiDaiDien = nguoiDaiDien;
     this.tenKhachHang = tenKhachHang;
     this.namSinhKhachHang = namSinhKhachHang;
@@ -95,5 +97,6 @@ export class CreditContract {
     this.gtkh = gtkh;
     this.nguonGocSuDung = nguonGocSuDung;
     this.ghiChu = ghiChu;
+    this.fileAvatarUrls = fileAvatarUrls;
   }
 }

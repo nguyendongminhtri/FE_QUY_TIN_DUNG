@@ -84,6 +84,10 @@ import { PageStorySuccessComponent } from './content/storySuccess/page-story-suc
 import { ProfileComponent } from './form_login/profile/profile.component';
 import { CreateCreditContractComponent } from './content/credit-contract/create-credit-contract/create-credit-contract.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import {SafeUrlPipe} from "./pipe/SafeUrlPipe";
+import { UploadMultipleAvatarComponent } from './upload/upload-multiple-avatar/upload-multiple-avatar.component';
+import { ListCreditContractComponent } from './content/credit-contract/list-credit-contract/list-credit-contract.component';
+import { DetailCreaditContractComponent } from './content/credit-contract/detail-creadit-contract/detail-creadit-contract.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -135,6 +139,10 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
     PageStorySuccessComponent,
     ProfileComponent,
     CreateCreditContractComponent,
+    SafeUrlPipe,
+    UploadMultipleAvatarComponent,
+    ListCreditContractComponent,
+    DetailCreaditContractComponent,
   ],
   imports: [
     QuillModule.forRoot(),

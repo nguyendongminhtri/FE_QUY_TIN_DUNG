@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from "@angular/forms";
-import { CreditContractService } from "../../../service/credit-contract.service";
-import { CreditContract } from "../../../model/CreditContract";
-import { ConvertMoney } from "../../../config/ConvertMoney";
+import {Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup} from "@angular/forms";
+import {CreditContractService} from "../../../service/credit-contract.service";
+import {CreditContract} from "../../../model/CreditContract";
+import {ConvertMoney} from "../../../config/ConvertMoney";
+import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
+import {UploadMultipleAvatarService} from "../../../service/upload-multiple-avatar.service";
+import {FileMetadataEntity} from "../../../model/FileMetadataEntity";
 
 @Component({
   selector: 'app-create-credit-contract',
@@ -12,7 +15,7 @@ import { ConvertMoney } from "../../../config/ConvertMoney";
 export class CreateCreditContractComponent implements OnInit {
   formGroup = new FormGroup({
     contractDate: new FormControl<Date | null>(new Date()),
-    nguoiDaiDien: new FormControl<string>('PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'),
+    nguoiDaiDien: new FormControl<string>('Bà: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'),
     tenKhachHang: new FormControl<string>(''),
     gtkh: new FormControl<string>(''),
     namSinhKhachHang: new FormControl<string>(''),
@@ -57,13 +60,17 @@ export class CreateCreditContractComponent implements OnInit {
     checkGhiChu: new FormControl<boolean>(false),
     ghiChu: new FormControl<string>(''),
   });
+  fileUrls: string[] = [];
 
   tienChu: string = '';
 
   constructor(
     private creditContractService: CreditContractService,
-    private convertMoney: ConvertMoney
-  ) {}
+    private convertMoney: ConvertMoney,
+    private sanitizer: DomSanitizer,
+    private uploadService: UploadMultipleAvatarService
+  ) {
+  }
 
   onSubmit() {
     const selectedDate = this.formGroup.value.contractDate;
@@ -118,11 +125,14 @@ export class CreateCreditContractComponent implements OnInit {
       ghiChu: this.formGroup.value.checkGhiChu
         ? this.formGroup.value.ghiChu ?? ''
         : '',
+      fileAvatarUrls: this.fileAvatarUrls
     };
 
-    console.log('Dữ liệu gửi về backend:', payload);
-    this.creditContractService.createCreditContract(payload).subscribe(() => {
-      console.log('Hợp đồng đã được tạo');
+    // 👉 Gọi API và nhận danh sách URL
+    this.creditContractService.createCreditContract(payload).subscribe((fileUrls: string[]) => {
+      console.log('Danh sách file:', fileUrls);
+      // Lưu lại để hiển thị preview
+      this.fileUrls = fileUrls;
     });
   }
 
@@ -144,12 +154,12 @@ export class CreateCreditContractComponent implements OnInit {
         const num = Number(String(rawValue).replace(/\./g, ''));
         if (!isNaN(num)) {
           const chu = this.convertMoney.numberToVietnamese(num);
-          this.formGroup.get('dienTichDatChu')?.setValue(chu, { emitEvent: false });
+          this.formGroup.get('dienTichDatChu')?.setValue(chu, {emitEvent: false});
         } else {
-          this.formGroup.get('dienTichDatChu')?.setValue('', { emitEvent: false });
+          this.formGroup.get('dienTichDatChu')?.setValue('', {emitEvent: false});
         }
       } else {
-        this.formGroup.get('dienTichDatChu')?.setValue('', { emitEvent: false });
+        this.formGroup.get('dienTichDatChu')?.setValue('', {emitEvent: false});
       }
     });
     // Nguồn gốc sử dụng
@@ -196,5 +206,101 @@ export class CreateCreditContractComponent implements OnInit {
       this.tienChu = '';
     }
   }
+
+  getGoogleViewerUrl(fileUrl: string): SafeResourceUrl {
+    const googleUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(fileUrl) + '&embedded=true';
+    return this.sanitizer.bypassSecurityTrustResourceUrl(googleUrl);
+  }
+
+
+  // protected readonly url = module
+
+
+  fileAvatarUrls: FileMetadataEntity[] = [];
+
+
+  onFilesSelected(event: any) {
+    const files: File[] = Array.from(event.target.files);
+    this.uploadService.uploadFiles(files).subscribe({
+      next: (res) => {
+        console.log('Upload trả về:', res);
+        this.fileAvatarUrls = res; // lưu danh sách object FileMetadataEntity
+      },
+      error: (err) => console.error('Upload thất bại:', err)
+    });
+  }
+
+  onExport() {
+    const selectedDate = this.formGroup.value.contractDate as Date;
+    if (!selectedDate) {
+      console.error('Ngày chưa được chọn');
+      return;
+    }
+
+    const payload: CreditContract = {
+      contractDate: selectedDate.toISOString().substring(0, 10),
+      nguoiDaiDien: this.formGroup.value.nguoiDaiDien ?? '',
+      tenKhachHang: this.formGroup.value.tenKhachHang ?? '',
+      gtkh: this.formGroup.value.gtkh ?? '',
+      namSinhKhachHang: this.formGroup.value.namSinhKhachHang ?? '',
+      phoneKhachHang: this.formGroup.value.phoneKhachHang ?? '',
+      soTheThanhVienKhachHang: this.formGroup.value.soTheThanhVienKhachHang ?? '',
+      cccdKhachHang: this.formGroup.value.cccdKhachHang ?? '',
+      ngayCapCCCDKhachHang: this.formGroup.value.ngayCapCCCDKhachHang ?? '',
+      diaChiThuongTruKhachHang: this.formGroup.value.diaChiThuongTruKhachHang ?? '',
+      gtnt: this.formGroup.value.gtnt ?? '',
+      tenNguoiThan: this.formGroup.value.tenNguoiThan ?? '',
+      namSinhNguoiThan: this.formGroup.value.namSinhNguoiThan ?? '',
+      cccdNguoiThan: this.formGroup.value.cccdNguoiThan ?? '',
+      ngayCapCCCDNguoiThan: this.formGroup.value.ngayCapCCCDNguoiThan ?? '',
+      diaChiThuongTruNguoiThan: this.formGroup.value.diaChiThuongTruNguoiThan ?? '',
+      quanHe: this.formGroup.value.quanHe ?? '',
+      // thêm số tiền vay nếu cần gửi backend
+      tienSo: this.formGroup.value.tienSo ?? '',
+      tienChu: this.tienChu ?? '',
+      muchDichVay: this.formGroup.value.mucDichVay ?? '',
+      hanMuc: this.formGroup.value.hanMuc ?? '',
+      laiSuat: this.formGroup.value.laiSuat ?? '',
+      soHopDongTheChapQSDD: this.formGroup.value.soHopDongTheChapQSDD ?? '',
+      //Thông bin sổ đỏ
+      serial: this.formGroup.value.serial ?? '',
+      noiCapSo: this.formGroup.value.noiCapSo ?? '',
+      ngayCapSo: this.formGroup.value.ngayCapSo ?? '',
+      noiDungVaoSo: this.formGroup.value.noiDungVaoSo ?? '',
+      soThuaDat: this.formGroup.value.soThuaDat ?? '',
+      soBanDo: this.formGroup.value.soBanDo ?? '',
+      diaChiThuaDat: this.formGroup.value.diaChiThuaDat ?? '',
+      dienTichDatSo: this.formGroup.value.dienTichDatSo ?? '',
+      dienTichDatChu: this.formGroup.value.dienTichDatChu ?? '',
+      hinhThucSuDung: this.formGroup.value.hinhThucSuDung ?? '',
+      muchDichSuDung: this.formGroup.value.muchDichSuDung ?? '',
+      thoiHanSuDung: this.formGroup.value.thoiHanSuDung ?? '',
+      soBienBanDinhGia: this.formGroup.value.soBienBanDinhGia ?? '',
+      noiDungThoaThuan: this.formGroup.value.noiDungThoaThuan ?? '',
+      nguonGocSuDung: this.formGroup.value.checkNguonGocSuDung
+        ? this.formGroup.value.nguonGocSuDung ?? ''
+        : '',
+      ghiChu: this.formGroup.value.checkGhiChu
+        ? this.formGroup.value.ghiChu ?? ''
+        : '',
+      fileAvatarUrls: this.fileAvatarUrls
+    };
+
+    this.creditContractService.exportContract(payload, this.fileAvatarUrls).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'contracts.zip'; // hoặc tên file từ backend
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Export thất bại:', err);
+      }
+    });
+
+  }
+
 
 }
