@@ -2,7 +2,12 @@
   <div class="row">
     <div class="col-12" style="max-width: 1200px;margin: auto;min-width: 500px; text-align: center">
       <mat-card style="background: rgba(255,255,255,0.7)">
-        <h1>Danh sách Tin Tức </h1>
+        <h1>DANH SÁCH HỢP ĐỒNG TÍN DỤNG </h1>
+        <button routerLink="/create-credit-contract" mat-raised-button color="accent"
+                style="width: 20%" class="mat-raised-button">
+          <mat-icon>assignment</mat-icon>
+          Tạo Hợp Đồng Mới
+        </button>
         <div class="mat-elevation-z8">
           <table mat-table [dataSource]="dataSource">
 

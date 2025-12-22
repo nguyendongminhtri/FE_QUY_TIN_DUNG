@@ -57,7 +57,100 @@ mat-form-field {
   align-items: flex-start; /* checkbox nằm trên cùng */
   gap: 8px; /* khoảng cách giữa checkbox và input */
 }
+/* Container hiển thị ảnh */
+.checkbox-input-col {
+  width: 100%;
+  margin-top: 20px;
+}
 
-.checkbox-input-col mat-checkbox {
-  margin-top: 8px; /* căn chỉnh checkbox với label input */
+/* Grid ảnh responsive */
+.image-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* mặc định: 1 ảnh mỗi hàng */
+  gap: 24px;
+}
+
+/* Ảnh hiển thị full chiều ngang, giữ tỷ lệ */
+.image-grid img {
+  width: 100%;
+  height: auto;
+  max-width: 100vw;           /* không vượt quá chiều ngang màn hình */
+  border-radius: 8px;
+  object-fit: contain;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Responsive: chia cột khi màn hình lớn */
+@media (min-width: 768px) {
+  .image-grid {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+.image-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.image-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: auto;
+  max-width: 100vw;
+  border-radius: 8px;
+  object-fit: contain;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+/* Chỉ áp dụng cho phần table-section */
+.table-section {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+/* Tiêu đề bảng */
+.table-section h3 {
+  margin-bottom: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+/* Header 3 cột nằm ngang */
+.table-section .table-row-headers {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+}
+
+.table-section .table-row-headers mat-form-field {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Các dòng dữ liệu */
+.table-section .table-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.table-section .table-row mat-form-field {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Nút xóa nằm cùng hàng */
+.table-section .table-row button {
+  align-self: center;
 }

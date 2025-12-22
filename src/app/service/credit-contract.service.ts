@@ -13,16 +13,13 @@ export class CreditContractService {
   private API_CREDIT_CONTRACT = environment.API + 'credit-contract'
   constructor(private http: HttpClient) { }
   // 👉 Gửi payload và nhận về danh sách URL (string[])
-  createCreditContract(contract: CreditContract): Observable<string[]> {
+  previewContract(contract: CreditContract): Observable<string[]> {
     return this.http.post<string[]>(this.API_CREDIT_CONTRACT, contract);
   }
-  exportContract(request: CreditContract, avatarUrls: FileMetadataEntity[]): Observable<Blob> {
-    const payload = {
-      ...request,
-      fileAvatarUrls: avatarUrls.map(a => a.fileName)
-    };
-    return this.http.post(`${this.API_CREDIT_CONTRACT}/export`, payload, { responseType: 'blob' });
+  exportContract(request: CreditContract): Observable<Blob> {
+    return this.http.post(`${this.API_CREDIT_CONTRACT}/export`, request, { responseType: 'blob' });
   }
+
   // Export hợp đồng đã có (update + lưu DB)
   exportContractUpdate(id: number, request: any): Observable<Blob> {
     return this.http.post(`${this.API_CREDIT_CONTRACT}/export/${id}`, request, { responseType: 'blob' });
@@ -30,5 +27,7 @@ export class CreditContractService {
   getListCreditContract(): Observable<any> {
     return this.http.get<CreditContract>(this.API_CREDIT_CONTRACT);
   }
-
+  getContractById(id: number): Observable<CreditContract> {
+    return this.http.get<CreditContract>(`${this.API_CREDIT_CONTRACT}/${id}`);
+  }
 }

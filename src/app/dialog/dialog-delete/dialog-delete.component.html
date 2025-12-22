@@ -1,12 +1,12 @@
-<h2 mat-dialog-title>Xác nhận</h2>
-<mat-dialog-content>
-  <p [ngStyle]="{ color: data.color || 'black' }">
-    {{ data.message }}
-  </p>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button style="background-color: rgba(113,191,191,0.59)" mat-button (click)="onCancel()">Hủy</button>
-  <button mat-button style="background-color: rgba(60,191,76,0.59)" color="warn" (click)="onConfirm()">Xác Nhận</button>
-</mat-dialog-actions>
+  <h2 mat-dialog-title>Xác nhận</h2>
+  <mat-dialog-content>
+    <p [ngStyle]="{ color: data.color || 'black' }">
+      {{ data.message }}
+    </p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button style="background-color: rgba(113,191,191,0.59)" mat-button (click)="onCancel()">Hủy</button>
+    <button mat-button style="background-color: rgba(60,191,76,0.59)" color="warn" (click)="onConfirm()">Xác Nhận</button>
+  </mat-dialog-actions>
 
 

@@ -81,7 +81,7 @@ const routes: Routes = [
   //credit-contract
   {path: 'create-credit-contract', component: CreateCreditContractComponent},
   {path: 'list-credit-contract', component: ListCreditContractComponent},
-  {path: 'credit-contract-update/:id', component: DetailCreaditContractComponent}
+  {path: 'credit-contract-update/:id', component: CreateCreditContractComponent}
 
 ];
 

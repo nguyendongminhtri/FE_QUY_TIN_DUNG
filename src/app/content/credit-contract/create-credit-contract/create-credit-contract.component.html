@@ -11,6 +11,26 @@
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
+          <div class="form-row-3">
+            <div class="form-col">
+              <mat-checkbox formControlName="checkOption"></mat-checkbox>
+            </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label>Cho vay</mat-label>
+                <input matInput formControlName="choVay" placeholder="Cho vay:">
+              </mat-form-field>
+            </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label>Chọn loại: </mat-label>
+                <mat-select formControlName="loaiVay" >
+                  <mat-option value="NGẮN HẠN (Thỏa thuận)">NGẮN HẠN (Thỏa thuận)</mat-option>
+                  <mat-option value="TRUNG HẠN">TRUNG HẠN</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
           <br>
           <mat-form-field appearance="fill" class="example-full-width">
             <mat-hint style="color: red">TT Người đại diện: Nếu có ủy quyền, hãy nhập nội dung thay thế, không sẽ nhận
@@ -217,7 +237,7 @@
               <mat-form-field appearance="fill">
                 <mat-label>Số vào sổ CNQSDĐ</mat-label>
                 <input matInput formControlName="noiDungVaoSo"
-                          placeholder="1703 QSDĐ/TH-CL">
+                       placeholder="1703 QSDĐ/TH-CL">
               </mat-form-field>
             </div>
 
@@ -255,13 +275,15 @@
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Hình thức sử dụng</mat-label>
-                <input formControlName="hinhThucSuDung" matInput placeholder="+ Sử dụng riêng: 690  m2; + Sử dụng chung: 0 m2">
+                <input formControlName="hinhThucSuDung" matInput
+                       placeholder="+ Sử dụng riêng: 690  m2; + Sử dụng chung: 0 m2">
               </mat-form-field>
             </div>
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Mục đích sử dụng</mat-label>
-                <input formControlName="muchDichSuDung" matInput placeholder="+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2">
+                <input formControlName="muchDichSuDung" matInput
+                       placeholder="+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2">
               </mat-form-field>
             </div>
             <div class="form-col">
@@ -278,7 +300,7 @@
             </div>
             <div class="form-col">
               <mat-form-field appearance="fill">
-                <mat-label>Nội dung thỏa thuận </mat-label>
+                <mat-label>Nội dung thỏa thuận</mat-label>
                 <input formControlName="noiDungThoaThuan" matInput>
               </mat-form-field>
             </div>
@@ -304,6 +326,50 @@
               </mat-form-field>
             </div>
           </div>
+          <mat-checkbox formControlName="hasTable">Có bảng dữ liệu</mat-checkbox>
+          <div *ngIf="formGroup.get('hasTable')?.value" class="table-section">
+            <h3>Tiêu đề bảng</h3>
+            <div class="table-row-headers" formArrayName="tableHeaders">
+              <mat-form-field *ngFor="let headerCtrl of tableHeaders.controls; let i = index">
+                <mat-label>Cột {{ i + 1 }}</mat-label>
+                <input matInput [formControlName]="i">
+              </mat-form-field>
+            </div>
+
+            <h3>Dữ liệu các dòng</h3>
+            <div formArrayName="tableRows">
+              <div *ngFor="let rowGroup of tableRows.controls; let i = index" [formGroupName]="i" class="table-row">
+                <mat-form-field><input matInput formControlName="col1" placeholder="Cột 1"></mat-form-field>
+                <mat-form-field><input matInput formControlName="col2" placeholder="Cột 2"></mat-form-field>
+                <mat-form-field><input matInput formControlName="col3" placeholder="Cột 3"></mat-form-field>
+                <button mat-icon-button color="warn" (click)="removeRow(i)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <!-- Preview table -->
+            <table *ngIf="tableData" class="table table-bordered">
+              <thead>
+              <tr>
+                <th *ngFor="let header of tableData?.headers">{{ header }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let row of tableData.rows">
+                <td *ngFor="let cell of row">{{ cell }}</td>
+              </tr>
+              </tbody>
+            </table>
+
+            <button type="button" mat-raised-button style="background: #24af05; color: red" (click)="addRow()">
+              <mat-icon>post_add</mat-icon> Thêm dòng Cho Bảng
+            </button>
+          </div>
+
+
+          <br>
+
           <!--          <button mat-raised-button color="primary" type="submit">Tạo hợp đồng</button>-->
           <button mat-raised-button color="primary" type="submit">Xem trước File</button>
         </form>
@@ -311,22 +377,24 @@
 
 
         <div *ngFor="let url of fileUrls; let i = index">
-          <h3>File {{i+1}}</h3>
+          <h3>File {{ i + 1 }}</h3>
           <iframe [src]="getGoogleViewerUrl(url)" width="100%" height="600px"></iframe>
         </div>
         <!-- Nhúng component upload nhiều file -->
+        <h2 style="text-align: left">Upload File Hình Ảnh Bìa Đỏ (Nhiều Ảnh)</h2>
         <div class="form-col checkbox-input-col">
-          <h2>Upload File Hình Ảnh Bìa Đỏ (Nhiều Ảnh)</h2>
-          <input type="file" multiple (change)="onFilesSelected($event)" />
+          <input type="file" multiple (change)="onFilesSelected($event)"/>
           <div *ngIf="fileAvatarUrls.length > 0" style="margin-top: 10px">
             <div *ngFor="let url of fileAvatarUrls; let i = index">
-              <h3>Ảnh {{i+1}}</h3>
-              <img [src]="url.fileUrl" style="width: 200px; height: 200px; border-radius: 8px; margin: 5px;">
+              <h3>Ảnh {{ i + 1 }}</h3>
+              <img [src]="url.filePath" style="width: auto; height: 100%; border-radius: 8px; margin: 5px;">
             </div>
           </div>
         </div>
-        <button mat-raised-button color="accent" (click)="onExport()">Export Hợp Đồng</button>
-
+        <div>
+          <button mat-raised-button color="accent" (click)="openExportDialog()">Export Hợp Đồng</button>
+          <button routerLink="/list-credit-contract" mat-raised-button color="primary" >Quay về trang quản lý</button>
+        </div>
       </mat-card>
     </div>
   </div>

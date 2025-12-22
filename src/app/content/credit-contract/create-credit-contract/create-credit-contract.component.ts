@@ -1,11 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CreditContractService} from "../../../service/credit-contract.service";
 import {CreditContract} from "../../../model/CreditContract";
 import {ConvertMoney} from "../../../config/ConvertMoney";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {UploadMultipleAvatarService} from "../../../service/upload-multiple-avatar.service";
 import {FileMetadataEntity} from "../../../model/FileMetadataEntity";
+import {ActivatedRoute} from "@angular/router";
+import {TableRequest} from "../../../model/TableRequest";
+import {MatDialog} from "@angular/material/dialog";
+import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
 
 @Component({
   selector: 'app-create-credit-contract',
@@ -13,132 +17,135 @@ import {FileMetadataEntity} from "../../../model/FileMetadataEntity";
   styleUrls: ['./create-credit-contract.component.css']
 })
 export class CreateCreditContractComponent implements OnInit {
-  formGroup = new FormGroup({
-    contractDate: new FormControl<Date | null>(new Date()),
-    nguoiDaiDien: new FormControl<string>('Bà: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'),
-    tenKhachHang: new FormControl<string>(''),
-    gtkh: new FormControl<string>(''),
-    namSinhKhachHang: new FormControl<string>(''),
-    phoneKhachHang: new FormControl<string>(''),
-    soTheThanhVienKhachHang: new FormControl<string>(''),
-    cccdKhachHang: new FormControl<string>(''),
-    ngayCapCCCDKhachHang: new FormControl<string>(''),
-    diaChiThuongTruKhachHang: new FormControl<string>('phường Chu Văn An, thành phố Hải Phòng'),
-    // Người Thân
-    tenNguoiThan: new FormControl<string>(''),
-    gtnt: new FormControl<string>(''),
-    namSinhNguoiThan: new FormControl<string>(''),
-    cccdNguoiThan: new FormControl<string>(''),
-    ngayCapCCCDNguoiThan: new FormControl<string>(''),
-    diaChiThuongTruNguoiThan: new FormControl<string>('phường Chu Văn An, thành phố Hải Phòng'),
-    quanHe: new FormControl<string>('Là vợ'),
-    // Thêm ô nhập số tiền
-    tienSo: new FormControl<string>(''),
-    tienChu: new FormControl<string>(''),
-    mucDichVay: new FormControl<string>(''),
-    hanMuc: new FormControl<string>(''),
-    laiSuat: new FormControl<string>('7,5%/năm'),
-    soHopDongTheChapQSDD: new FormControl<string>('123/2025/HĐQSDĐ'),
-    //Thông tin Bìa Đỏ
-    serial: new FormControl<string>(''),
-    noiCapSo: new FormControl<string>(''),
-    ngayCapSo: new FormControl<string>(''),
-    noiDungVaoSo: new FormControl<string>('1703 QSDĐ/TH-CL'),
-    soThuaDat: new FormControl<string>(''),
-    soBanDo: new FormControl<string>(''),
-    diaChiThuaDat: new FormControl<string>('...,huyện Chí Linh, tỉnh Hải Dương nay là Phường Chu Văn An, thành phố Hải Phòng'),
-    dienTichDatSo: new FormControl<string>(''),
-    dienTichDatChu: new FormControl(''),
-    hinhThucSuDung: new FormControl('+ Sử dụng riêng: 690  m2; + Sử dụng chung: 0 m2'),
-    muchDichSuDung: new FormControl('+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2'),
-    thoiHanSuDung: new FormControl('Lâu dài'),
-    soBienBanDinhGia: new FormControl('01/077'),
-    noiDungThoaThuan: new FormControl('là một mảnh đất ở hợp pháp lâu dài với diện tích'),
-    checkNguonGocSuDung: new FormControl<boolean>(false),
-    nguonGocSuDung: new FormControl<string>('Nguồn gốc sử dụng: Nhà nước giao đất có thu tiền sử dụng đất.Nhận chuyển nhượng QSD đất của ông Nguyễn Đình Chiến và bà Nguyễn Thị Xuyến.'),
-    // Checkbox + input cho Ghi chú
-    checkGhiChu: new FormControl<boolean>(false),
-    ghiChu: new FormControl<string>(''),
-  });
+  formGroup!: FormGroup;
   fileUrls: string[] = [];
-
+  fileAvatarUrls: FileMetadataEntity[] = [];
   tienChu: string = '';
-
+  contractId?: number;
+  mode: 'create' | 'update' = 'create';
+  tableData: TableRequest | null = null;
   constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
     private creditContractService: CreditContractService,
+    private uploadService: UploadMultipleAvatarService,
     private convertMoney: ConvertMoney,
     private sanitizer: DomSanitizer,
-    private uploadService: UploadMultipleAvatarService
+    private dialog: MatDialog,
   ) {
   }
 
-  onSubmit() {
-    const selectedDate = this.formGroup.value.contractDate;
-    if (!selectedDate) {
-      console.error('Ngày chưa được chọn');
-      return;
+  ngOnInit(): void {
+    // Lấy id từ route nếu có
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.contractId = Number(idParam);
+      this.mode = 'update';
     }
 
-    const payload: CreditContract = {
-      contractDate: selectedDate.toISOString().substring(0, 10),
-      nguoiDaiDien: this.formGroup.value.nguoiDaiDien ?? '',
-      tenKhachHang: this.formGroup.value.tenKhachHang ?? '',
-      gtkh: this.formGroup.value.gtkh ?? '',
-      namSinhKhachHang: this.formGroup.value.namSinhKhachHang ?? '',
-      phoneKhachHang: this.formGroup.value.phoneKhachHang ?? '',
-      soTheThanhVienKhachHang: this.formGroup.value.soTheThanhVienKhachHang ?? '',
-      cccdKhachHang: this.formGroup.value.cccdKhachHang ?? '',
-      ngayCapCCCDKhachHang: this.formGroup.value.ngayCapCCCDKhachHang ?? '',
-      diaChiThuongTruKhachHang: this.formGroup.value.diaChiThuongTruKhachHang ?? '',
-      gtnt: this.formGroup.value.gtnt ?? '',
-      tenNguoiThan: this.formGroup.value.tenNguoiThan ?? '',
-      namSinhNguoiThan: this.formGroup.value.namSinhNguoiThan ?? '',
-      cccdNguoiThan: this.formGroup.value.cccdNguoiThan ?? '',
-      ngayCapCCCDNguoiThan: this.formGroup.value.ngayCapCCCDNguoiThan ?? '',
-      diaChiThuongTruNguoiThan: this.formGroup.value.diaChiThuongTruNguoiThan ?? '',
-      quanHe: this.formGroup.value.quanHe ?? '',
-      // thêm số tiền vay nếu cần gửi backend
-      tienSo: this.formGroup.value.tienSo ?? '',
-      tienChu: this.tienChu ?? '',
-      muchDichVay: this.formGroup.value.mucDichVay ?? '',
-      hanMuc: this.formGroup.value.hanMuc ?? '',
-      laiSuat: this.formGroup.value.laiSuat ?? '',
-      soHopDongTheChapQSDD: this.formGroup.value.soHopDongTheChapQSDD ?? '',
-      //Thông bin sổ đỏ
-      serial: this.formGroup.value.serial ?? '',
-      noiCapSo: this.formGroup.value.noiCapSo ?? '',
-      ngayCapSo: this.formGroup.value.ngayCapSo ?? '',
-      noiDungVaoSo: this.formGroup.value.noiDungVaoSo ?? '',
-      soThuaDat: this.formGroup.value.soThuaDat ?? '',
-      soBanDo: this.formGroup.value.soBanDo ?? '',
-      diaChiThuaDat: this.formGroup.value.diaChiThuaDat ?? '',
-      dienTichDatSo: this.formGroup.value.dienTichDatSo ?? '',
-      dienTichDatChu: this.formGroup.value.dienTichDatChu ?? '',
-      hinhThucSuDung: this.formGroup.value.hinhThucSuDung ?? '',
-      muchDichSuDung: this.formGroup.value.muchDichSuDung ?? '',
-      thoiHanSuDung: this.formGroup.value.thoiHanSuDung ?? '',
-      soBienBanDinhGia: this.formGroup.value.soBienBanDinhGia ?? '',
-      noiDungThoaThuan: this.formGroup.value.noiDungThoaThuan ?? '',
-      nguonGocSuDung: this.formGroup.value.checkNguonGocSuDung
-        ? this.formGroup.value.nguonGocSuDung ?? ''
-        : '',
-      ghiChu: this.formGroup.value.checkGhiChu
-        ? this.formGroup.value.ghiChu ?? ''
-        : '',
-      fileAvatarUrls: this.fileAvatarUrls
-    };
-
-    // 👉 Gọi API và nhận danh sách URL
-    this.creditContractService.createCreditContract(payload).subscribe((fileUrls: string[]) => {
-      console.log('Danh sách file:', fileUrls);
-      // Lưu lại để hiển thị preview
-      this.fileUrls = fileUrls;
+    // Khởi tạo form
+    this.formGroup = this.fb.group({
+      contractDate: [new Date()],
+      nguoiDaiDien: ['Bà: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'],
+      tenKhachHang: [''],
+      gtkh: [''],
+      namSinhKhachHang: [''],
+      phoneKhachHang: [''],
+      soTheThanhVienKhachHang: [''],
+      cccdKhachHang: [''],
+      ngayCapCCCDKhachHang: [''],
+      diaChiThuongTruKhachHang: [', phường Chu Văn An, thành phố Hải Phòng'],
+      gtnt: [''],
+      tenNguoiThan: [''],
+      namSinhNguoiThan: [''],
+      cccdNguoiThan: [''],
+      ngayCapCCCDNguoiThan: [''],
+      diaChiThuongTruNguoiThan: [', phường Chu Văn An, thành phố Hải Phòng'],
+      quanHe: ['Là vợ'],
+      tienSo: [''],
+      mucDichVay: [''],
+      hanMuc: [''],
+      laiSuat: ['7,5%/năm'],
+      soHopDongTheChapQSDD: ['123/2025/HĐQSDĐ'],
+      serial: [''],
+      noiCapSo: [''],
+      ngayCapSo: [''],
+      noiDungVaoSo: ['1703 QSDĐ/TH-CL'],
+      soThuaDat: [''],
+      soBanDo: [''],
+      diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương Nay là Phường Chu Văn An, thành phố Hải Phòng'],
+      dienTichDatSo: [''],
+      dienTichDatChu: [''],
+      hinhThucSuDung: ['+ Sử dụng riêng: 690  m2; + Sử dụng chung: 0 m2'],
+      muchDichSuDung: ['+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2'],
+      thoiHanSuDung: ['Lâu dài'],
+      soBienBanDinhGia: ['01/077 '],
+      noiDungThoaThuan: ['là một mảnh đất ở hợp pháp lâu dài với diện tích '],
+      checkNguonGocSuDung: [false],
+      nguonGocSuDung: [{value: '', disabled: true}],
+      checkGhiChu: [false],
+      ghiChu: [{value:'', disabled: true }],
+      loaiVay: [{value:'', disabled: true}],
+      choVay: [{value:'Cho vay:', disabled: true }],
+      checkOption: [false],
+      hasTable: [false], // checkbox bật/tắt bảng
+      tableHeaders: this.fb.array([
+        this.fb.control('Kỳ trả nợ'), // cột 1
+        this.fb.control('Đến ngày, tháng, năm'), // cột 2
+        this.fb.control('Số tiền phải trả')  // cột 3
+      ]),
+      tableRows: this.fb.array([]) // danh sách các row
     });
-  }
 
-  ngOnInit(): void {
+    // Nếu là update, load dữ liệu cũ
+    if (this.mode === 'update' && this.contractId) {
+      this.creditContractService.getContractById(this.contractId).subscribe(contract => {
+        console.log('contract update:::', contract)
+        this.formGroup.patchValue(contract);
+        this.fileAvatarUrls = contract.avatars ?? [];
+        if (contract.contractDate) {
+          this.formGroup.get('contractDate')?.setValue(new Date(contract.contractDate));
+        }
+        if (contract.tableJson) {
+          this.tableData = JSON.parse(contract.tableJson) as TableRequest;
+
+          // reset headers
+          this.tableHeaders.clear();
+          this.tableData.headers.forEach(h => this.tableHeaders.push(this.fb.control(h)));
+
+          // reset rows
+          this.tableRows.clear();
+          this.tableData.rows.forEach(r => {
+            this.tableRows.push(this.fb.group({
+              col1: [r[0] || ''],
+              col2: [r[1] || ''],
+              col3: [r[2] || '']
+            }));
+          });
+          this.formGroup.patchValue({ hasTable: this.tableData.drawTable });
+        } else {
+          this.tableData = null;
+        }
+        // Nếu contract.loaiVay có dữ liệu thì set lại cho mat-select
+        // Nếu contract.checkOption = true thì checkbox sẽ tick
+        if (contract.checkOption) {
+          this.formGroup.get('loaiVay')?.enable();
+          this.formGroup.get('choVay')?.enable();
+        }
+        if (contract.loaiVay) {
+          this.formGroup.get('loaiVay')?.enable();
+          this.formGroup.get('loaiVay')?.setValue(contract.loaiVay);
+        }
+        if (contract.choVay) {
+          this.formGroup.get('choVay')?.enable();
+          this.formGroup.get('choVay')?.setValue(contract.choVay);
+        }
+      });
+    }
+
+    // Lắng nghe thay đổi số tiền để convert sang chữ
     this.formGroup.get('tienSo')?.valueChanges.subscribe(rawValue => {
-      if (rawValue !== undefined && rawValue !== null && rawValue !== '') {
+      if (rawValue) {
         const num = Number(String(rawValue).replace(/\./g, ''));
         if (!isNaN(num)) {
           this.tienChu = this.convertMoney.numberToVietnameseWordsMoney(num);
@@ -149,8 +156,10 @@ export class CreateCreditContractComponent implements OnInit {
         this.tienChu = '';
       }
     });
+
+    // Lắng nghe diện tích để convert sang chữ
     this.formGroup.get('dienTichDatSo')?.valueChanges.subscribe(rawValue => {
-      if (rawValue !== undefined && rawValue !== null && rawValue !== '') {
+      if (rawValue) {
         const num = Number(String(rawValue).replace(/\./g, ''));
         if (!isNaN(num)) {
           const chu = this.convertMoney.numberToVietnamese(num);
@@ -160,6 +169,15 @@ export class CreateCreditContractComponent implements OnInit {
         }
       } else {
         this.formGroup.get('dienTichDatChu')?.setValue('', {emitEvent: false});
+      }
+    });
+    this.formGroup.get('checkOption')?.valueChanges.subscribe(checked => {
+      if (checked) {
+        this.formGroup.get('loaiVay')?.enable();
+        this.formGroup.get('choVay')?.enable();
+      } else {
+        this.formGroup.get('loaiVay')?.disable();
+        this.formGroup.get('choVay')?.disable();
       }
     });
     // Nguồn gốc sử dụng
@@ -185,12 +203,92 @@ export class CreateCreditContractComponent implements OnInit {
         control?.setValue('');
       }
     });
-
-    // Khởi tạo: disable sẵn 2 ô này
-    this.formGroup.get('nguonGocSuDung')?.disable();
-    this.formGroup.get('ghiChu')?.disable();
   }
 
+  // 👉 Preview file
+  onSubmit(): void {
+    const rawDate: Date = this.formGroup.get('contractDate')?.value;
+    const formattedDate = rawDate ? rawDate.toISOString().split('T')[0] : null;
+    console.log('formattedDate', formattedDate);
+    const headers: string[] = this.tableHeaders.value;
+    const rows: string[][] = this.tableRows.value.map((r: any) => [r.col1, r.col2, r.col3]);
+
+    const tableRequest = {
+      headers,
+      rows,
+      drawTable: this.formGroup.get('hasTable')?.value
+    };
+
+    const payload: CreditContract = {
+      ...this.formGroup.value,
+      contractDate: formattedDate,
+      tienChu: this.tienChu,
+      fileAvatarUrls: this.fileAvatarUrls,
+      tableRequest: tableRequest
+    };
+    this.creditContractService.previewContract(payload).subscribe(urls => {
+      this.fileUrls = urls;
+    });
+  }
+
+  // 👉 Export file (create hoặc update)
+  onExport(): void {
+    const rawDate: Date = this.formGroup.get('contractDate')?.value;
+    const formattedDate = rawDate ? rawDate.toISOString().split('T')[0] : null;
+    console.log('formattedDate', formattedDate);
+    const headers: string[] = this.tableHeaders.value;
+    const rows: string[][] = this.tableRows.value.map((r: any) => [r.col1, r.col2, r.col3]);
+
+    const tableRequest = {
+      headers,
+      rows,
+      drawTable: this.formGroup.get('hasTable')?.value
+    };
+    const payload: CreditContract = {
+      ...this.formGroup.value,
+      contractDate: formattedDate,
+      tienChu: this.tienChu,
+      fileAvatarUrls: this.fileAvatarUrls,
+      tableRequest: tableRequest
+    };
+    console.log('playload -->', payload)
+    if (this.mode === 'update' && this.contractId) {
+      this.creditContractService.exportContractUpdate(this.contractId, payload).subscribe(blob => {
+        this.downloadZip(blob);
+      });
+    } else {
+      this.creditContractService.exportContract(payload).subscribe(blob => {
+        this.downloadZip(blob);
+      });
+    }
+  }
+
+  // 👉 Tải file ZIP
+  private downloadZip(blob: Blob): void {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'contracts.zip';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  // 👉 Upload avatar
+  onFilesSelected(event: any): void {
+    const files: File[] = Array.from(event.target.files);
+    this.uploadService.uploadFiles(files).subscribe({
+      next: (res) => {
+        this.fileAvatarUrls = res;
+      },
+      error: (err) => console.error('Upload thất bại:', err)
+    });
+  }
+
+  // 👉 Hiển thị file preview bằng Google Viewer
+  getGoogleViewerUrl(fileUrl: string): SafeResourceUrl {
+    const googleUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(fileUrl) + '&embedded=true';
+    return this.sanitizer.bypassSecurityTrustResourceUrl(googleUrl);
+  }
 
   convertToWords() {
     const rawValue = this.formGroup.get('tienSo')?.value;
@@ -206,101 +304,38 @@ export class CreateCreditContractComponent implements OnInit {
       this.tienChu = '';
     }
   }
-
-  getGoogleViewerUrl(fileUrl: string): SafeResourceUrl {
-    const googleUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(fileUrl) + '&embedded=true';
-    return this.sanitizer.bypassSecurityTrustResourceUrl(googleUrl);
+  // tiện getter
+  get tableHeaders() {
+    return this.formGroup.get('tableHeaders') as FormArray;
+  }
+  get tableRows() {
+    return this.formGroup.get('tableRows') as FormArray;
   }
 
-
-  // protected readonly url = module
-
-
-  fileAvatarUrls: FileMetadataEntity[] = [];
-
-
-  onFilesSelected(event: any) {
-    const files: File[] = Array.from(event.target.files);
-    this.uploadService.uploadFiles(files).subscribe({
-      next: (res) => {
-        console.log('Upload trả về:', res);
-        this.fileAvatarUrls = res; // lưu danh sách object FileMetadataEntity
-      },
-      error: (err) => console.error('Upload thất bại:', err)
-    });
+  addRow() {
+    this.tableRows.push(this.fb.group({
+      col1: ['Lần 1'],
+      col2: ['11/11/2026'],
+      col3: ['60.000.000, đồng']
+    }));
   }
 
-  onExport() {
-    const selectedDate = this.formGroup.value.contractDate as Date;
-    if (!selectedDate) {
-      console.error('Ngày chưa được chọn');
-      return;
-    }
-
-    const payload: CreditContract = {
-      contractDate: selectedDate.toISOString().substring(0, 10),
-      nguoiDaiDien: this.formGroup.value.nguoiDaiDien ?? '',
-      tenKhachHang: this.formGroup.value.tenKhachHang ?? '',
-      gtkh: this.formGroup.value.gtkh ?? '',
-      namSinhKhachHang: this.formGroup.value.namSinhKhachHang ?? '',
-      phoneKhachHang: this.formGroup.value.phoneKhachHang ?? '',
-      soTheThanhVienKhachHang: this.formGroup.value.soTheThanhVienKhachHang ?? '',
-      cccdKhachHang: this.formGroup.value.cccdKhachHang ?? '',
-      ngayCapCCCDKhachHang: this.formGroup.value.ngayCapCCCDKhachHang ?? '',
-      diaChiThuongTruKhachHang: this.formGroup.value.diaChiThuongTruKhachHang ?? '',
-      gtnt: this.formGroup.value.gtnt ?? '',
-      tenNguoiThan: this.formGroup.value.tenNguoiThan ?? '',
-      namSinhNguoiThan: this.formGroup.value.namSinhNguoiThan ?? '',
-      cccdNguoiThan: this.formGroup.value.cccdNguoiThan ?? '',
-      ngayCapCCCDNguoiThan: this.formGroup.value.ngayCapCCCDNguoiThan ?? '',
-      diaChiThuongTruNguoiThan: this.formGroup.value.diaChiThuongTruNguoiThan ?? '',
-      quanHe: this.formGroup.value.quanHe ?? '',
-      // thêm số tiền vay nếu cần gửi backend
-      tienSo: this.formGroup.value.tienSo ?? '',
-      tienChu: this.tienChu ?? '',
-      muchDichVay: this.formGroup.value.mucDichVay ?? '',
-      hanMuc: this.formGroup.value.hanMuc ?? '',
-      laiSuat: this.formGroup.value.laiSuat ?? '',
-      soHopDongTheChapQSDD: this.formGroup.value.soHopDongTheChapQSDD ?? '',
-      //Thông bin sổ đỏ
-      serial: this.formGroup.value.serial ?? '',
-      noiCapSo: this.formGroup.value.noiCapSo ?? '',
-      ngayCapSo: this.formGroup.value.ngayCapSo ?? '',
-      noiDungVaoSo: this.formGroup.value.noiDungVaoSo ?? '',
-      soThuaDat: this.formGroup.value.soThuaDat ?? '',
-      soBanDo: this.formGroup.value.soBanDo ?? '',
-      diaChiThuaDat: this.formGroup.value.diaChiThuaDat ?? '',
-      dienTichDatSo: this.formGroup.value.dienTichDatSo ?? '',
-      dienTichDatChu: this.formGroup.value.dienTichDatChu ?? '',
-      hinhThucSuDung: this.formGroup.value.hinhThucSuDung ?? '',
-      muchDichSuDung: this.formGroup.value.muchDichSuDung ?? '',
-      thoiHanSuDung: this.formGroup.value.thoiHanSuDung ?? '',
-      soBienBanDinhGia: this.formGroup.value.soBienBanDinhGia ?? '',
-      noiDungThoaThuan: this.formGroup.value.noiDungThoaThuan ?? '',
-      nguonGocSuDung: this.formGroup.value.checkNguonGocSuDung
-        ? this.formGroup.value.nguonGocSuDung ?? ''
-        : '',
-      ghiChu: this.formGroup.value.checkGhiChu
-        ? this.formGroup.value.ghiChu ?? ''
-        : '',
-      fileAvatarUrls: this.fileAvatarUrls
-    };
-
-    this.creditContractService.exportContract(payload, this.fileAvatarUrls).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'contracts.zip'; // hoặc tên file từ backend
-        a.click();
-        window.URL.revokeObjectURL(url);
-      },
-      error: (err) => {
-        console.error('Export thất bại:', err);
+  removeRow(i: number) {
+    this.tableRows.removeAt(i);
+  }
+  openExportDialog(): void {
+    const dialogRef = this.dialog.open(DialogDeleteComponent, {
+      width: '400px',
+      data: {
+        message: 'Bạn có chắc chắn muốn Export hợp đồng này?',
+        color: 'red'
       }
     });
 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.onExport(); // chỉ export khi người dùng xác nhận
+      }
+    });
   }
-
-
 }

@@ -1,4 +1,5 @@
 import {FileMetadataEntity} from "./FileMetadataEntity";
+import {TableRequest} from "./TableRequest";
 
 export class CreditContract {
   id?: number;
@@ -42,9 +43,13 @@ export class CreditContract {
   soBienBanDinhGia?: string;
   noiDungThoaThuan?: string;
   nguonGocSuDung?: string;
-  ghiChu?: string
+  ghiChu?: string;
+  choVay?: string;
+  loaiVay?: string;
   fileAvatarUrls?: FileMetadataEntity[] = [];
-
+  avatars?: FileMetadataEntity[] = [];
+  tableJson?: string
+  checkOption?: boolean;
   constructor(contractDate: string, nguoiDaiDien?: string, tenKhachHang?: string,
               namSinhKhachHang?: string, sdtKhachHang?: string, sttvKhachHang?: string,
               cccdKhachHang?: string, ngayCapCCCDKhachHang?: string,
@@ -57,7 +62,8 @@ export class CreditContract {
               soThuaDat?: string, soBanDo?: string, diaChiThuaDat?: string, dienTichDatSo?: string,
               dienTichDatChu?: string, hinhThucSuDung?: string, muchDichSuDung?: string,
               thoiHanSuDung?: string, soBienBanDinhGia?: string, noiDungThoaThuan?: string,
-              gtkh?: string, gtnt?: string, nguonGocSuDung?: string, ghiChu?: string, fileAvatarUrls?: FileMetadataEntity[]) {
+              gtkh?: string, gtnt?: string, nguonGocSuDung?: string, ghiChu?: string, fileAvatarUrls?: FileMetadataEntity[],
+              choVay?: string, loaiVay?: string, checkOption?: boolean) {
     this.contractDate = contractDate;
     this.nguoiDaiDien = nguoiDaiDien;
     this.tenKhachHang = tenKhachHang;
@@ -98,5 +104,8 @@ export class CreditContract {
     this.nguonGocSuDung = nguonGocSuDung;
     this.ghiChu = ghiChu;
     this.fileAvatarUrls = fileAvatarUrls;
+    this.choVay =choVay;
+    this.loaiVay = loaiVay;
+    this.checkOption = checkOption;
   }
 }
