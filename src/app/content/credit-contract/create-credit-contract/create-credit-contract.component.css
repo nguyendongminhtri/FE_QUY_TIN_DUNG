@@ -59,8 +59,9 @@ mat-form-field {
 }
 /* Container hiển thị ảnh */
 .checkbox-input-col {
-  width: 100%;
-  margin-top: 20px;
+  width: 250px !important;
+  min-width: 250px !important;
+  /*margin-top: 20px;*/
 }
 
 /* Grid ảnh responsive */

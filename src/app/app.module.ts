@@ -88,6 +88,8 @@ import {SafeUrlPipe} from "./pipe/SafeUrlPipe";
 import { UploadMultipleAvatarComponent } from './upload/upload-multiple-avatar/upload-multiple-avatar.component';
 import { ListCreditContractComponent } from './content/credit-contract/list-credit-contract/list-credit-contract.component';
 import { DetailCreaditContractComponent } from './content/credit-contract/detail-creadit-contract/detail-creadit-contract.component';
+import { CreateShortTermCreditContractComponent } from './content/credit-contract/create-short-term-credit-contract/create-short-term-credit-contract.component';
+import {MatTabsModule} from "@angular/material/tabs";
 @NgModule({
   declarations: [
     AppComponent,
@@ -143,6 +145,7 @@ import { DetailCreaditContractComponent } from './content/credit-contract/detail
     UploadMultipleAvatarComponent,
     ListCreditContractComponent,
     DetailCreaditContractComponent,
+    CreateShortTermCreditContractComponent,
   ],
   imports: [
     QuillModule.forRoot(),
@@ -174,7 +177,8 @@ import { DetailCreaditContractComponent } from './content/credit-contract/detail
     MatExpansionModule,
     CdkDrag,
     MatSlideToggleModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTabsModule
   ],
   exports: [
     QuillContentComponent

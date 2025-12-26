@@ -24,6 +24,9 @@ export class CreateCreditContractComponent implements OnInit {
   contractId?: number;
   mode: 'create' | 'update' = 'create';
   tableData: TableRequest | null = null;
+  tongTaiSanBD: string = '';
+  tongTaiSanBDChu: string = '';
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -46,6 +49,7 @@ export class CreateCreditContractComponent implements OnInit {
     // Khởi tạo form
     this.formGroup = this.fb.group({
       contractDate: [new Date()],
+      soHopDongTD: ['01/25/232/HĐTD'],
       nguoiDaiDien: ['Bà: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'],
       tenKhachHang: [''],
       gtkh: [''],
@@ -54,18 +58,19 @@ export class CreateCreditContractComponent implements OnInit {
       soTheThanhVienKhachHang: [''],
       cccdKhachHang: [''],
       ngayCapCCCDKhachHang: [''],
-      diaChiThuongTruKhachHang: [', phường Chu Văn An, thành phố Hải Phòng'],
+      diaChiThuongTruKhachHang: [''],
       gtnt: [''],
       tenNguoiThan: [''],
       namSinhNguoiThan: [''],
       cccdNguoiThan: [''],
       ngayCapCCCDNguoiThan: [''],
-      diaChiThuongTruNguoiThan: [', phường Chu Văn An, thành phố Hải Phòng'],
+      diaChiThuongTruNguoiThan: [''],
       quanHe: ['Là vợ'],
       tienSo: [''],
       mucDichVay: [''],
       hanMuc: [''],
       laiSuat: ['7,5%/năm'],
+      ngayKetThucKyHanVay: [''],
       soHopDongTheChapQSDD: ['123/2025/HĐQSDĐ'],
       serial: [''],
       noiCapSo: [''],
@@ -76,25 +81,32 @@ export class CreateCreditContractComponent implements OnInit {
       diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương Nay là Phường Chu Văn An, thành phố Hải Phòng'],
       dienTichDatSo: [''],
       dienTichDatChu: [''],
-      hinhThucSuDung: ['+ Sử dụng riêng: 690  m2; + Sử dụng chung: 0 m2'],
-      muchDichSuDung: ['+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2'],
+      hinhThucSuDung: ['+ Sử dụng riêng: 690  m²; + Sử dụng chung: 0 m²'],
+      muchDichSuDung: ['+ Đất ở: 200 m²; + Đất thừa hợp pháp: 490 m²'],
       thoiHanSuDung: ['Lâu dài'],
       soBienBanDinhGia: ['01/077 '],
       noiDungThoaThuan: ['là một mảnh đất ở hợp pháp lâu dài với diện tích '],
       checkNguonGocSuDung: [false],
       nguonGocSuDung: [{value: '', disabled: true}],
       checkGhiChu: [false],
-      ghiChu: [{value:'', disabled: true }],
-      loaiVay: [{value:'', disabled: true}],
-      choVay: [{value:'Cho vay:', disabled: true }],
-      checkOption: [false],
-      hasTable: [false], // checkbox bật/tắt bảng
+      ghiChu: [{value: '', disabled: true}],
+      // loaiVay: [{value: '', disabled: true}],
+      // choVay: [{value: 'Cho vay:', disabled: true}],
+      // checkOption: [false],
+      checkNhaCoDinh: [false],
+      nhaCoDinh: [{value: '+ Nhà ở cố định:    m²;  loại nhà:      ; Không được định giá', disabled: true}],
+      checkNguoiDungTenBiaDo2: [false],
+      dungTenBiaDo2: [{value: 'Và: ', disabled: true}],
+      landItems: ['+ Đất ở: 120m²; được định giá là: 1.200.000.000 đồng\n' +
+      '+ Đất LNK: 300m²; được định giá là: 2.500.000.000 đồng\n' +
+      '+ Đất ao: 300m²; được định giá là: 2.500.000.000 đồng'],
+      hasTable: [false],
       tableHeaders: this.fb.array([
         this.fb.control('Kỳ trả nợ'), // cột 1
         this.fb.control('Đến ngày, tháng, năm'), // cột 2
         this.fb.control('Số tiền phải trả')  // cột 3
       ]),
-      tableRows: this.fb.array([]) // danh sách các row
+      tableRows: this.fb.array([])
     });
 
     // Nếu là update, load dữ liệu cũ
@@ -122,23 +134,33 @@ export class CreateCreditContractComponent implements OnInit {
               col3: [r[2] || '']
             }));
           });
-          this.formGroup.patchValue({ hasTable: this.tableData.drawTable });
+          this.formGroup.patchValue({hasTable: this.tableData.drawTable});
         } else {
           this.tableData = null;
         }
-        // Nếu contract.loaiVay có dữ liệu thì set lại cho mat-select
-        // Nếu contract.checkOption = true thì checkbox sẽ tick
-        if (contract.checkOption) {
-          this.formGroup.get('loaiVay')?.enable();
-          this.formGroup.get('choVay')?.enable();
+        // if (contract.checkOption) {
+        //   this.formGroup.get('loaiVay')?.enable();
+        //   this.formGroup.get('choVay')?.enable();
+        // }
+        if (contract.checkNguoiDungTenBiaDo2) {
+          this.formGroup.get('dungTenBiaDo2')?.enable();
+          this.formGroup.get('dungTenBiaDo2')?.setValue(contract.dungTenBiaDo2);
         }
-        if (contract.loaiVay) {
-          this.formGroup.get('loaiVay')?.enable();
-          this.formGroup.get('loaiVay')?.setValue(contract.loaiVay);
+        if (contract.checkGhiChu) {
+          this.formGroup.get('ghiChu')?.enable();
+          this.formGroup.get('ghiChu')?.setValue(contract.ghiChu);
         }
-        if (contract.choVay) {
-          this.formGroup.get('choVay')?.enable();
-          this.formGroup.get('choVay')?.setValue(contract.choVay);
+        // if (contract.loaiVay) {
+        //   this.formGroup.get('loaiVay')?.enable();
+        //   this.formGroup.get('loaiVay')?.setValue(contract.loaiVay);
+        // }
+        // if (contract.choVay) {
+        //   this.formGroup.get('choVay')?.enable();
+        //   this.formGroup.get('choVay')?.setValue(contract.choVay);
+        // }
+        if (contract.checkNhaCoDinh) {
+          this.formGroup.get('nhaCoDinh')?.enable();
+          this.formGroup.get('nhaCoDinh')?.setValue(contract.nhaCoDinh);
         }
       });
     }
@@ -156,7 +178,9 @@ export class CreateCreditContractComponent implements OnInit {
         this.tienChu = '';
       }
     });
-
+    this.formGroup.get('landItems')?.valueChanges.subscribe(() => {
+      this.calculateTongTaiSanBD();
+    });
     // Lắng nghe diện tích để convert sang chữ
     this.formGroup.get('dienTichDatSo')?.valueChanges.subscribe(rawValue => {
       if (rawValue) {
@@ -171,13 +195,27 @@ export class CreateCreditContractComponent implements OnInit {
         this.formGroup.get('dienTichDatChu')?.setValue('', {emitEvent: false});
       }
     });
-    this.formGroup.get('checkOption')?.valueChanges.subscribe(checked => {
+    // this.formGroup.get('checkOption')?.valueChanges.subscribe(checked => {
+    //   if (checked) {
+    //     this.formGroup.get('loaiVay')?.enable();
+    //     this.formGroup.get('choVay')?.enable();
+    //   } else {
+    //     this.formGroup.get('loaiVay')?.disable();
+    //     this.formGroup.get('choVay')?.disable();
+    //   }
+    // });
+    this.formGroup.get('checkNhaCoDinh')?.valueChanges.subscribe(checked => {
       if (checked) {
-        this.formGroup.get('loaiVay')?.enable();
-        this.formGroup.get('choVay')?.enable();
+        this.formGroup.get('nhaCoDinh')?.enable();
       } else {
-        this.formGroup.get('loaiVay')?.disable();
-        this.formGroup.get('choVay')?.disable();
+        this.formGroup.get('nhaCoDinh')?.disable();
+      }
+    });
+    this.formGroup.get('checkNguoiDungTenBiaDo2')?.valueChanges.subscribe(checked => {
+      if (checked) {
+        this.formGroup.get('dungTenBiaDo2')?.enable();
+      } else {
+        this.formGroup.get('dungTenBiaDo2')?.disable();
       }
     });
     // Nguồn gốc sử dụng
@@ -304,10 +342,12 @@ export class CreateCreditContractComponent implements OnInit {
       this.tienChu = '';
     }
   }
+
   // tiện getter
   get tableHeaders() {
     return this.formGroup.get('tableHeaders') as FormArray;
   }
+
   get tableRows() {
     return this.formGroup.get('tableRows') as FormArray;
   }
@@ -323,6 +363,7 @@ export class CreateCreditContractComponent implements OnInit {
   removeRow(i: number) {
     this.tableRows.removeAt(i);
   }
+
   openExportDialog(): void {
     const dialogRef = this.dialog.open(DialogDeleteComponent, {
       width: '400px',
@@ -338,4 +379,27 @@ export class CreateCreditContractComponent implements OnInit {
       }
     });
   }
+
+  calculateTongTaiSanBD() {
+    const landItems = this.formGroup.get('landItems')?.value;
+    if (!landItems) return;
+
+    const regex = /định giá là:\s*([\d\.]+)\s*đồng/g;
+    let total = 0;
+
+    const matches = landItems.matchAll(regex);
+    for (const match of matches) {
+      const value = Number(match[1].replace(/\./g, ''));
+      if (!isNaN(value)) {
+        total += value;
+      }
+    }
+
+    // Format số có dấu chấm phân cách
+    this.tongTaiSanBD = new Intl.NumberFormat('vi-VN').format(total);
+
+    // Chuyển sang chữ
+    this.tongTaiSanBDChu = this.convertMoney.numberToVietnameseWordsMoney(total);
+  }
+
 }

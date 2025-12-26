@@ -13,7 +13,7 @@ import {Router} from "@angular/router";
 })
 export class ListCreditContractComponent implements OnInit{
   listCreditContract: CreditContract[] = [];
-  displayedColumns: string[] = ['id', 'tenKhachHang', 'cccdKhachHang','namSinhKhachHang', 'phoneKhachHang', 'soTheThanhVienKhachHang','update'];
+  displayedColumns: string[] = ['id', 'tenKhachHang', 'cccdKhachHang','namSinhKhachHang', 'phoneKhachHang', 'soTheThanhVienKhachHang','loaiVay','update'];
   dataSource: any;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   constructor(private creditContractService: CreditContractService,

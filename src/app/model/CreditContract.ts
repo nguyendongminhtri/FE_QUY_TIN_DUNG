@@ -1,5 +1,5 @@
 import {FileMetadataEntity} from "./FileMetadataEntity";
-import {TableRequest} from "./TableRequest";
+
 
 export class CreditContract {
   id?: number;
@@ -27,6 +27,7 @@ export class CreditContract {
   hanMuc?: string;
   laiSuat?: string;
   soHopDongTheChapQSDD?: string;
+  ngayKetThucKyHanVay?: string;
 
   serial?: string;
   noiCapSo?: string;
@@ -43,13 +44,23 @@ export class CreditContract {
   soBienBanDinhGia?: string;
   noiDungThoaThuan?: string;
   nguonGocSuDung?: string;
+  checkGhiChu?: boolean;
   ghiChu?: string;
-  choVay?: string;
-  loaiVay?: string;
+  // choVay?: string;
+  // loaiVay?: string;
   fileAvatarUrls?: FileMetadataEntity[] = [];
   avatars?: FileMetadataEntity[] = [];
   tableJson?: string
-  checkOption?: boolean;
+  // checkOption?: boolean;
+  soHopDongTD?: string;
+  checkNguoiDungTenBiaDo2?:boolean;
+  dungTenBiaDo1?: string;
+  dungTenBiaDo2?:string;
+  landItems?:string;
+  checkNhaCoDinh?:boolean;
+  nhaCoDinh?:string;
+  tongTaiSanBD?:string;
+  tongTaiSanBDChu?:string;
   constructor(contractDate: string, nguoiDaiDien?: string, tenKhachHang?: string,
               namSinhKhachHang?: string, sdtKhachHang?: string, sttvKhachHang?: string,
               cccdKhachHang?: string, ngayCapCCCDKhachHang?: string,
@@ -63,7 +74,9 @@ export class CreditContract {
               dienTichDatChu?: string, hinhThucSuDung?: string, muchDichSuDung?: string,
               thoiHanSuDung?: string, soBienBanDinhGia?: string, noiDungThoaThuan?: string,
               gtkh?: string, gtnt?: string, nguonGocSuDung?: string, ghiChu?: string, fileAvatarUrls?: FileMetadataEntity[],
-              choVay?: string, loaiVay?: string, checkOption?: boolean) {
+              soHopDongTD?: string, checkGhiChu?: boolean, ngayKetThucKyHanVay?: string,
+              checkNguoiDungTenBiaDo2?:boolean, dungTenBiaDo1?: string, dungTenBiaDo2?: string, landItems?:string,
+              checkNhaCoDinh?:boolean, nhaCoDinh?:string, tongTaiSanBD?:string,tongTaiSanBDChu?:string) {
     this.contractDate = contractDate;
     this.nguoiDaiDien = nguoiDaiDien;
     this.tenKhachHang = tenKhachHang;
@@ -104,8 +117,19 @@ export class CreditContract {
     this.nguonGocSuDung = nguonGocSuDung;
     this.ghiChu = ghiChu;
     this.fileAvatarUrls = fileAvatarUrls;
-    this.choVay =choVay;
-    this.loaiVay = loaiVay;
-    this.checkOption = checkOption;
+    // this.choVay =choVay;
+    // this.loaiVay = loaiVay;
+    // this.checkOption = checkOption;
+    this.soHopDongTD = soHopDongTD;
+    this.checkGhiChu = checkGhiChu;
+    this.ngayKetThucKyHanVay = ngayKetThucKyHanVay;
+    this.checkNguoiDungTenBiaDo2 = checkNguoiDungTenBiaDo2;
+    this.dungTenBiaDo1 = dungTenBiaDo1;
+    this.dungTenBiaDo2 = dungTenBiaDo2;
+    this.landItems = landItems;
+    this.checkNhaCoDinh= checkNhaCoDinh;
+    this.nhaCoDinh = nhaCoDinh;
+    this.tongTaiSanBD = tongTaiSanBD;
+    this.tongTaiSanBDChu = tongTaiSanBDChu;
   }
 }
