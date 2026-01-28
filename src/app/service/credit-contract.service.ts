@@ -30,4 +30,8 @@ export class CreditContractService {
   getContractById(id: number): Observable<CreditContract> {
     return this.http.get<CreditContract>(`${this.API_CREDIT_CONTRACT}/${id}`);
   }
+  deleteCreditContract(id: number): Observable<any> {
+    console.log('API XOA --> ',this.API_CREDIT_CONTRACT + '/' + id)
+    return this.http.delete(this.API_CREDIT_CONTRACT + '/' + id);
+  }
 }

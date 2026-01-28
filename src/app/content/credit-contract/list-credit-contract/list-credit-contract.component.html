@@ -2,14 +2,17 @@
   <div class="row">
     <div class="col-12" style="max-width: 1200px;margin: auto;min-width: 500px; text-align: center">
       <mat-card style="background: rgba(255,255,255,0.7)">
-        <mat-tab-group backgroundColor="primary" color="accent">
-          <mat-tab label="Tạo Hợp Đồng Trung Hạn">
-            <app-create-credit-contract></app-create-credit-contract>
-          </mat-tab>
-          <mat-tab label="Tạo Hợp Đồng Ngắn Hạn">
-            <app-create-short-term-credit-contract></app-create-short-term-credit-contract>
-          </mat-tab>
-        </mat-tab-group>
+<!--        <mat-tab-group backgroundColor="primary" color="accent">-->
+<!--          <mat-tab label="Tạo Hợp Đồng Trung Hạn">-->
+<!--            <app-create-credit-contract></app-create-credit-contract>-->
+<!--          </mat-tab>-->
+<!--          <mat-tab label="Tạo Hợp Đồng Ngắn Hạn">-->
+<!--            <app-create-short-term-credit-contract></app-create-short-term-credit-contract>-->
+<!--          </mat-tab>-->
+<!--        </mat-tab-group>-->
+        <div style="text-align: left">
+          <button  routerLink="/create-credit-contract" color="accent" mat-raised-button  ><mat-icon>post_add</mat-icon>Tạo Hợp Đồng Mới</button>
+        </div>
         <h1>DANH SÁCH CÁC HỢP ĐỒNG TÍN DỤNG</h1>
         <div class="mat-elevation-z8">
           <table mat-table [dataSource]="dataSource">
@@ -67,14 +70,14 @@
                 </button>
               </td>
             </ng-container>
-<!--            <ng-container matColumnDef="delete">-->
-<!--              <th mat-header-cell *matHeaderCellDef> Xóa Tin Tức</th>-->
-<!--              <td mat-cell *matCellDef="let element">-->
-<!--                <button mat-menu-item class="delete" (click)="deleteNews(element)">-->
-<!--                  <mat-icon color="warn">delete</mat-icon>-->
-<!--                </button>-->
-<!--              </td>-->
-<!--            </ng-container>-->
+            <ng-container matColumnDef="delete">
+              <th mat-header-cell *matHeaderCellDef> Xóa Tin Tức</th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-menu-item class="delete" (click)="deleteCreditContract(element)">
+                  <mat-icon color="warn">delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>

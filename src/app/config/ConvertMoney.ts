@@ -58,10 +58,8 @@ export class ConvertMoney {
 
     return docTien(number);
   }
-  numberToVietnamese(number: number | string): string {
-    number = Number(number);
-    if (isNaN(number)) return '';
 
+  numberToVietnamese(input: number | string): string {
     const ChuSo = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
     const DonVi = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ', 'triệu tỷ', 'tỷ tỷ'];
 
@@ -90,28 +88,67 @@ export class ConvertMoney {
       return result.trim();
     }
 
-    function docSo(number: number): string {
-      if (number === 0) return 'Không';
+    function docPhanNguyen(num: number): string {
+      if (num === 0) return 'không';
       let result = '';
       let i = 0;
-
-      while (number > 0) {
-        let phan = number % 1000;
+      while (num > 0) {
+        const phan = num % 1000;
         if (phan > 0) {
-          let chu = docSo3ChuSo(phan);
+          const chu = docSo3ChuSo(phan);
           result = chu + ' ' + DonVi[i] + ' ' + result;
         }
-        number = Math.floor(number / 1000);
+        num = Math.floor(num / 1000);
         i++;
       }
-
-      result = result.trim();
-      // Viết hoa chữ cái đầu
-      result = result.charAt(0).toUpperCase() + result.slice(1);
-      return result;
+      return result.trim();
     }
 
-    return docSo(number);
+    // ---- Xử lý chuỗi gốc ----
+    let s = String(input).trim();
+
+    const hasDot = s.includes('.');
+    const hasComma = s.includes(',');
+    let decimalSeparator: '.' | ',' | null = null;
+
+    if (hasDot && hasComma) {
+      // Chuẩn Việt Nam: dấu chấm là nghìn, dấu phẩy là thập phân
+      s = s.replace(/\./g, '');
+      decimalSeparator = ',';
+    } else if (hasDot && !hasComma) {
+      decimalSeparator = '.';
+    } else if (!hasDot && hasComma) {
+      decimalSeparator = ',';
+    }
+
+    let nguyenStr = s;
+    let thapPhanStr = '';
+    if (decimalSeparator) {
+      const parts = s.split(decimalSeparator);
+      nguyenStr = parts[0] || '0';
+      thapPhanStr = parts[1] || '';
+    }
+
+    const nguyen = parseInt(nguyenStr || '0', 10);
+    let result = docPhanNguyen(isNaN(nguyen) ? 0 : nguyen);
+    console.log('s:', s);
+    console.log('nguyenStr:', nguyenStr);
+    console.log('thapPhanStr:', thapPhanStr);
+
+    // ---- Đọc phần thập phân ----
+    if (thapPhanStr && /^\d+$/.test(thapPhanStr)) {
+      result += ' phẩy';
+      for (const d of thapPhanStr) {
+        result += ' ' + ChuSo[parseInt(d, 10)];
+      }
+    }
+
+    // ---- Viết hoa chữ cái đầu ----
+    return result ? result.charAt(0).toUpperCase() + result.slice(1) : '';
   }
+
+
+
+
 
 }

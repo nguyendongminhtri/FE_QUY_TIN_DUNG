@@ -2,7 +2,6 @@
   <div class="row">
     <div class="col-12" style="max-width: 1200px; margin: auto;  text-align: center">
       <mat-card>
-        <h1>Tạo Hợp Đồng: TRUNG HẠN</h1>
         <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
           <div class="form-row">
             <div class="form-col">
@@ -20,35 +19,42 @@
                 <input matInput formControlName="soHopDongTD" placeholder="01/25/232/HĐTD">
               </mat-form-field>
             </div>
-            <!--            <div class="form-col">-->
-            <!--              <mat-checkbox formControlName="checkOption"></mat-checkbox>-->
-            <!--            </div>-->
-            <!--            <div class="form-col">-->
-            <!--              <mat-form-field appearance="fill">-->
-            <!--                <mat-label>Cho vay</mat-label>-->
-            <!--                <input matInput formControlName="choVay" placeholder="Cho vay:">-->
-            <!--              </mat-form-field>-->
-            <!--            </div>-->
-            <!--            <div class="form-col">-->
-            <!--              <mat-form-field appearance="fill">-->
-            <!--                <mat-label>Chọn loại:</mat-label>-->
-            <!--                <mat-select formControlName="loaiVay">-->
-            <!--                  <mat-option value="NGẮN HẠN (Thỏa thuận)">NGẮN HẠN (Thỏa thuận)</mat-option>-->
-            <!--                  <mat-option value="TRUNG HẠN">TRUNG HẠN</mat-option>-->
-            <!--                </mat-select>-->
-            <!--              </mat-form-field>-->
-            <!--            </div>-->
+            <div class="form-col checkbox-input-col">
+              <mat-checkbox formControlName="checkOption"></mat-checkbox>
+              <mat-form-field appearance="fill">
+                <mat-label>Cho vay</mat-label>
+                <input matInput formControlName="choVay" placeholder="Cho vay:">
+              </mat-form-field>
+            </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label>Chọn loại:</mat-label>
+                <mat-select formControlName="loaiVay">
+                  <mat-option value="NGẮN HẠN">NGẮN HẠN</mat-option>
+                  <mat-option value="TRUNG HẠN">TRUNG HẠN</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label>Chọn Người đại diện: </mat-label>
+                <mat-select formControlName="nguoiDaiDien">
+                  <mat-option value="gd">PHÙNG THỊ LOAN</mat-option>
+                  <mat-option value="pgd">VŨ THANH HẢI</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
           </div>
-          <div class="form-col">
-            <mat-form-field appearance="fill" class="example-full-width">
-              <mat-hint style="color: red">TT Người đại diện: Nếu có ủy quyền, hãy nhập nội dung thay thế, không sẽ nhận
-                dữ liệu mặc định
-              </mat-hint>
-              <mat-label>Thông tin người đại diện: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành</mat-label>
-              <textarea matInput formControlName="nguoiDaiDien" rows="3"
-                        placeholder="PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành"></textarea>
-            </mat-form-field>
-          </div>
+<!--          <div class="form-col">-->
+<!--            <mat-form-field appearance="fill" class="example-full-width">-->
+<!--              <mat-hint style="color: red">TT Người đại diện: Nếu có ủy quyền, hãy nhập nội dung thay thế, không sẽ nhận-->
+<!--                dữ liệu mặc định-->
+<!--              </mat-hint>-->
+<!--              <mat-label>Thông tin người đại diện: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành</mat-label>-->
+<!--              <textarea matInput formControlName="nguoiDaiDien" rows="3"-->
+<!--                        placeholder="PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành"></textarea>-->
+<!--            </mat-form-field>-->
+<!--          </div>-->
           <br>
           <br>
           <div class="section-row">
@@ -75,8 +81,8 @@
                 </div>
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
-                    <mat-label>Năm Sinh</mat-label>
-                    <input matInput formControlName="namSinhKhachHang" placeholder="1984">
+                    <mat-label>Ngày Sinh</mat-label>
+                    <input matInput formControlName="namSinhKhachHang" placeholder="01/08/1984">
                   </mat-form-field>
                 </div>
                 <div class="form-col-3">
@@ -105,9 +111,18 @@
                 </div>
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
+                    <mat-label>Nơi cấp khách hàng: </mat-label>
+                    <mat-select formControlName="noiCapCCCDKhachHang">
+                      <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
+                      <mat-option value="Bộ công an">Bộ công an</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
                     <mat-label>Địa Chỉ Thường Trú</mat-label>
-                    <input matInput formControlName="diaChiThuongTruKhachHang"
-                           placeholder="TDP Lạc Sơn">
+                    <textarea matInput formControlName="diaChiThuongTruKhachHang"
+                              placeholder="TDP Lạc Sơn"></textarea>
                   </mat-form-field>
                 </div>
               </div>
@@ -127,17 +142,17 @@
                   <mat-form-field>
                     <mat-label>Giới tính</mat-label>
                     <mat-select formControlName="gtnt">
-                      <mat-option value="ông">ông
+                      <mat-option value="Và ông">Ông
                       </mat-option>
-                      <mat-option value="bà">bà
+                      <mat-option value="Và bà">Bà
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
-                    <mat-label>Năm Sinh</mat-label>
-                    <input matInput formControlName="namSinhNguoiThan" placeholder="1991">
+                    <mat-label>Ngày Sinh</mat-label>
+                    <input matInput formControlName="namSinhNguoiThan" placeholder="01/08/1991">
                   </mat-form-field>
                 </div>
                 <div class="form-col-3">
@@ -154,6 +169,15 @@
                 </div>
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
+                    <mat-label>Nơi cấp người thân: </mat-label>
+                    <mat-select formControlName="noiCapCCCDNguoiThan">
+                      <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
+                      <mat-option value="Bộ công an">Bộ công an</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
                     <mat-label>Quan Hệ với Khách Hàng</mat-label>
                     <input matInput formControlName="quanHe" placeholder="Là vợ">
                   </mat-form-field>
@@ -163,8 +187,8 @@
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
                     <mat-label>Địa Chỉ Thường Trú Người Thân</mat-label>
-                    <input matInput formControlName="diaChiThuongTruNguoiThan"
-                           placeholder="TDP Lạc Sơn">
+                    <textarea matInput formControlName="diaChiThuongTruNguoiThan"
+                              placeholder="TDP Lạc Sơn"></textarea>
                   </mat-form-field>
                 </div>
               </div>
@@ -180,7 +204,6 @@
                 <input matInput formControlName="tienSo" (input)="convertToWords()" placeholder="1.400.000.000">
               </mat-form-field>
             </div>
-
             <!-- Hiển thị số tiền bằng chữ -->
             <div class="form-col">
               <mat-form-field appearance="fill">
@@ -191,7 +214,7 @@
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Mục đích vay</mat-label>
-                <input matInput formControlName="mucDichVay" placeholder="Ví dụ: Mua nhà, kinh doanh...">
+                <input matInput formControlName="muchDichVay" placeholder="Ví dụ: Mua nhà, kinh doanh...">
               </mat-form-field>
             </div>
 
@@ -210,7 +233,7 @@
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Số hợp đồng TC</mat-label>
-                <input matInput formControlName="soHopDongTheChapQSDD" placeholder="123/2025/HĐQSDĐ">
+                <input matInput formControlName="soHopDongTheChapQSDD" placeholder="07/26/006/HĐTC">
               </mat-form-field>
             </div>
             <div class="form-col">
@@ -331,24 +354,26 @@
                 <input formControlName="dienTichDatChu" matInput>
               </mat-form-field>
             </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Hình thức sử dụng</mat-label>
-                <input formControlName="hinhThucSuDung" matInput
-                       placeholder="+ Sử dụng riêng: 690  m2; + Sử dụng chung: 0 m2">
-              </mat-form-field>
-            </div>
-            <div class="form-col">
+            <div class="form-col checkbox-input-col">
+              <mat-checkbox formControlName="checkMucDich"></mat-checkbox>
               <mat-form-field appearance="fill">
                 <mat-label>Mục đích sử dụng</mat-label>
-                <input formControlName="muchDichSuDung" matInput
-                       placeholder="+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2">
+                <textarea formControlName="muchDichSuDung" matInput
+                          placeholder="+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2"></textarea>
+              </mat-form-field>
+            </div>
+            <div class="form-col checkbox-input-col">
+              <mat-checkbox formControlName="checkLoaiDat"></mat-checkbox>
+              <mat-form-field appearance="fill">
+                <mat-label>Loại đất</mat-label>
+                <textarea formControlName="loaiDat" matInput
+                          placeholder="+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2"></textarea>
               </mat-form-field>
             </div>
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Thời hạn sử dụng</mat-label>
-                <input formControlName="thoiHanSuDung" matInput>
+                <textarea formControlName="thoiHanSuDung" matInput></textarea>
               </mat-form-field>
             </div>
             <div class="form-col">
@@ -384,24 +409,155 @@
                           placeholder="Nhập ghi chú nếu cần"></textarea>
               </mat-form-field>
             </div>
-          </div>
-          <h2>Nhập thêm thông tin GIẤY ĐỀ NGHỊ VAY VỐN</h2>
-          <div class="form-row-3">
-            <!-- Nhập số tiền -->
             <div class="form-col">
               <mat-form-field appearance="fill">
-                <mat-label>Người đứng tên bìa đỏ 1</mat-label>
-                <input matInput formControlName="dungTenBiaDo1" placeholder="Người đứng tên bìa đỏ 1">
+                <mat-label>Hình thức sử dụng</mat-label>
+                <textarea formControlName="hinhThucSuDung" matInput
+                          placeholder="+ Sử dụng riêng: 690  m2; + Sử dụng chung: 0 m2"></textarea>
               </mat-form-field>
             </div>
-            <!--            <div class="form-col">-->
-            <!--              <mat-checkbox formControlName="checkNguoiDungTenBiaDo2"></mat-checkbox>-->
-            <!--            </div>-->
-            <div class="form-col checkbox-input-col">
-              <mat-checkbox formControlName="checkNguoiDungTenBiaDo2"></mat-checkbox>
+          </div>
+          <h2>Nhập thêm thông tin GIẤY ĐỀ NGHỊ VAY VỐN</h2>
+          <mat-checkbox formControlName="checkHopDongBaoLanh"><span style="color: red">Tích chọn nếu là hợp đồng bảo lãnh</span></mat-checkbox>
+          <div class="section-row">
+            <div class="section-col">
+              <h2>{{titleNguoiBaoLanh1}}</h2>
+              <div class="form-row-3">
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Người đứng bảo lãnh 1</mat-label>
+                    <input matInput formControlName="dungTenBiaDo1" placeholder="Người đứng tên bìa đỏ 1">
+                  </mat-form-field>
+                </div>
+                <div class="form-col">
+                  <mat-form-field>
+                    <mat-label>Giới tính</mat-label>
+                    <mat-select formControlName="gioiTinhDungTenBiaDo1">
+                      <mat-option value="Ông">Ông
+                      </mat-option>
+                      <mat-option value="Bà">Bà
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Ngày Sinh</mat-label>
+                    <input matInput formControlName="namSinhDungTenBiaDo1" placeholder="01/08/1984">
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Số điện thoại</mat-label>
+                    <input matInput formControlName="phoneDungTenBiaDo1" placeholder="0343304666">
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Số CCCD</mat-label>
+                    <input matInput formControlName="cccdDungTenBiaDo1" placeholder="030084015981">
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Ngày cấp CCCD</mat-label>
+                    <input matInput formControlName="ngayCapCCCDDungTenBiaDo1" placeholder="11/08/2021">
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Nơi cấp cccd bảo lãnh 1: </mat-label>
+                    <mat-select formControlName="noiCapCCCDDungTenBiaDo1">
+                      <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
+                      <mat-option value="Bộ công an">Bộ công an</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Địa Chỉ Thường Trú</mat-label>
+                    <textarea matInput formControlName="diaChiThuongTruDungTenBiaDo1"
+                              placeholder="TDP Lạc Sơn"></textarea>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+            <div class="section-col">
+              <h2>{{titleNguoiBaoLanh2}}</h2>
+              <div class="form-row-3">
+                <div class="form-col checkbox-input-col">
+                  <mat-checkbox formControlName="checkNguoiDungTenBiaDo2"></mat-checkbox>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Người bảo lãnh 2</mat-label>
+                    <input matInput formControlName="dungTenBiaDo2" placeholder="Người đứng tên bìa đỏ 2">
+                  </mat-form-field>
+                </div>
+                <div class="form-col">
+                  <mat-form-field>
+                    <mat-label>Giới tính</mat-label>
+                    <mat-select formControlName="gioiTinhDungTenBiaDo2">
+                      <mat-option value="Và ông">Ông
+                      </mat-option>
+                      <mat-option value="Và bà">Bà
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Ngày Sinh</mat-label>
+                    <input matInput formControlName="namSinhDungTenBiaDo2" placeholder="01/08/1984">
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Số CCCD</mat-label>
+                    <input matInput formControlName="cccdDungTenBiaDo2" placeholder="030084015981">
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Ngày cấp CCCD</mat-label>
+                    <input matInput formControlName="ngayCapCCCDDungTenBiaDo2" placeholder="11/08/2021">
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Nơi cấp cccd bảo lãnh 2: </mat-label>
+                    <mat-select formControlName="noiCapCCCDDungTenBiaDo2">
+                      <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
+                      <mat-option value="Bộ công an">Bộ công an</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-col-3">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Địa Chỉ Thường Trú</mat-label>
+                    <textarea matInput formControlName="diaChiThuongTruDungTenBiaDo2"
+                              placeholder="TDP Lạc Sơn"></textarea>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+            <div class="section-col">
+              <h2>Trường hợp bìa đỏ sang tên nếu có: </h2>
+              <div class="form-row-3">
+                <div class="form-col checkbox-input-col">
+                  <mat-checkbox formControlName="checkNguoiMangTenBiaDo"></mat-checkbox>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Nội dung sang tên</mat-label>
+                    <textarea matInput formControlName="nguoiMangTen" placeholder="mang tên bà Đặng Thị Hà. Ngày 18/11/2025, Chi nhánh Văn phòng đăng ký đất đai Chí Linh xác nhận chuyển nhượng cho ông Nguyễn Đình Nam CC số 030084018290 và bà Nguyễn Thị Thu Huế  CCCD số 031189020545 theo hồ sơ số 002575.CN.007"></textarea>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-col">
               <mat-form-field appearance="fill">
-                <mat-label>Người đứng tên bìa đỏ 2</mat-label>
-                <input matInput formControlName="dungTenBiaDo2" placeholder="Người đứng tên bìa đỏ 2">
+                <mat-label>Thời hạn vay tính theo năm</mat-label>
+                <input matInput formControlName="thoiHanVay" placeholder="3">
               </mat-form-field>
             </div>
             <div class="form-col">
@@ -423,12 +579,12 @@
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Tổng giá trị tài sản bìa đỏ (VNĐ)</mat-label>
-                <input matInput [value]="tongTaiSanBD" readonly></mat-form-field>
+                <input formControlName="tongTaiSanBD" matInput [value]="tongTaiSanBD" readonly></mat-form-field>
             </div> <!-- Hiển thị tổng tài sản bằng chữ -->
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Tổng giá trị tài sản bìa đỏ (Bằng chữ)</mat-label>
-                <input matInput [value]="tongTaiSanBDChu" readonly></mat-form-field>
+                <input formControlName="tongTaiSanBDChu" matInput [value]="tongTaiSanBDChu" readonly></mat-form-field>
             </div>
           </div>
           <br>
@@ -453,8 +609,16 @@
             </div>
           </div>
         </div>
-        <button mat-raised-button color="accent" (click)="openExportDialog()">Export Hợp Đồng</button>
-        <!--          <button routerLink="/list-credit-contract" mat-raised-button color="primary" >Quay về trang quản lý</button>-->
+        <div>
+          <button mat-raised-button color="accent" (click)="openExportDialog()">
+            <mat-icon>download_2</mat-icon>
+            Export Hợp Đồng
+          </button>
+          <button routerLink="/list-credit-contract" mat-raised-button color="primary">
+            <mat-icon>keyboard_return</mat-icon>
+            Quay về trang quản lý
+          </button>
+        </div>
       </mat-card>
     </div>
   </div>

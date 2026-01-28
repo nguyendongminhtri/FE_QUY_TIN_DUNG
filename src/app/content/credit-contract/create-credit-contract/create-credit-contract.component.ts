@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
 import {CreditContractService} from "../../../service/credit-contract.service";
 import {CreditContract} from "../../../model/CreditContract";
 import {ConvertMoney} from "../../../config/ConvertMoney";
@@ -26,7 +26,8 @@ export class CreateCreditContractComponent implements OnInit {
   tableData: TableRequest | null = null;
   tongTaiSanBD: string = '';
   tongTaiSanBDChu: string = '';
-
+  titleNguoiBaoLanh1 = 'Người đứng tên bìa đỏ 1';
+  titleNguoiBaoLanh2 = 'Người đứng tên bìa đỏ 2';
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -50,7 +51,7 @@ export class CreateCreditContractComponent implements OnInit {
     this.formGroup = this.fb.group({
       contractDate: [new Date()],
       soHopDongTD: ['01/25/232/HĐTD'],
-      nguoiDaiDien: ['Bà: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'],
+      nguoiDaiDien: ['PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'],
       tenKhachHang: [''],
       gtkh: [''],
       namSinhKhachHang: [''],
@@ -58,20 +59,22 @@ export class CreateCreditContractComponent implements OnInit {
       soTheThanhVienKhachHang: [''],
       cccdKhachHang: [''],
       ngayCapCCCDKhachHang: [''],
-      diaChiThuongTruKhachHang: [''],
+      diaChiThuongTruKhachHang: [', phường Chu Văn An, thành phố Hải Phòng.'],
       gtnt: [''],
+      tongTaiSanBD: [''],
+      tongTaiSanBDChu: [''],
       tenNguoiThan: [''],
       namSinhNguoiThan: [''],
       cccdNguoiThan: [''],
       ngayCapCCCDNguoiThan: [''],
-      diaChiThuongTruNguoiThan: [''],
+      diaChiThuongTruNguoiThan: [', phường Chu Văn An, thành phố Hải Phòng.'],
       quanHe: ['Là vợ'],
       tienSo: [''],
-      mucDichVay: [''],
+      muchDichVay: [''],
       hanMuc: [''],
       laiSuat: ['7,5%/năm'],
       ngayKetThucKyHanVay: [''],
-      soHopDongTheChapQSDD: ['123/2025/HĐQSDĐ'],
+      soHopDongTheChapQSDD: ['07/26/006/HĐTC'],
       serial: [''],
       noiCapSo: [''],
       ngayCapSo: [''],
@@ -80,23 +83,31 @@ export class CreateCreditContractComponent implements OnInit {
       soBanDo: [''],
       diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương Nay là Phường Chu Văn An, thành phố Hải Phòng'],
       dienTichDatSo: [''],
+      thoiHanVay: [''],
       dienTichDatChu: [''],
       hinhThucSuDung: ['+ Sử dụng riêng: 690  m²; + Sử dụng chung: 0 m²'],
-      muchDichSuDung: ['+ Đất ở: 200 m²; + Đất thừa hợp pháp: 490 m²'],
+      muchDichSuDung: [{value: '- Mục đích sử dụng: + Đất ở tại đô thị: 50m²; + Đất LNK: 55,3m²', disabled: true}],
       thoiHanSuDung: ['Lâu dài'],
-      soBienBanDinhGia: ['01/077 '],
+      soBienBanDinhGia: ['07/006/BBĐG'],
       noiDungThoaThuan: ['là một mảnh đất ở hợp pháp lâu dài với diện tích '],
       checkNguonGocSuDung: [false],
+      noiCapCCCDNguoiThan: [''],
+      noiCapCCCDKhachHang: [''],
+      noiCapCCCDDungTenBiaDo1: [''],
+      noiCapCCCDDungTenBiaDo2: [''],
       nguonGocSuDung: [{value: '', disabled: true}],
       checkGhiChu: [false],
       ghiChu: [{value: '', disabled: true}],
-      // loaiVay: [{value: '', disabled: true}],
-      // choVay: [{value: 'Cho vay:', disabled: true}],
-      // checkOption: [false],
+      loaiVay: [{value: '', disabled: true}],
+      choVay: [{value: 'Cho vay:', disabled: true}],
+      checkOption: [false],
       checkNhaCoDinh: [false],
+      checkMucDich: [false],
+      checkLoaiDat: [false],
+      loaiDat: [{value: '+ Đất ở tại đô thị: 50m²; + Đất trồng cây lâu năm 55,3m²', disabled: true}],
       nhaCoDinh: [{value: '+ Nhà ở cố định:    m²;  loại nhà:      ; Không được định giá', disabled: true}],
       checkNguoiDungTenBiaDo2: [false],
-      dungTenBiaDo2: [{value: 'Và: ', disabled: true}],
+      checkHopDongBaoLanh: [false],
       landItems: ['+ Đất ở: 120m²; được định giá là: 1.200.000.000 đồng\n' +
       '+ Đất LNK: 300m²; được định giá là: 2.500.000.000 đồng\n' +
       '+ Đất ao: 300m²; được định giá là: 2.500.000.000 đồng'],
@@ -106,9 +117,50 @@ export class CreateCreditContractComponent implements OnInit {
         this.fb.control('Đến ngày, tháng, năm'), // cột 2
         this.fb.control('Số tiền phải trả')  // cột 3
       ]),
-      tableRows: this.fb.array([])
+      tableRows: this.fb.array([]),
+      // Người đứng tên bìa đỏ 1
+      dungTenBiaDo1: [''],
+      gioiTinhDungTenBiaDo1: [''],
+      namSinhDungTenBiaDo1: [''],
+      phoneDungTenBiaDo1: [''],
+      cccdDungTenBiaDo1: [''],
+      ngayCapCCCDDungTenBiaDo1: [''],
+      diaChiThuongTruDungTenBiaDo1: [''],
+      // Người đứng tên bìa đỏ 1
+      dungTenBiaDo2: [{value: 'và bà ', disabled: true}],
+      gioiTinhDungTenBiaDo2: [{value: '', disabled: true}],
+      namSinhDungTenBiaDo2: [{value: '', disabled: true}],
+      cccdDungTenBiaDo2: [{value: '', disabled: true}],
+      ngayCapCCCDDungTenBiaDo2: [{value: '', disabled: true}],
+      diaChiThuongTruDungTenBiaDo2: [{value: '', disabled: true}],
+      checkNguoiMangTenBiaDo: [false],
+      nguoiMangTen: [{value: 'mang tên bà Đặng Thị Hà. Ngày 18/11/2025, Chi nhánh Văn phòng đăng ký đất đai Chí Linh xác nhận chuyển nhượng cho ông Nguyễn Đình Nam CC số 030084018290 và bà Nguyễn Thị Thu Huế  CCCD số 031189020545 theo hồ sơ số 002575.CN.007', disabled: true}],
     });
+// Lắng nghe thay đổi form Khách Hàng
+    this.syncField('tenKhachHang', 'dungTenBiaDo1');
+    this.syncField('gtkh', 'gioiTinhDungTenBiaDo1');
+    this.syncField('namSinhKhachHang', 'namSinhDungTenBiaDo1');
+    this.syncField('phoneKhachHang', 'phoneDungTenBiaDo1');
+    this.syncField('cccdKhachHang', 'cccdDungTenBiaDo1');
+    this.syncField('ngayCapCCCDKhachHang', 'ngayCapCCCDDungTenBiaDo1');
+    this.syncField('diaChiThuongTruKhachHang', 'diaChiThuongTruDungTenBiaDo1');
+    this.syncField('noiCapCCCDKhachHang', 'noiCapCCCDDungTenBiaDo1');
 
+    this.syncField('tenNguoiThan', 'dungTenBiaDo2');
+    this.syncField('gtnt', 'gioiTinhDungTenBiaDo2');
+    this.syncField('namSinhNguoiThan', 'namSinhDungTenBiaDo2');
+    this.syncField('cccdNguoiThan', 'cccdDungTenBiaDo2');
+    this.syncField('ngayCapCCCDNguoiThan', 'ngayCapCCCDDungTenBiaDo2');
+    this.syncField('diaChiThuongTruNguoiThan', 'diaChiThuongTruDungTenBiaDo2');
+    this.syncField('noiCapCCCDNguoiThan', 'noiCapCCCDDungTenBiaDo2');
+    this.formGroup.get('dienTichDatSo')?.valueChanges.subscribe(value => {
+      if (value) {
+        const formatted = `+ Sử dụng riêng: ${value} m²; + Sử dụng chung: 0 m²`;
+        this.formGroup.get('hinhThucSuDung')?.setValue(formatted);
+      } else {
+        this.formGroup.get('hinhThucSuDung')?.setValue('');
+      }
+    });
     // Nếu là update, load dữ liệu cũ
     if (this.mode === 'update' && this.contractId) {
       this.creditContractService.getContractById(this.contractId).subscribe(contract => {
@@ -138,26 +190,49 @@ export class CreateCreditContractComponent implements OnInit {
         } else {
           this.tableData = null;
         }
-        // if (contract.checkOption) {
-        //   this.formGroup.get('loaiVay')?.enable();
-        //   this.formGroup.get('choVay')?.enable();
-        // }
+        if (contract.checkOption) {
+          this.formGroup.get('loaiVay')?.enable();
+          this.formGroup.get('choVay')?.enable();
+        }
+        if (contract.checkLoaiDat) {
+          this.formGroup.get('loaiDat')?.enable();
+          this.formGroup.get('loaiDat')?.setValue(contract.loaiDat);
+        }
+        if (contract.checkMucDich) {
+          this.formGroup.get('muchDichSuDung')?.enable();
+          this.formGroup.get('muchDichSuDung')?.setValue(contract.muchDichSuDung);
+        }
+
         if (contract.checkNguoiDungTenBiaDo2) {
           this.formGroup.get('dungTenBiaDo2')?.enable();
           this.formGroup.get('dungTenBiaDo2')?.setValue(contract.dungTenBiaDo2);
+          this.formGroup.get('gioiTinhDungTenBiaDo2')?.enable();
+          this.formGroup.get('gioiTinhDungTenBiaDo2')?.setValue(contract.gioiTinhDungTenBiaDo2);
+          this.formGroup.get('namSinhDungTenBiaDo2')?.enable();
+          this.formGroup.get('namSinhDungTenBiaDo2')?.setValue(contract.namSinhDungTenBiaDo2);
+          this.formGroup.get('cccdDungTenBiaDo2')?.enable();
+          this.formGroup.get('cccdDungTenBiaDo2')?.setValue(contract.cccdDungTenBiaDo2);
+          this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.enable();
+          this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.setValue(contract.ngayCapCCCDDungTenBiaDo2);
+          this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.enable();
+          this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.setValue(contract.diaChiThuongTruDungTenBiaDo2);
         }
         if (contract.checkGhiChu) {
           this.formGroup.get('ghiChu')?.enable();
           this.formGroup.get('ghiChu')?.setValue(contract.ghiChu);
         }
-        // if (contract.loaiVay) {
-        //   this.formGroup.get('loaiVay')?.enable();
-        //   this.formGroup.get('loaiVay')?.setValue(contract.loaiVay);
-        // }
-        // if (contract.choVay) {
-        //   this.formGroup.get('choVay')?.enable();
-        //   this.formGroup.get('choVay')?.setValue(contract.choVay);
-        // }
+        if (contract.checkNguoiMangTenBiaDo) {
+          this.formGroup.get('nguoiMangTen')?.enable();
+          this.formGroup.get('nguoiMangTen')?.setValue(contract.nguoiMangTen);
+        }
+        if (contract.loaiVay) {
+          this.formGroup.get('loaiVay')?.enable();
+          this.formGroup.get('loaiVay')?.setValue(contract.loaiVay);
+        }
+        if (contract.choVay) {
+          this.formGroup.get('choVay')?.enable();
+          this.formGroup.get('choVay')?.setValue(contract.choVay);
+        }
         if (contract.checkNhaCoDinh) {
           this.formGroup.get('nhaCoDinh')?.enable();
           this.formGroup.get('nhaCoDinh')?.setValue(contract.nhaCoDinh);
@@ -184,26 +259,52 @@ export class CreateCreditContractComponent implements OnInit {
     // Lắng nghe diện tích để convert sang chữ
     this.formGroup.get('dienTichDatSo')?.valueChanges.subscribe(rawValue => {
       if (rawValue) {
-        const num = Number(String(rawValue).replace(/\./g, ''));
-        if (!isNaN(num)) {
-          const chu = this.convertMoney.numberToVietnamese(num);
-          this.formGroup.get('dienTichDatChu')?.setValue(chu, {emitEvent: false});
-        } else {
-          this.formGroup.get('dienTichDatChu')?.setValue('', {emitEvent: false});
-        }
+        // Giữ nguyên chuỗi, không ép kiểu Number
+        const chu = this.convertMoney.numberToVietnamese(String(rawValue));
+        this.formGroup.get('dienTichDatChu')?.setValue(chu, {emitEvent: false});
       } else {
         this.formGroup.get('dienTichDatChu')?.setValue('', {emitEvent: false});
       }
     });
-    // this.formGroup.get('checkOption')?.valueChanges.subscribe(checked => {
-    //   if (checked) {
-    //     this.formGroup.get('loaiVay')?.enable();
-    //     this.formGroup.get('choVay')?.enable();
-    //   } else {
-    //     this.formGroup.get('loaiVay')?.disable();
-    //     this.formGroup.get('choVay')?.disable();
-    //   }
-    // });
+    this.formGroup.get('checkOption')?.valueChanges.subscribe(checked => {
+      if (checked) {
+        this.formGroup.get('loaiVay')?.enable();
+        this.formGroup.get('choVay')?.enable();
+      } else {
+        this.formGroup.get('loaiVay')?.disable();
+        this.formGroup.get('choVay')?.disable();
+      }
+    });
+    this.formGroup.get('checkHopDongBaoLanh')?.valueChanges.subscribe(checked => {
+      if (checked) {
+        this.titleNguoiBaoLanh1 = 'Người bảo lãnh 1';
+        this.titleNguoiBaoLanh2 = 'Người bảo lãnh 2';
+      } else {
+        this.titleNguoiBaoLanh1 = 'Người đứng tên bìa đỏ 1';
+        this.titleNguoiBaoLanh2 = 'Người đứng tên bìa đỏ 2';
+      }
+    });
+    this.formGroup.get('checkNguoiMangTenBiaDo')?.valueChanges.subscribe(checked => {
+      if (checked) {
+        this.formGroup.get('nguoiMangTen')?.enable();
+      } else {
+        this.formGroup.get('nguoiMangTen')?.disable();
+      }
+    });
+    this.formGroup.get('checkLoaiDat')?.valueChanges.subscribe(checked => {
+      if (checked) {
+        this.formGroup.get('loaiDat')?.enable();
+      } else {
+        this.formGroup.get('loaiDat')?.disable();
+      }
+    });
+    this.formGroup.get('checkMucDich')?.valueChanges.subscribe(checked => {
+      if (checked) {
+        this.formGroup.get('muchDichSuDung')?.enable();
+      } else {
+        this.formGroup.get('muchDichSuDung')?.disable();
+      }
+    });
     this.formGroup.get('checkNhaCoDinh')?.valueChanges.subscribe(checked => {
       if (checked) {
         this.formGroup.get('nhaCoDinh')?.enable();
@@ -214,8 +315,18 @@ export class CreateCreditContractComponent implements OnInit {
     this.formGroup.get('checkNguoiDungTenBiaDo2')?.valueChanges.subscribe(checked => {
       if (checked) {
         this.formGroup.get('dungTenBiaDo2')?.enable();
+        this.formGroup.get('gioiTinhDungTenBiaDo2')?.enable();
+        this.formGroup.get('namSinhDungTenBiaDo2')?.enable();
+        this.formGroup.get('cccdDungTenBiaDo2')?.enable();
+        this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.enable();
+        this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.enable();
       } else {
         this.formGroup.get('dungTenBiaDo2')?.disable();
+        this.formGroup.get('gioiTinhDungTenBiaDo2')?.disable();
+        this.formGroup.get('namSinhDungTenBiaDo2')?.disable();
+        this.formGroup.get('cccdDungTenBiaDo2')?.disable();
+        this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.disable();
+        this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.disable();
       }
     });
     // Nguồn gốc sử dụng
@@ -243,9 +354,24 @@ export class CreateCreditContractComponent implements OnInit {
     });
   }
 
+  syncField(source: string, target: string) {
+    this.formGroup.get(source)?.valueChanges.subscribe(value => {
+      console.log('value -->', value)
+      console.log('target -->', target);
+      const targetCtrl = this.formGroup.get(target); // Nếu người dùng chưa chỉnh sửa (pristine) thì tự động copy liên tục
+      if (targetCtrl?.pristine) {
+        targetCtrl.patchValue(value, {emitEvent: false});
+      }
+    });
+  }
+
   // 👉 Preview file
-  onSubmit(): void {
-    const rawDate: Date = this.formGroup.get('contractDate')?.value;
+  onSubmit()
+    :
+    void {
+    const rawDate
+      :
+      Date = this.formGroup.get('contractDate')?.value;
     const formattedDate = rawDate ? rawDate.toISOString().split('T')[0] : null;
     console.log('formattedDate', formattedDate);
     const headers: string[] = this.tableHeaders.value;
@@ -302,7 +428,7 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
   // 👉 Tải file ZIP
-  private downloadZip(blob: Blob): void {
+  downloadZip(blob: Blob): void {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -395,11 +521,9 @@ export class CreateCreditContractComponent implements OnInit {
       }
     }
 
-    // Format số có dấu chấm phân cách
-    this.tongTaiSanBD = new Intl.NumberFormat('vi-VN').format(total);
-
-    // Chuyển sang chữ
-    this.tongTaiSanBDChu = this.convertMoney.numberToVietnameseWordsMoney(total);
+    const tongTaiSanBD = new Intl.NumberFormat('vi-VN').format(total);
+    const tongTaiSanBDChu = this.convertMoney.numberToVietnameseWordsMoney(total);
+    // ✅ cập nhật trực tiếp vào form controls
+    this.formGroup.patchValue({tongTaiSanBD, tongTaiSanBDChu});
   }
-
 }

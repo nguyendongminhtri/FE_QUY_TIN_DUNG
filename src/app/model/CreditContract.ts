@@ -46,21 +46,45 @@ export class CreditContract {
   nguonGocSuDung?: string;
   checkGhiChu?: boolean;
   ghiChu?: string;
-  // choVay?: string;
-  // loaiVay?: string;
+  choVay?: string;
+  loaiVay?: string;
   fileAvatarUrls?: FileMetadataEntity[] = [];
   avatars?: FileMetadataEntity[] = [];
   tableJson?: string
-  // checkOption?: boolean;
+  checkOption?: boolean;
   soHopDongTD?: string;
   checkNguoiDungTenBiaDo2?:boolean;
+  //Đứng tên bìa đỏ 1
   dungTenBiaDo1?: string;
+  gioiTinhDungTenBiaDo1?: string;
+  namSinhDungTenBiaDo1?: string;
+  phoneDungTenBiaDo1?: string;
+  cccdDungTenBiaDo1?: string;
+  ngayCapCCCDDungTenBiaDo1?: string;
+  diaChiThuongTruDungTenBiaDo1?: string;
+
   dungTenBiaDo2?:string;
+  gioiTinhDungTenBiaDo2?:string;
+  namSinhDungTenBiaDo2?:string;
+  cccdDungTenBiaDo2?:string;
+  ngayCapCCCDDungTenBiaDo2?:string;
+  diaChiThuongTruDungTenBiaDo2?:string;
+
   landItems?:string;
   checkNhaCoDinh?:boolean;
   nhaCoDinh?:string;
   tongTaiSanBD?:string;
   tongTaiSanBDChu?:string;
+  thoiHanVay?: string;
+  checkMucDich?: boolean;
+  checkLoaiDat?: boolean;
+  loaiDat?: string;
+  checkNguoiMangTenBiaDo?: boolean;
+  nguoiMangTen?: string;
+  noiCapCCCDNguoiThan?: string;
+  noiCapCCCDKhachHang?: string;
+  noiCapCCCDDungTenBiaDo1?: string;
+  noiCapCCCDDungTenBiaDo2?: string;
   constructor(contractDate: string, nguoiDaiDien?: string, tenKhachHang?: string,
               namSinhKhachHang?: string, sdtKhachHang?: string, sttvKhachHang?: string,
               cccdKhachHang?: string, ngayCapCCCDKhachHang?: string,
@@ -76,7 +100,8 @@ export class CreditContract {
               gtkh?: string, gtnt?: string, nguonGocSuDung?: string, ghiChu?: string, fileAvatarUrls?: FileMetadataEntity[],
               soHopDongTD?: string, checkGhiChu?: boolean, ngayKetThucKyHanVay?: string,
               checkNguoiDungTenBiaDo2?:boolean, dungTenBiaDo1?: string, dungTenBiaDo2?: string, landItems?:string,
-              checkNhaCoDinh?:boolean, nhaCoDinh?:string, tongTaiSanBD?:string,tongTaiSanBDChu?:string) {
+              checkNhaCoDinh?:boolean, nhaCoDinh?:string, tongTaiSanBD?:string,tongTaiSanBDChu?:string, thoiHanVay?:string,
+            ) {
     this.contractDate = contractDate;
     this.nguoiDaiDien = nguoiDaiDien;
     this.tenKhachHang = tenKhachHang;
@@ -131,5 +156,6 @@ export class CreditContract {
     this.nhaCoDinh = nhaCoDinh;
     this.tongTaiSanBD = tongTaiSanBD;
     this.tongTaiSanBDChu = tongTaiSanBDChu;
+    this.thoiHanVay = thoiHanVay;
   }
 }
