@@ -28,6 +28,7 @@ export class CreateCreditContractComponent implements OnInit {
   tongTaiSanBDChu: string = '';
   titleNguoiBaoLanh1 = 'Người đứng tên bìa đỏ 1';
   titleNguoiBaoLanh2 = 'Người đứng tên bìa đỏ 2';
+  contractUpdate: any;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -38,7 +39,6 @@ export class CreateCreditContractComponent implements OnInit {
     private dialog: MatDialog,
   ) {
   }
-
   ngOnInit(): void {
     // Lấy id từ route nếu có
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -50,6 +50,7 @@ export class CreateCreditContractComponent implements OnInit {
     // Khởi tạo form
     this.formGroup = this.fb.group({
       contractDate: [new Date()],
+      ngayTheChap: [new Date()],
       soHopDongTD: ['01/25/232/HĐTD'],
       nguoiDaiDien: ['PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'],
       tenKhachHang: [''],
@@ -71,6 +72,7 @@ export class CreateCreditContractComponent implements OnInit {
       quanHe: ['Là vợ'],
       tienSo: [''],
       muchDichVay: [''],
+      soBBXetDuyetChoVay: [''],
       hanMuc: [''],
       laiSuat: ['7,5%/năm'],
       ngayKetThucKyHanVay: [''],
@@ -105,7 +107,7 @@ export class CreateCreditContractComponent implements OnInit {
       checkMucDich: [false],
       checkLoaiDat: [false],
       loaiDat: [{value: '+ Đất ở tại đô thị: 50m²; + Đất trồng cây lâu năm 55,3m²', disabled: true}],
-      nhaCoDinh: [{value: '+ Nhà ở cố định:    m²;  loại nhà:      ; Không được định giá', disabled: true}],
+      nhaCoDinh: [{value: '- Nhà ở cố định:    m²;  loại nhà:      ; \nĐược định giá 0 đồng', disabled: true}],
       checkNguoiDungTenBiaDo2: [false],
       checkHopDongBaoLanh: [false],
       landItems: ['+ Đất ở: 120m²; được định giá là: 1.200.000.000 đồng\n' +
@@ -162,13 +164,18 @@ export class CreateCreditContractComponent implements OnInit {
       }
     });
     // Nếu là update, load dữ liệu cũ
+    console.log('mode ===========---> ', this.mode)
     if (this.mode === 'update' && this.contractId) {
       this.creditContractService.getContractById(this.contractId).subscribe(contract => {
         console.log('contract update:::', contract)
+        this.contractUpdate = contract;
         this.formGroup.patchValue(contract);
         this.fileAvatarUrls = contract.avatars ?? [];
         if (contract.contractDate) {
           this.formGroup.get('contractDate')?.setValue(new Date(contract.contractDate));
+        }
+        if (contract.ngayTheChap) {
+          this.formGroup.get('ngayTheChap')?.setValue(new Date(contract.ngayTheChap));
         }
         if (contract.tableJson) {
           this.tableData = JSON.parse(contract.tableJson) as TableRequest;
@@ -236,6 +243,10 @@ export class CreateCreditContractComponent implements OnInit {
         if (contract.checkNhaCoDinh) {
           this.formGroup.get('nhaCoDinh')?.enable();
           this.formGroup.get('nhaCoDinh')?.setValue(contract.nhaCoDinh);
+        }
+        if(contract.checkNguonGocSuDung){
+          this.formGroup.get('nguonGocSuDung')?.enable();
+          this.formGroup.get('nguonGocSuDung')?.setValue(contract.nguonGocSuDung);
         }
       });
     }
@@ -306,10 +317,16 @@ export class CreateCreditContractComponent implements OnInit {
       }
     });
     this.formGroup.get('checkNhaCoDinh')?.valueChanges.subscribe(checked => {
+      const control = this.formGroup.get('nhaCoDinh');
       if (checked) {
-        this.formGroup.get('nhaCoDinh')?.enable();
+        control?.enable();
+        if(this.mode == 'create'){
+          control?.setValue('- Nhà ở cố định:    m²;  loại nhà:      ; \nĐược định giá 0 đồng')
+        }else if(this.mode == 'update'){
+          control?.setValue(this.contractUpdate.nhaCoDinh);
+        }
       } else {
-        this.formGroup.get('nhaCoDinh')?.disable();
+        control?.disable();
       }
     });
     this.formGroup.get('checkNguoiDungTenBiaDo2')?.valueChanges.subscribe(checked => {
@@ -334,7 +351,12 @@ export class CreateCreditContractComponent implements OnInit {
       const control = this.formGroup.get('nguonGocSuDung');
       if (checked) {
         control?.enable();
-        control?.setValue('Nguồn gốc sử dụng: Nhà nước giao đất có thu tiền sử dụng đất.Nhận chuyển nhượng QSD đất của ông Nguyễn Đình Chiến và bà Nguyễn Thị Xuyến.')
+        if(this.mode == 'create'){
+          control?.setValue('Nguồn gốc sử dụng: Nhà nước giao đất có thu tiền sử dụng đất.Nhận chuyển nhượng QSD đất của ông Nguyễn Đình Chiến và bà Nguyễn Thị Xuyến.')
+        } else if(this.mode == 'update') {
+          control?.setValue(this.contractUpdate.nguonGocSuDung)
+        }
+
       } else {
         control?.disable();
         control?.setValue('');
@@ -346,7 +368,12 @@ export class CreateCreditContractComponent implements OnInit {
       const control = this.formGroup.get('ghiChu');
       if (checked) {
         control?.enable();
-        control?.setValue('Ghi chú: Thửa đất số 203, tờ bản đồ số 39 được chỉnh lý từ lô LK3 tờ bản đồ quy hoạch chi tiết điểm dân cư mới Lạc Sơn, phường Thái Học. ')
+        if(this.mode == 'create'){
+          control?.setValue('Ghi chú: Thửa đất số 203, tờ bản đồ số 39 được chỉnh lý từ lô LK3 tờ bản đồ quy hoạch chi tiết điểm dân cư mới Lạc Sơn, phường Thái Học. ')
+        } else if(this.mode == 'update') {
+          control?.setValue(this.contractUpdate.ghiChu)
+        }
+
       } else {
         control?.disable();
         control?.setValue('');
@@ -366,14 +393,26 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
   // 👉 Preview file
-  onSubmit()
-    :
-    void {
-    const rawDate
-      :
-      Date = this.formGroup.get('contractDate')?.value;
-    const formattedDate = rawDate ? rawDate.toISOString().split('T')[0] : null;
-    console.log('formattedDate', formattedDate);
+  onSubmit(): void {
+    const rawDate: Date = this.formGroup.get('contractDate')?.value;
+    console.log('rawDate -->', rawDate);
+
+    const formattedDate = rawDate
+      ? new Date(rawDate.getTime() - rawDate.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0]
+      : null;
+
+    const tcDate: Date = this.formGroup.get('ngayTheChap')?.value;
+    const formattedDateTC = tcDate
+      ? new Date(tcDate.getTime() - tcDate.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0]
+      : null;
+
+    console.log('formattedDate -->', formattedDate);
+    console.log('formattedDateTC -->', formattedDateTC);
+
     const headers: string[] = this.tableHeaders.value;
     const rows: string[][] = this.tableRows.value.map((r: any) => [r.col1, r.col2, r.col3]);
 
@@ -386,6 +425,7 @@ export class CreateCreditContractComponent implements OnInit {
     const payload: CreditContract = {
       ...this.formGroup.value,
       contractDate: formattedDate,
+      ngayTheChap: formattedDateTC,
       tienChu: this.tienChu,
       fileAvatarUrls: this.fileAvatarUrls,
       tableRequest: tableRequest
@@ -398,8 +438,24 @@ export class CreateCreditContractComponent implements OnInit {
   // 👉 Export file (create hoặc update)
   onExport(): void {
     const rawDate: Date = this.formGroup.get('contractDate')?.value;
-    const formattedDate = rawDate ? rawDate.toISOString().split('T')[0] : null;
-    console.log('formattedDate', formattedDate);
+    console.log('rawDate -->', rawDate);
+
+    const formattedDate = rawDate
+      ? new Date(rawDate.getTime() - rawDate.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0]
+      : null;
+
+    const tcDate: Date = this.formGroup.get('ngayTheChap')?.value;
+    const formattedDateTC = tcDate
+      ? new Date(tcDate.getTime() - tcDate.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0]
+      : null;
+
+    console.log('formattedDate -->', formattedDate);
+    console.log('formattedDateTC -->', formattedDateTC);
+
     const headers: string[] = this.tableHeaders.value;
     const rows: string[][] = this.tableRows.value.map((r: any) => [r.col1, r.col2, r.col3]);
 
@@ -411,6 +467,7 @@ export class CreateCreditContractComponent implements OnInit {
     const payload: CreditContract = {
       ...this.formGroup.value,
       contractDate: formattedDate,
+      ngayTheChap: formattedDateTC,
       tienChu: this.tienChu,
       fileAvatarUrls: this.fileAvatarUrls,
       tableRequest: tableRequest

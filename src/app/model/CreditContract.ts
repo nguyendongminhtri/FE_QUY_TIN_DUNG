@@ -78,6 +78,7 @@ export class CreditContract {
   thoiHanVay?: string;
   checkMucDich?: boolean;
   checkLoaiDat?: boolean;
+  checkNguonGocSuDung?: boolean;
   loaiDat?: string;
   checkNguoiMangTenBiaDo?: boolean;
   nguoiMangTen?: string;
@@ -85,6 +86,8 @@ export class CreditContract {
   noiCapCCCDKhachHang?: string;
   noiCapCCCDDungTenBiaDo1?: string;
   noiCapCCCDDungTenBiaDo2?: string;
+  ngayTheChap?: string;
+  soBBXetDuyetChoVay?: string;
   constructor(contractDate: string, nguoiDaiDien?: string, tenKhachHang?: string,
               namSinhKhachHang?: string, sdtKhachHang?: string, sttvKhachHang?: string,
               cccdKhachHang?: string, ngayCapCCCDKhachHang?: string,

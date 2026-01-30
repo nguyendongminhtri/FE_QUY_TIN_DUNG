@@ -6,7 +6,7 @@
           <div class="form-row">
             <div class="form-col">
               <mat-form-field appearance="fill" class="example-full-width">
-                <mat-label>Ngày ký hợp đồng</mat-label>
+                <mat-label>Ngày ký hợp đồng tín dụng</mat-label>
                 <input matInput [matDatepicker]="picker" formControlName="contractDate">
                 <mat-hint>MM/DD/YYYY</mat-hint>
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -231,9 +231,24 @@
               </mat-form-field>
             </div>
             <div class="form-col">
+              <mat-form-field appearance="fill" class="example-full-width">
+                <mat-label>Ngày ký hợp đồng thế chấp</mat-label>
+                <input matInput [matDatepicker]="ngayTC" formControlName="ngayTheChap">
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="ngayTC"></mat-datepicker-toggle>
+                <mat-datepicker #ngayTC></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Số hợp đồng TC</mat-label>
                 <input matInput formControlName="soHopDongTheChapQSDD" placeholder="07/26/006/HĐTC">
+              </mat-form-field>
+            </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label>Số BB Xét Duyệt Cho Vay</mat-label>
+                <input matInput formControlName="soBBXetDuyetChoVay" placeholder="118/2025">
               </mat-form-field>
             </div>
             <div class="form-col">
