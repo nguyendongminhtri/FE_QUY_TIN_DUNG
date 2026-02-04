@@ -602,6 +602,59 @@
                 <input formControlName="tongTaiSanBDChu" matInput [value]="tongTaiSanBDChu" readonly></mat-form-field>
             </div>
           </div>
+          <h2>Nhập thông tin: Biên Bản Xác Định Giá Trị Tài Sản Bảo Đảm</h2>
+          <div class="form-row">
+            <div formArrayName="table1">
+              <b>Giá đất theo giá UBND tỉnh Hải Dương quy định: </b>
+              <table class="table table-bordered">
+                <tbody>
+                <tr *ngFor="let row of table1.controls; let i = index" [formGroupName]="i">
+                  <td><input matInput formControlName="col1"></td>
+                  <td><input matInput formControlName="col2"></td>
+                  <td><input matInput formControlName="col3"></td>
+                  <td><input matInput formControlName="col4"></td>
+                  <td><input matInput formControlName="col5"></td>
+                  <td><input matInput formControlName="col6" readonly></td>
+                  <td><input matInput formControlName="col7" readonly></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div formArrayName="table2">
+              <b>Căn cứ giá đất trên thị trường phường Thái Học tại thời điểm xác định giá tài sản: </b>
+              <table class="table table-bordered">
+                <tbody>
+                <tr *ngFor="let row of table2.controls; let i = index" [formGroupName]="i">
+                  <td><input matInput formControlName="col1"></td>
+                  <td><input matInput formControlName="col2"></td>
+                  <td><input matInput formControlName="col3"></td>
+                  <td><input matInput formControlName="col4"></td>
+                  <td><input matInput formControlName="col5"></td>
+                  <td><input matInput formControlName="col6" readonly></td>
+                  <td><input matInput formControlName="col7" readonly></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div formArrayName="table3">
+              <b>Giá do hai bên cùng thỏa thuận thống nhất xác định: </b>
+              <table class="table table-bordered">
+                <tbody>
+                <tr *ngFor="let row of table3.controls; let i = index" [formGroupName]="i">
+                  <td><input matInput formControlName="col1"></td>
+                  <td><input matInput formControlName="col2"></td>
+                  <td><input matInput formControlName="col3"></td>
+                  <td><input matInput formControlName="col4"></td>
+                  <td><input matInput formControlName="col5"></td>
+                  <td><input matInput formControlName="col6" readonly></td>
+                  <td><input matInput formControlName="col7" readonly></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+
           <br>
           <!--          <button mat-raised-button color="primary" type="submit">Tạo hợp đồng</button>-->
           <button mat-raised-button color="primary" type="submit">Xem trước File</button>
@@ -617,10 +670,12 @@
         <h2 style="text-align: left">Upload File Hình Ảnh Bìa Đỏ (Nhiều Ảnh)</h2>
         <div class="form-col checkbox-input-col">
           <input type="file" multiple (change)="onFilesSelected($event)"/>
-          <div *ngIf="fileAvatarUrls.length > 0" style="margin-top: 10px">
-            <div *ngFor="let url of fileAvatarUrls; let i = index">
+
+          <div *ngIf="fileAvatarUrls.length > 0" style="margin-top: 10px; display: flex; flex-direction: column; gap: 15px;">
+            <div *ngFor="let file of fileAvatarUrls; let i = index" style="display: flex; flex-direction: column; align-items: flex-start;">
               <h3>Ảnh {{ i + 1 }}</h3>
-              <img [src]="url.filePath" style="width: auto; height: 100%; border-radius: 8px; margin: 5px;">
+              <img [src]="file.fileUrl"
+                   style="max-width: 800px; height: auto; border-radius: 8px; margin-bottom: 10px;">
             </div>
           </div>
         </div>

@@ -1,9 +1,5 @@
 export interface FileMetadataEntity {
-  id: number;
   fileName: string;
-  filePath: string;
-  fileUrl: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
+  contentType: string;   // thêm vào
+  fileUrl: string;       // hoặc filePath nếu backend trả về tên này
 }

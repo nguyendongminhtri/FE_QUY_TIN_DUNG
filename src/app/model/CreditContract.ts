@@ -1,4 +1,5 @@
 import {FileMetadataEntity} from "./FileMetadataEntity";
+import {TableRequest} from "./TableRequest";
 
 
 export class CreditContract {
@@ -49,8 +50,11 @@ export class CreditContract {
   choVay?: string;
   loaiVay?: string;
   fileAvatarUrls?: FileMetadataEntity[] = [];
-  avatars?: FileMetadataEntity[] = [];
-  tableJson?: string
+  // avatars?: FileMetadataEntity[] = [];
+  tableRequest?: TableRequest;
+  table1?: TableRequest;
+  table2?: TableRequest;
+  table3?: TableRequest;
   checkOption?: boolean;
   soHopDongTD?: string;
   checkNguoiDungTenBiaDo2?:boolean;
