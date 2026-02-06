@@ -91,6 +91,8 @@ export class CreditContract {
   noiCapCCCDDungTenBiaDo1?: string;
   noiCapCCCDDungTenBiaDo2?: string;
   ngayTheChap?: string;
+  noiDungNgoaiBia?:string;
+  ngayBaoDam?: string;
   soBBXetDuyetChoVay?: string;
   constructor(contractDate: string, nguoiDaiDien?: string, tenKhachHang?: string,
               namSinhKhachHang?: string, sdtKhachHang?: string, sttvKhachHang?: string,

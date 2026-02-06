@@ -155,3 +155,9 @@ mat-form-field {
 .table-section .table-row button {
   align-self: center;
 }
+.option-red { background: red; }
+.option-blue { background: blue; }
+.option-green { background: green; }
+.option-orange { background: orange; }
+.option-purple { background: purple; }
+.option-brown { background: brown; }

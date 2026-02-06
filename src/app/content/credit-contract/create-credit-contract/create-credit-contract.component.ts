@@ -59,31 +59,24 @@ export class CreateCreditContractComponent implements OnInit {
       this.creditContractService.getContractById(this.contractId).subscribe(contract => {
         console.log('contract::::', contract);
         this.contractUpdate = contract;
-
         // Patch các field đơn giản (strings, booleans, dates)
         this.patchSimpleFields(contract);
-
         this.loadTableArray(contract.table1, this.table1, 7);
         this.loadTableArray(contract.table2, this.table2, 7);
         this.loadTableArray(contract.table3, this.table3, 7);
-
-
-
-
-
         // File avatars
         this.fileAvatarUrls = contract.fileAvatarUrls ?? [];
-
-
         // Các control enable/disable theo checkbox
         this.applyConditionalControls(contract);
-
         // Nếu có ngày, set lại control date (đặt sau patchSimpleFields để tránh override)
         if (contract.contractDate) {
           this.formGroup.get('contractDate')?.setValue(new Date(contract.contractDate));
         }
         if (contract.ngayTheChap) {
           this.formGroup.get('ngayTheChap')?.setValue(new Date(contract.ngayTheChap));
+        }
+        if (contract.ngayBaoDam) {
+          this.formGroup.get('ngayBaoDam')?.setValue(new Date(contract.ngayBaoDam));
         }
       });
     }
@@ -101,6 +94,7 @@ export class CreateCreditContractComponent implements OnInit {
     this.formGroup = this.fb.group({
       contractDate: [new Date()],
       ngayTheChap: [new Date()],
+      ngayBaoDam: [new Date()],
       soHopDongTD: ['01/25/232/HĐTD'],
       nguoiDaiDien: ['PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'],
       tenKhachHang: [''],
@@ -132,6 +126,7 @@ export class CreateCreditContractComponent implements OnInit {
       ngayCapSo: [''],
       noiDungVaoSo: ['1703 QSDĐ/TH-CL'],
       soThuaDat: [''],
+      noiDungNgoaiBia: [''],
       soBanDo: [''],
       diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương Nay là Phường Chu Văn An, thành phố Hải Phòng'],
       dienTichDatSo: [''],
@@ -146,7 +141,7 @@ export class CreateCreditContractComponent implements OnInit {
       noiCapCCCDNguoiThan: [''],
       noiCapCCCDKhachHang: [''],
       noiCapCCCDDungTenBiaDo1: [''],
-      noiCapCCCDDungTenBiaDo2: [''],
+      noiCapCCCDDungTenBiaDo2: [{value: '', disabled: true}],
       nguonGocSuDung: [{value: '', disabled: true}],
       checkGhiChu: [false],
       ghiChu: [{value: '', disabled: true}],
@@ -224,6 +219,7 @@ export class CreateCreditContractComponent implements OnInit {
       nguoiDaiDien: contract.nguoiDaiDien,
       tenKhachHang: contract.tenKhachHang,
       gtkh: contract.gtkh,
+      noiDungNgoaiBia: contract.noiDungNgoaiBia,
       namSinhKhachHang: contract.namSinhKhachHang,
       phoneKhachHang: contract.phoneKhachHang,
       soTheThanhVienKhachHang: contract.soTheThanhVienKhachHang,
@@ -234,7 +230,9 @@ export class CreateCreditContractComponent implements OnInit {
       tenNguoiThan: contract.tenNguoiThan,
       namSinhNguoiThan: contract.namSinhNguoiThan,
       cccdNguoiThan: contract.cccdNguoiThan,
+      noiCapCCCDKhachHang: contract.noiCapCCCDKhachHang,
       ngayCapCCCDNguoiThan: contract.ngayCapCCCDNguoiThan,
+      noiCapCCCDNguoiThan: contract.noiCapCCCDKhachHang,
       diaChiThuongTruNguoiThan: contract.diaChiThuongTruNguoiThan,
       quanHe: contract.quanHe,
       tienSo: contract.tienSo,
@@ -362,12 +360,14 @@ export class CreateCreditContractComponent implements OnInit {
       this.formGroup.get('cccdDungTenBiaDo2')?.enable();
       this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.enable();
       this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.enable();
+      this.formGroup.get('noiCapCCCDDungTenBiaDo2')?.enable();
 
       this.formGroup.get('dungTenBiaDo2')?.setValue(contract.dungTenBiaDo2);
       this.formGroup.get('gioiTinhDungTenBiaDo2')?.setValue(contract.gioiTinhDungTenBiaDo2);
       this.formGroup.get('namSinhDungTenBiaDo2')?.setValue(contract.namSinhDungTenBiaDo2);
       this.formGroup.get('cccdDungTenBiaDo2')?.setValue(contract.cccdDungTenBiaDo2);
       this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.setValue(contract.ngayCapCCCDDungTenBiaDo2);
+      this.formGroup.get('noiCapCCCDDungTenBiaDo2')?.setValue(contract.noiCapCCCDDungTenBiaDo2);
       this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.setValue(contract.diaChiThuongTruDungTenBiaDo2);
     }
 
@@ -441,6 +441,9 @@ export class CreateCreditContractComponent implements OnInit {
     this.formGroup.get('checkMucDich')?.valueChanges.subscribe(checked => {
       if (checked) this.formGroup.get('muchDichSuDung')?.enable(); else this.formGroup.get('muchDichSuDung')?.disable();
     });
+    this.formGroup.get('checkNguonGocSuDung')?.valueChanges.subscribe(checked => {
+      if (checked) this.formGroup.get('nguonGocSuDung')?.enable(); else this.formGroup.get('nguonGocSuDung')?.disable();
+    });
 
     this.formGroup.get('checkNhaCoDinh')?.valueChanges.subscribe(checked => {
       const control = this.formGroup.get('nhaCoDinh');
@@ -457,7 +460,7 @@ export class CreateCreditContractComponent implements OnInit {
     });
 
     this.formGroup.get('checkNguoiDungTenBiaDo2')?.valueChanges.subscribe(checked => {
-      const controls = ['dungTenBiaDo2','gioiTinhDungTenBiaDo2','namSinhDungTenBiaDo2','cccdDungTenBiaDo2','ngayCapCCCDDungTenBiaDo2','diaChiThuongTruDungTenBiaDo2'];
+      const controls = ['dungTenBiaDo2','gioiTinhDungTenBiaDo2','namSinhDungTenBiaDo2','cccdDungTenBiaDo2','ngayCapCCCDDungTenBiaDo2','noiCapCCCDDungTenBiaDo2','diaChiThuongTruDungTenBiaDo2'];
       controls.forEach(c => {
         const ctrl = this.formGroup.get(c);
         if (checked) ctrl?.enable(); else ctrl?.disable();
@@ -480,419 +483,11 @@ export class CreateCreditContractComponent implements OnInit {
     });
   }
 
-//   ngOnInit(): void {
-//     // Lấy id từ route nếu có
-//     const idParam = this.route.snapshot.paramMap.get('id');
-//     if (idParam) {
-//       this.contractId = Number(idParam);
-//       this.mode = 'update';
-//     }
-//
-//     // Khởi tạo form
-//     this.formGroup = this.fb.group({
-//       contractDate: [new Date()],
-//       ngayTheChap: [new Date()],
-//       soHopDongTD: ['01/25/232/HĐTD'],
-//       nguoiDaiDien: ['PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'],
-//       tenKhachHang: [''],
-//       gtkh: [''],
-//       namSinhKhachHang: [''],
-//       phoneKhachHang: [''],
-//       soTheThanhVienKhachHang: [''],
-//       cccdKhachHang: [''],
-//       ngayCapCCCDKhachHang: [''],
-//       diaChiThuongTruKhachHang: [', phường Chu Văn An, thành phố Hải Phòng.'],
-//       gtnt: [''],
-//       tongTaiSanBD: [''],
-//       tongTaiSanBDChu: [''],
-//       tenNguoiThan: [''],
-//       namSinhNguoiThan: [''],
-//       cccdNguoiThan: [''],
-//       ngayCapCCCDNguoiThan: [''],
-//       diaChiThuongTruNguoiThan: [', phường Chu Văn An, thành phố Hải Phòng.'],
-//       quanHe: ['Là vợ'],
-//       tienSo: [''],
-//       muchDichVay: [''],
-//       soBBXetDuyetChoVay: [''],
-//       hanMuc: [''],
-//       laiSuat: ['7,5%/năm'],
-//       ngayKetThucKyHanVay: [''],
-//       soHopDongTheChapQSDD: ['07/26/006/HĐTC'],
-//       serial: [''],
-//       noiCapSo: [''],
-//       ngayCapSo: [''],
-//       noiDungVaoSo: ['1703 QSDĐ/TH-CL'],
-//       soThuaDat: [''],
-//       soBanDo: [''],
-//       diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương Nay là Phường Chu Văn An, thành phố Hải Phòng'],
-//       dienTichDatSo: [''],
-//       thoiHanVay: [''],
-//       dienTichDatChu: [''],
-//       hinhThucSuDung: ['+ Sử dụng riêng: 690  m²; + Sử dụng chung: 0 m²'],
-//       muchDichSuDung: [{value: '- Mục đích sử dụng: + Đất ở tại đô thị: 50m²; + Đất LNK: 55,3m²', disabled: true}],
-//       thoiHanSuDung: ['Lâu dài'],
-//       soBienBanDinhGia: ['07/006/BBĐG'],
-//       noiDungThoaThuan: ['là một mảnh đất ở hợp pháp lâu dài với diện tích '],
-//       checkNguonGocSuDung: [false],
-//       noiCapCCCDNguoiThan: [''],
-//       noiCapCCCDKhachHang: [''],
-//       noiCapCCCDDungTenBiaDo1: [''],
-//       noiCapCCCDDungTenBiaDo2: [''],
-//       nguonGocSuDung: [{value: '', disabled: true}],
-//       checkGhiChu: [false],
-//       ghiChu: [{value: '', disabled: true}],
-//       loaiVay: [{value: '', disabled: true}],
-//       choVay: [{value: 'Cho vay:', disabled: true}],
-//       checkOption: [false],
-//       checkNhaCoDinh: [false],
-//       checkMucDich: [false],
-//       checkLoaiDat: [false],
-//       loaiDat: [{value: '+ Đất ở tại đô thị: 50m²; + Đất trồng cây lâu năm 55,3m²', disabled: true}],
-//       nhaCoDinh: [{value: '- Nhà ở cố định:    m²;  loại nhà:      ; \nĐược định giá 0 đồng', disabled: true}],
-//       checkNguoiDungTenBiaDo2: [false],
-//       checkHopDongBaoLanh: [false],
-//       landItems: ['+ Đất ở: 120m²; được định giá là: 1.200.000.000 đồng\n' +
-//       '+ Đất LNK: 300m²; được định giá là: 2.500.000.000 đồng\n' +
-//       '+ Đất ao: 300m²; được định giá là: 2.500.000.000 đồng'],
-//       hasTable: [false],
-//       tableHeaders: this.fb.array([
-//         this.fb.control('Kỳ trả nợ'), // cột 1
-//         this.fb.control('Đến ngày, tháng, năm'), // cột 2
-//         this.fb.control('Số tiền phải trả')  // cột 3
-//       ]),
-//       tableRows: this.fb.array([]),
-//       // Người đứng tên bìa đỏ 1
-//       dungTenBiaDo1: [''],
-//       gioiTinhDungTenBiaDo1: [''],
-//       namSinhDungTenBiaDo1: [''],
-//       phoneDungTenBiaDo1: [''],
-//       cccdDungTenBiaDo1: [''],
-//       ngayCapCCCDDungTenBiaDo1: [''],
-//       diaChiThuongTruDungTenBiaDo1: [''],
-//       // Người đứng tên bìa đỏ 1
-//       dungTenBiaDo2: [{value: 'và bà ', disabled: true}],
-//       gioiTinhDungTenBiaDo2: [{value: '', disabled: true}],
-//       namSinhDungTenBiaDo2: [{value: '', disabled: true}],
-//       cccdDungTenBiaDo2: [{value: '', disabled: true}],
-//       ngayCapCCCDDungTenBiaDo2: [{value: '', disabled: true}],
-//       diaChiThuongTruDungTenBiaDo2: [{value: '', disabled: true}],
-//       checkNguoiMangTenBiaDo: [false],
-//       nguoiMangTen: [{
-//         value: 'mang tên bà Đặng Thị Hà. Ngày 18/11/2025, Chi nhánh Văn phòng đăng ký đất đai Chí Linh xác nhận chuyển nhượng cho ông Nguyễn Đình Nam CC số 030084018290 và bà Nguyễn Thị Thu Huế  CCCD số 031189020545 theo hồ sơ số 002575.CN.007',
-//         disabled: true
-//       }],
-//       table1: this.fb.array([]),
-//       table2: this.fb.array([]),
-//       table3: this.fb.array([])
-//     });
-// // Lắng nghe thay đổi form Khách Hàng
-//     this.syncField('tenKhachHang', 'dungTenBiaDo1');
-//     this.syncField('gtkh', 'gioiTinhDungTenBiaDo1');
-//     this.syncField('namSinhKhachHang', 'namSinhDungTenBiaDo1');
-//     this.syncField('phoneKhachHang', 'phoneDungTenBiaDo1');
-//     this.syncField('cccdKhachHang', 'cccdDungTenBiaDo1');
-//     this.syncField('ngayCapCCCDKhachHang', 'ngayCapCCCDDungTenBiaDo1');
-//     this.syncField('diaChiThuongTruKhachHang', 'diaChiThuongTruDungTenBiaDo1');
-//     this.syncField('noiCapCCCDKhachHang', 'noiCapCCCDDungTenBiaDo1');
-//
-//     this.syncField('tenNguoiThan', 'dungTenBiaDo2');
-//     this.syncField('gtnt', 'gioiTinhDungTenBiaDo2');
-//     this.syncField('namSinhNguoiThan', 'namSinhDungTenBiaDo2');
-//     this.syncField('cccdNguoiThan', 'cccdDungTenBiaDo2');
-//     this.syncField('ngayCapCCCDNguoiThan', 'ngayCapCCCDDungTenBiaDo2');
-//     this.syncField('diaChiThuongTruNguoiThan', 'diaChiThuongTruDungTenBiaDo2');
-//     this.syncField('noiCapCCCDNguoiThan', 'noiCapCCCDDungTenBiaDo2');
-//     this.formGroup.get('dienTichDatSo')?.valueChanges.subscribe(value => {
-//       if (value) {
-//         const formatted = `+ Sử dụng riêng: ${value} m²; + Sử dụng chung: 0 m²`;
-//         this.formGroup.get('hinhThucSuDung')?.setValue(formatted);
-//       } else {
-//         this.formGroup.get('hinhThucSuDung')?.setValue('');
-//       }
-//     });
-//     // Nếu là update, load dữ liệu cũ
-//     console.log('mode ===========---> ', this.mode)
-//     if (this.mode === 'update' && this.contractId) {
-//       this.creditContractService.getContractById(this.contractId).subscribe(contract => {
-//         console.log('contract update:::', contract)
-//         console.log( 'table2',contract.table1?.rows);
-//         if (contract.table2 && Array.isArray(contract.table2?.rows)) {
-//           this.table2.clear();
-//           contract.table2?.rows.forEach(r => {
-//             this.table2.push(this.fb.group({
-//               col1: [r[0] || ''],
-//               col2: [r[1] || ''],
-//               col3: [r[2] || ''],
-//               col4: [r[3] || ''],
-//               col5: [r[4] || ''],
-//               col6: [r[5] || ''],
-//               col7: [r[6] || '']
-//             }));
-//           });
-//         }
-//
-//         if (contract.table1 && Array.isArray(contract.table1.rows)) {
-//           this.table1.clear();
-//           contract.table1.rows.forEach(r => {
-//             this.table1.push(this.fb.group({
-//               col1: [r[0] || ''],
-//               col2: [r[1] || ''],
-//               col3: [r[2] || ''],
-//               col4: [r[3] || ''],
-//               col5: [r[4] || ''],
-//               col6: [r[5] || ''],
-//               col7: [r[6] || '']
-//             }));
-//           });
-//         }
-//
-//         if (contract.table3 && Array.isArray(contract.table3.rows)) {
-//           this.table3.clear();
-//           contract.table3.rows.forEach(r => {
-//             this.table3.push(this.fb.group({
-//               col1: [r[0] || ''],
-//               col2: [r[1] || ''],
-//               col3: [r[2] || ''],
-//               col4: [r[3] || ''],
-//               col5: [r[4] || ''],
-//               col6: [r[5] || ''],
-//               col7: [r[6] || '']
-//             }));
-//           });
-//         }
-//         this.contractUpdate = contract;
-//         console.log('------------truoc path -----------')
-//         this.formGroup.patchValue(contract);
-//         console.log('------------sau pathchValue ---------')
-//         this.fileAvatarUrls = contract.avatars ?? [];
-//         if (contract.contractDate) {
-//           this.formGroup.get('contractDate')?.setValue(new Date(contract.contractDate));
-//         }
-//         if (contract.ngayTheChap) {
-//           this.formGroup.get('ngayTheChap')?.setValue(new Date(contract.ngayTheChap));
-//         }
-//         if (contract.tableRequest) {
-//           this.tableData = contract.tableRequest;
-//
-//           // reset headers
-//           this.tableHeaders.clear();
-//           if (this.tableData.headers) {
-//             this.tableData.headers.forEach(h => this.tableHeaders.push(this.fb.control(h)));
-//           }
-//
-//           // reset rows
-//           this.tableRows.clear();
-//           if (this.tableData.rows) {
-//             this.tableData.rows.forEach(r => {
-//               this.tableRows.push(this.fb.group({
-//                 col1: [r[0] || ''],
-//                 col2: [r[1] || ''],
-//                 col3: [r[2] || '']
-//               }));
-//             });
-//           }
-//
-//           this.formGroup.patchValue({hasTable: this.tableData.drawTable});
-//         } else {
-//           this.tableData = null;
-//         }
-//
-//         console.log('--------------chet---------------------')
-//         console.log( 'table2',contract.table1)
-//
-//
-//
-//
-//         if (contract.checkOption) {
-//           this.formGroup.get('loaiVay')?.enable();
-//           this.formGroup.get('choVay')?.enable();
-//         }
-//         if (contract.checkLoaiDat) {
-//           this.formGroup.get('loaiDat')?.enable();
-//           this.formGroup.get('loaiDat')?.setValue(contract.loaiDat);
-//         }
-//         if (contract.checkMucDich) {
-//           this.formGroup.get('muchDichSuDung')?.enable();
-//           this.formGroup.get('muchDichSuDung')?.setValue(contract.muchDichSuDung);
-//         }
-//
-//         if (contract.checkNguoiDungTenBiaDo2) {
-//           this.formGroup.get('dungTenBiaDo2')?.enable();
-//           this.formGroup.get('dungTenBiaDo2')?.setValue(contract.dungTenBiaDo2);
-//           this.formGroup.get('gioiTinhDungTenBiaDo2')?.enable();
-//           this.formGroup.get('gioiTinhDungTenBiaDo2')?.setValue(contract.gioiTinhDungTenBiaDo2);
-//           this.formGroup.get('namSinhDungTenBiaDo2')?.enable();
-//           this.formGroup.get('namSinhDungTenBiaDo2')?.setValue(contract.namSinhDungTenBiaDo2);
-//           this.formGroup.get('cccdDungTenBiaDo2')?.enable();
-//           this.formGroup.get('cccdDungTenBiaDo2')?.setValue(contract.cccdDungTenBiaDo2);
-//           this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.enable();
-//           this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.setValue(contract.ngayCapCCCDDungTenBiaDo2);
-//           this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.enable();
-//           this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.setValue(contract.diaChiThuongTruDungTenBiaDo2);
-//         }
-//         if (contract.checkGhiChu) {
-//           this.formGroup.get('ghiChu')?.enable();
-//           this.formGroup.get('ghiChu')?.setValue(contract.ghiChu);
-//         }
-//         if (contract.checkNguoiMangTenBiaDo) {
-//           this.formGroup.get('nguoiMangTen')?.enable();
-//           this.formGroup.get('nguoiMangTen')?.setValue(contract.nguoiMangTen);
-//         }
-//         if (contract.loaiVay) {
-//           this.formGroup.get('loaiVay')?.enable();
-//           this.formGroup.get('loaiVay')?.setValue(contract.loaiVay);
-//         }
-//         if (contract.choVay) {
-//           this.formGroup.get('choVay')?.enable();
-//           this.formGroup.get('choVay')?.setValue(contract.choVay);
-//         }
-//         if (contract.checkNhaCoDinh) {
-//           this.formGroup.get('nhaCoDinh')?.enable();
-//           this.formGroup.get('nhaCoDinh')?.setValue(contract.nhaCoDinh);
-//         }
-//         if (contract.checkNguonGocSuDung) {
-//           this.formGroup.get('nguonGocSuDung')?.enable();
-//           this.formGroup.get('nguonGocSuDung')?.setValue(contract.nguonGocSuDung);
-//         }
-//       });
-//     }
-//
-//     // Lắng nghe thay đổi số tiền để convert sang chữ
-//     this.formGroup.get('tienSo')?.valueChanges.subscribe(rawValue => {
-//       if (rawValue) {
-//         const num = Number(String(rawValue).replace(/\./g, ''));
-//         if (!isNaN(num)) {
-//           this.tienChu = this.convertMoney.numberToVietnameseWordsMoney(num);
-//         } else {
-//           this.tienChu = '';
-//         }
-//       } else {
-//         this.tienChu = '';
-//       }
-//     });
-//     this.formGroup.get('landItems')?.valueChanges.subscribe(() => {
-//       this.calculateTongTaiSanBD();
-//     });
-//     // Lắng nghe diện tích để convert sang chữ
-//     this.formGroup.get('dienTichDatSo')?.valueChanges.subscribe(rawValue => {
-//       if (rawValue) {
-//         // Giữ nguyên chuỗi, không ép kiểu Number
-//         const chu = this.convertMoney.numberToVietnamese(String(rawValue));
-//         this.formGroup.get('dienTichDatChu')?.setValue(chu, {emitEvent: false});
-//       } else {
-//         this.formGroup.get('dienTichDatChu')?.setValue('', {emitEvent: false});
-//       }
-//     });
-//     this.formGroup.get('checkOption')?.valueChanges.subscribe(checked => {
-//       if (checked) {
-//         this.formGroup.get('loaiVay')?.enable();
-//         this.formGroup.get('choVay')?.enable();
-//       } else {
-//         this.formGroup.get('loaiVay')?.disable();
-//         this.formGroup.get('choVay')?.disable();
-//       }
-//     });
-//     this.formGroup.get('checkHopDongBaoLanh')?.valueChanges.subscribe(checked => {
-//       if (checked) {
-//         this.titleNguoiBaoLanh1 = 'Người bảo lãnh 1';
-//         this.titleNguoiBaoLanh2 = 'Người bảo lãnh 2';
-//       } else {
-//         this.titleNguoiBaoLanh1 = 'Người đứng tên bìa đỏ 1';
-//         this.titleNguoiBaoLanh2 = 'Người đứng tên bìa đỏ 2';
-//       }
-//     });
-//     this.formGroup.get('checkNguoiMangTenBiaDo')?.valueChanges.subscribe(checked => {
-//       if (checked) {
-//         this.formGroup.get('nguoiMangTen')?.enable();
-//       } else {
-//         this.formGroup.get('nguoiMangTen')?.disable();
-//       }
-//     });
-//     this.formGroup.get('checkLoaiDat')?.valueChanges.subscribe(checked => {
-//       if (checked) {
-//         this.formGroup.get('loaiDat')?.enable();
-//       } else {
-//         this.formGroup.get('loaiDat')?.disable();
-//       }
-//     });
-//     this.formGroup.get('checkMucDich')?.valueChanges.subscribe(checked => {
-//       if (checked) {
-//         this.formGroup.get('muchDichSuDung')?.enable();
-//       } else {
-//         this.formGroup.get('muchDichSuDung')?.disable();
-//       }
-//     });
-//     this.formGroup.get('checkNhaCoDinh')?.valueChanges.subscribe(checked => {
-//       const control = this.formGroup.get('nhaCoDinh');
-//       if (checked) {
-//         control?.enable();
-//         if (this.mode == 'create') {
-//           control?.setValue('- Nhà ở cố định:    m²;  loại nhà:      ; \nĐược định giá 0 đồng')
-//         } else if (this.mode == 'update') {
-//           control?.setValue(this.contractUpdate.nhaCoDinh);
-//         }
-//       } else {
-//         control?.disable();
-//       }
-//     });
-//     this.formGroup.get('checkNguoiDungTenBiaDo2')?.valueChanges.subscribe(checked => {
-//       if (checked) {
-//         this.formGroup.get('dungTenBiaDo2')?.enable();
-//         this.formGroup.get('gioiTinhDungTenBiaDo2')?.enable();
-//         this.formGroup.get('namSinhDungTenBiaDo2')?.enable();
-//         this.formGroup.get('cccdDungTenBiaDo2')?.enable();
-//         this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.enable();
-//         this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.enable();
-//       } else {
-//         this.formGroup.get('dungTenBiaDo2')?.disable();
-//         this.formGroup.get('gioiTinhDungTenBiaDo2')?.disable();
-//         this.formGroup.get('namSinhDungTenBiaDo2')?.disable();
-//         this.formGroup.get('cccdDungTenBiaDo2')?.disable();
-//         this.formGroup.get('ngayCapCCCDDungTenBiaDo2')?.disable();
-//         this.formGroup.get('diaChiThuongTruDungTenBiaDo2')?.disable();
-//       }
-//     });
-//     // Nguồn gốc sử dụng
-//     this.formGroup.get('checkNguonGocSuDung')?.valueChanges.subscribe(checked => {
-//       const control = this.formGroup.get('nguonGocSuDung');
-//       if (checked) {
-//         control?.enable();
-//         if (this.mode == 'create') {
-//           control?.setValue('Nguồn gốc sử dụng: Nhà nước giao đất có thu tiền sử dụng đất.Nhận chuyển nhượng QSD đất của ông Nguyễn Đình Chiến và bà Nguyễn Thị Xuyến.')
-//         } else if (this.mode == 'update') {
-//           control?.setValue(this.contractUpdate.nguonGocSuDung)
-//         }
-//
-//       } else {
-//         control?.disable();
-//         control?.setValue('');
-//       }
-//     });
-//
-//     // Ghi chú
-//     this.formGroup.get('checkGhiChu')?.valueChanges.subscribe(checked => {
-//       const control = this.formGroup.get('ghiChu');
-//       if (checked) {
-//         control?.enable();
-//         if (this.mode == 'create') {
-//           control?.setValue('Ghi chú: Thửa đất số 203, tờ bản đồ số 39 được chỉnh lý từ lô LK3 tờ bản đồ quy hoạch chi tiết điểm dân cư mới Lạc Sơn, phường Thái Học. ')
-//         } else if (this.mode == 'update') {
-//           control?.setValue(this.contractUpdate.ghiChu)
-//         }
-//
-//       } else {
-//         control?.disable();
-//         control?.setValue('');
-//       }
-//     });
-//     this.initTables()
-//   }
-
   syncField(source: string, target: string) {
     this.formGroup.get(source)?.valueChanges.subscribe(value => {
       console.log('value -->', value)
       console.log('target -->', target);
-      const targetCtrl = this.formGroup.get(target); // Nếu người dùng chưa chỉnh sửa (pristine) thì tự động copy liên tục
+      const targetCtrl = this.formGroup.get(target);
       if (targetCtrl?.pristine) {
         targetCtrl.patchValue(value, {emitEvent: false});
       }
@@ -917,6 +512,13 @@ export class CreateCreditContractComponent implements OnInit {
         .split('T')[0]
       : null;
 
+    const bdDate: Date = this.formGroup.get('ngayBaoDam')?.value;
+    const formattedDateBD = bdDate
+      ? new Date(bdDate.getTime() - bdDate.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0]
+      : null;
+
     console.log('formattedDate -->', formattedDate);
     console.log('formattedDateTC -->', formattedDateTC);
 
@@ -933,12 +535,14 @@ export class CreateCreditContractComponent implements OnInit {
       ...this.formGroup.value,
       contractDate: formattedDate,
       ngayTheChap: formattedDateTC,
+      ngayBaoDam: formattedDateBD,
       tienChu: this.tienChu,
       fileAvatarUrls: this.fileAvatarUrls,
       tableRequest: tableRequest,
       table1: this.buildTableRequest(this.table1),
       table2: this.buildTableRequest(this.table2),
-      table3: this.buildTableRequest(this.table3)
+      table3: this.buildTableRequest(this.table3),
+      giaTriQuyenSuDungDat: this.giaTriQuyenSuDungDat
     };
     this.creditContractService.previewContract(payload).subscribe(urls => {
       this.fileUrls = urls;
@@ -957,10 +561,18 @@ export class CreateCreditContractComponent implements OnInit {
       : null;
 
     const tcDateStr: string = this.formGroup.get('ngayTheChap')?.value;
+    const bdDateStr: string = this.formGroup.get('ngayBaoDam')?.value;
+    console.log('bdDateStr ---> ', bdDateStr);
     const tcDate = tcDateStr ? new Date(tcDateStr) : null;
+    const bdDate = bdDateStr ? new Date(bdDateStr) : null;
 
     const formattedDateTC = tcDate
       ? new Date(tcDate.getTime() - tcDate.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0]
+      : null;
+    const formattedDateBD = bdDate
+      ? new Date(bdDate.getTime() - bdDate.getTimezoneOffset() * 60000)
         .toISOString()
         .split('T')[0]
       : null;
@@ -981,6 +593,7 @@ export class CreateCreditContractComponent implements OnInit {
       ...this.formGroup.value,
       contractDate: formattedDate,
       ngayTheChap: formattedDateTC,
+      ngayBaoDam: formattedDateBD,
       tienChu: this.tienChu,
       fileAvatarUrls: this.fileAvatarUrls,
       tableRequest: tableRequest,
@@ -1221,7 +834,6 @@ export class CreateCreditContractComponent implements OnInit {
     const giaTriQuyenSuDungDat =
       Number(table.at(0).get('col7')?.value || 0) +
       Number(table.at(1).get('col7')?.value || 0);
-
     return {
       rows,
       giaTriQuyenSuDungDat // thêm biến này vào payload gửi backend
@@ -1242,6 +854,4 @@ export class CreateCreditContractComponent implements OnInit {
 
     return row1 + row2;
   }
-
-
 }

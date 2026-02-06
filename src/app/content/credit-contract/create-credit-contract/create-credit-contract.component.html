@@ -32,6 +32,7 @@
                 <mat-select formControlName="loaiVay">
                   <mat-option value="NGẮN HẠN">NGẮN HẠN</mat-option>
                   <mat-option value="TRUNG HẠN">TRUNG HẠN</mat-option>
+                  <mat-option value="NGẮN HẠN (Thỏa thuận)">HẠN MỨC</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -115,6 +116,7 @@
                     <mat-select formControlName="noiCapCCCDKhachHang">
                       <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
                       <mat-option value="Bộ công an">Bộ công an</mat-option>
+                      <mat-option value="Cục cảnh sát">Cục cảnh sát</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -173,6 +175,7 @@
                     <mat-select formControlName="noiCapCCCDNguoiThan">
                       <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
                       <mat-option value="Bộ công an">Bộ công an</mat-option>
+                      <mat-option value="Cục cảnh sát">Cục cảnh sát</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -301,6 +304,22 @@
           </div>
           <h2>Nhập thông tin tài sản TSTC</h2>
           <div class="form-row-3">
+            <div class="form-col">
+              <mat-form-field>
+                <mat-label>Chọn Nội Dung Ngoài Bìa:</mat-label>
+                <mat-select formControlName="noiDungNgoaiBia">
+                  <mat-option class="option-blue" value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu nhà ở và tài sản khác gắn liền với đất">
+                    GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT QUYỀN SỞ HỮU NHÀ Ở VÀ TÀI SẢN KHÁC GẮN LIỀN VỚI ĐẤT
+                  </mat-option>
+                  <mat-option class="option-red" value="Giấy chứng nhận quyền sử dụng đất">
+                    GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT
+                  </mat-option>
+                  <mat-option class="option-green" value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu tài sản gắn liền với đất">
+                    GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT QUYỂN SỞ HỮU TÀI SẢN GẮN LIỀN VỚI ĐẤT
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
             <!-- Nhập số tiền -->
             <div class="form-col">
               <mat-form-field appearance="fill">
@@ -312,12 +331,24 @@
               <mat-form-field>
                 <mat-label>Chọn Nơi Cấp</mat-label>
                 <mat-select formControlName="noiCapSo">
-                  <mat-option value="UBND huyện Chí Linh, tỉnh Hải Dương">UBND huyện Chí Linh, tỉnh Hải Dương
+                  <mat-option class="option-red" value="UBND huyện Chí Linh, tỉnh Hải Dương">
+                    UBND huyện Chí Linh, tỉnh Hải Dương
                   </mat-option>
-                  <mat-option value="Chi nhánh văn phòng đăng ký đất đai thành phố Chí Linh">Chi nhánh văn phòng đăng ký
-                    đất đai thành phố Chí Linh
+                  <mat-option class="option-blue" value="UBND thị xã Chí Linh, tỉnh Hải Dương">
+                    UBND thị xã Chí Linh, tỉnh Hải Dương
                   </mat-option>
-                  <mat-option value="Địa chỉ thứ 3">Địa chỉ thứ 3</mat-option>
+                  <mat-option class="option-green" value="UBND thành phố Chí Linh, tỉnh Hải Dương">
+                    UBND thành phố Chí Linh, tỉnh Hải Dương
+                  </mat-option>
+                  <mat-option class="option-orange" value="Chi nhánh văn phòng đăng ký đất đai thành phố Chí Linh">
+                    Chi nhánh văn phòng đăng ký đất đai thành phố Chí Linh
+                  </mat-option>
+                  <mat-option class="option-purple" value="Chi nhánh văn phòng đăng ký đất đai Chí Linh">
+                    Chi nhánh văn phòng đăng ký thành phố Chí Linh
+                  </mat-option>
+                  <mat-option class="option-brown" value="Văn phòng đăng ký đất đai tỉnh Hải Dương">
+                    Văn phòng đăng ký đất đai tỉnh Hải Dương
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -485,6 +516,7 @@
                     <mat-select formControlName="noiCapCCCDDungTenBiaDo1">
                       <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
                       <mat-option value="Bộ công an">Bộ công an</mat-option>
+                      <mat-option value="Cục cảnh sát">Cục cảnh sát</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -542,6 +574,7 @@
                     <mat-select formControlName="noiCapCCCDDungTenBiaDo2">
                       <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
                       <mat-option value="Bộ công an">Bộ công an</mat-option>
+                      <mat-option value="Cục cảnh sát">Cục cảnh sát</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -604,6 +637,15 @@
           </div>
           <h2>Nhập thông tin: Biên Bản Xác Định Giá Trị Tài Sản Bảo Đảm</h2>
           <div class="form-row">
+            <div class="form-col">
+              <mat-form-field appearance="fill" class="example-full-width">
+                <mat-label>Ngày lập BBXĐGT Tài Sản Bảo Đảm</mat-label>
+                <input matInput [matDatepicker]="ngayBD" formControlName="ngayBaoDam">
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="ngayBD"></mat-datepicker-toggle>
+                <mat-datepicker #ngayBD></mat-datepicker>
+              </mat-form-field>
+            </div>
             <div formArrayName="table1">
               <b>Giá đất theo giá UBND tỉnh Hải Dương quy định: </b>
               <table class="table table-bordered">
