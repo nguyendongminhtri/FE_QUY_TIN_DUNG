@@ -424,12 +424,6 @@
             </div>
             <div class="form-col">
               <mat-form-field appearance="fill">
-                <mat-label>Số biên bản định giá</mat-label>
-                <input formControlName="soBienBanDinhGia" matInput>
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
                 <mat-label>Nội dung thỏa thuận</mat-label>
                 <input formControlName="noiDungThoaThuan" matInput>
               </mat-form-field>
@@ -638,6 +632,12 @@
           <h2>Nhập thông tin: Biên Bản Xác Định Giá Trị Tài Sản Bảo Đảm</h2>
           <div class="form-row">
             <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label>Số biên bản định giá</mat-label>
+                <input formControlName="soBienBanDinhGia" matInput>
+              </mat-form-field>
+            </div>
+            <div class="form-col">
               <mat-form-field appearance="fill" class="example-full-width">
                 <mat-label>Ngày lập BBXĐGT Tài Sản Bảo Đảm</mat-label>
                 <input matInput [matDatepicker]="ngayBD" formControlName="ngayBaoDam">
@@ -646,6 +646,22 @@
                 <mat-datepicker #ngayBD></mat-datepicker>
               </mat-form-field>
             </div>
+            <div formGroupName="tsbdRequest" class="form-col checkbox-input-col">
+              <mat-checkbox formControlName="checkTaiSanGanLienVoiDat">Tài sản gắn liền với đất</mat-checkbox>
+              <mat-form-field appearance="fill">
+                <mat-label>Diện tích Tài Sản</mat-label>
+                <input matInput formControlName="dienTichTS" placeholder="">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Kết cấu xây dựng</mat-label>
+                <input matInput formControlName="ketCauXayDung" placeholder="">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Từ năm</mat-label>
+                <input matInput formControlName="fromTime" placeholder="">
+              </mat-form-field>
+            </div>
+
             <div formArrayName="table1">
               <b>Giá đất theo giá UBND tỉnh Hải Dương quy định: </b>
               <table class="table table-bordered">

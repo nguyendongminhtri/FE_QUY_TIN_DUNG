@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CreditContractService} from "../../../service/credit-contract.service";
 import {CreditContract} from "../../../model/CreditContract";
 import {ConvertMoney} from "../../../config/ConvertMoney";
@@ -40,6 +40,7 @@ export class CreateCreditContractComponent implements OnInit {
     private dialog: MatDialog,
   ) {
   }
+
   ngOnInit(): void {
     // Lấy id từ route
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -77,6 +78,9 @@ export class CreateCreditContractComponent implements OnInit {
         }
         if (contract.ngayBaoDam) {
           this.formGroup.get('ngayBaoDam')?.setValue(new Date(contract.ngayBaoDam));
+        }
+        if (contract.tableRequest) {
+          this.loadTableRequest(contract.tableRequest);
         }
       });
     }
@@ -151,6 +155,13 @@ export class CreateCreditContractComponent implements OnInit {
       checkNhaCoDinh: [false],
       checkMucDich: [false],
       checkLoaiDat: [false],
+      tsbdRequest: this.fb.group({
+        checkTaiSanGanLienVoiDat: [false],
+        dienTichTS: [{value: '', disabled: true}],
+        ketCauXayDung: [{value: 'Mái bằng', disabled: true}],
+        fromTime: [{value: '', disabled: true}]
+      }),
+      fromTime: [{value: '', disabled: true}],
       loaiDat: [{value: '+ Đất ở tại đô thị: 50m²; + Đất trồng cây lâu năm 55,3m²', disabled: true}],
       nhaCoDinh: [{value: '- Nhà ở cố định:    m²;  loại nhà:      ; \nĐược định giá 0 đồng', disabled: true}],
       checkNguoiDungTenBiaDo2: [false],
@@ -177,7 +188,7 @@ export class CreateCreditContractComponent implements OnInit {
       ngayCapCCCDDungTenBiaDo2: [{value: '', disabled: true}],
       diaChiThuongTruDungTenBiaDo2: [{value: '', disabled: true}],
       checkNguoiMangTenBiaDo: [false],
-      nguoiMangTen: [{ value: 'mang tên ...', disabled: true }],
+      nguoiMangTen: [{value: 'mang tên ...', disabled: true}],
       table1: this.fb.array([]),
       table2: this.fb.array([]),
       table3: this.fb.array([])
@@ -266,7 +277,13 @@ export class CreateCreditContractComponent implements OnInit {
       checkNguoiDungTenBiaDo2: contract.checkNguoiDungTenBiaDo2,
       checkHopDongBaoLanh: contract.checkHopDongBaoLanh,
       landItems: contract.landItems,
-      hasTable: contract.tableRequest?.drawTable ?? false
+      hasTable: contract.tableRequest?.drawTable ?? false,
+      tsbdRequest: {
+        checkTaiSanGanLienVoiDat: contract.tsbdRequest?.checkTaiSanGanLienVoiDat ?? false,
+        dienTichTS: contract.tsbdRequest?.dienTichTS ?? '',
+        ketCauXayDung: contract.tsbdRequest?.ketCauXayDung ?? '',
+        fromTime: contract.tsbdRequest?.fromTime ?? ''
+      }
     });
   }
 
@@ -295,7 +312,7 @@ export class CreateCreditContractComponent implements OnInit {
     });
 
     // set hasTable control
-    this.formGroup.patchValue({ hasTable: !!tableRequest.drawTable });
+    this.formGroup.patchValue({hasTable: !!tableRequest.drawTable});
   }
 
   loadTableArray(tableData: { rows: string[][] } | undefined, table: FormArray, colCount: number) {
@@ -327,7 +344,6 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
 
-
   private applyConditionalControls(contract: any): void {
     if (contract.checkOption) {
       this.formGroup.get('loaiVay')?.enable();
@@ -338,6 +354,21 @@ export class CreateCreditContractComponent implements OnInit {
       this.formGroup.get('loaiVay')?.disable();
       this.formGroup.get('choVay')?.disable();
     }
+    if (contract.tsbdRequest?.checkTaiSanGanLienVoiDat) {
+      console.log('')
+      this.formGroup.get('tsbdRequest.dienTichTS')?.enable();
+      this.formGroup.get('tsbdRequest.ketCauXayDung')?.enable();
+      this.formGroup.get('tsbdRequest.fromTime')?.enable();
+
+      this.formGroup.get('tsbdRequest.dienTichTS')?.setValue(contract.tsbdRequest.dienTichTS);
+      this.formGroup.get('tsbdRequest.ketCauXayDung')?.setValue(contract.tsbdRequest.ketCauXayDung);
+      this.formGroup.get('tsbdRequest.fromTime')?.setValue(contract.tsbdRequest.fromTime);
+    } else {
+      this.formGroup.get('tsbdRequest.dienTichTS')?.disable();
+      this.formGroup.get('tsbdRequest.ketCauXayDung')?.disable();
+      this.formGroup.get('tsbdRequest.fromTime')?.disable();
+    }
+
 
     if (contract.checkLoaiDat) {
       this.formGroup.get('loaiDat')?.enable();
@@ -460,12 +491,20 @@ export class CreateCreditContractComponent implements OnInit {
     });
 
     this.formGroup.get('checkNguoiDungTenBiaDo2')?.valueChanges.subscribe(checked => {
-      const controls = ['dungTenBiaDo2','gioiTinhDungTenBiaDo2','namSinhDungTenBiaDo2','cccdDungTenBiaDo2','ngayCapCCCDDungTenBiaDo2','noiCapCCCDDungTenBiaDo2','diaChiThuongTruDungTenBiaDo2'];
+      const controls = ['dungTenBiaDo2', 'gioiTinhDungTenBiaDo2', 'namSinhDungTenBiaDo2', 'cccdDungTenBiaDo2', 'ngayCapCCCDDungTenBiaDo2', 'noiCapCCCDDungTenBiaDo2', 'diaChiThuongTruDungTenBiaDo2'];
       controls.forEach(c => {
         const ctrl = this.formGroup.get(c);
         if (checked) ctrl?.enable(); else ctrl?.disable();
       });
     });
+    (this.formGroup.get('tsbdRequest.checkTaiSanGanLienVoiDat') as FormControl)?.valueChanges.subscribe(checked => {
+      const controls = ['dienTichTS', 'ketCauXayDung', 'fromTime'];
+      controls.forEach(c => {
+        const ctrl = this.formGroup.get(`tsbdRequest.${c}`);
+        if (checked) ctrl?.enable(); else ctrl?.disable();
+      });
+    });
+
 
     this.formGroup.get('checkGhiChu')?.valueChanges.subscribe(checked => {
       const control = this.formGroup.get('ghiChu');
@@ -654,7 +693,6 @@ export class CreateCreditContractComponent implements OnInit {
       error: (err) => console.error('Upload thất bại:', err)
     });
   }
-
 
 
   // 👉 Hiển thị file preview bằng Google Viewer

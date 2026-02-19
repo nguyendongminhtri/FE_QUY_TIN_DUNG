@@ -1,5 +1,6 @@
 import {FileMetadataEntity} from "./FileMetadataEntity";
 import {TableRequest} from "./TableRequest";
+import {CreditContractTSBD} from "./CreditContractTSBD";
 
 
 export class CreditContract {
@@ -51,7 +52,7 @@ export class CreditContract {
   loaiVay?: string;
   fileAvatarUrls?: FileMetadataEntity[] = [];
   // avatars?: FileMetadataEntity[] = [];
-  tableRequest?: TableRequest;
+  tableRequest?: string;
   table1?: TableRequest;
   table2?: TableRequest;
   table3?: TableRequest;
@@ -94,6 +95,7 @@ export class CreditContract {
   noiDungNgoaiBia?:string;
   ngayBaoDam?: string;
   soBBXetDuyetChoVay?: string;
+  tsbdRequest?: CreditContractTSBD;
   constructor(contractDate: string, nguoiDaiDien?: string, tenKhachHang?: string,
               namSinhKhachHang?: string, sdtKhachHang?: string, sttvKhachHang?: string,
               cccdKhachHang?: string, ngayCapCCCDKhachHang?: string,
