@@ -38,7 +38,7 @@
             </div>
             <div class="form-col">
               <mat-form-field appearance="fill">
-                <mat-label>Chọn Người đại diện: </mat-label>
+                <mat-label>Chọn Người đại diện:</mat-label>
                 <mat-select formControlName="nguoiDaiDien">
                   <mat-option value="gd">PHÙNG THỊ LOAN</mat-option>
                   <mat-option value="pgd">VŨ THANH HẢI</mat-option>
@@ -46,16 +46,16 @@
               </mat-form-field>
             </div>
           </div>
-<!--          <div class="form-col">-->
-<!--            <mat-form-field appearance="fill" class="example-full-width">-->
-<!--              <mat-hint style="color: red">TT Người đại diện: Nếu có ủy quyền, hãy nhập nội dung thay thế, không sẽ nhận-->
-<!--                dữ liệu mặc định-->
-<!--              </mat-hint>-->
-<!--              <mat-label>Thông tin người đại diện: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành</mat-label>-->
-<!--              <textarea matInput formControlName="nguoiDaiDien" rows="3"-->
-<!--                        placeholder="PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành"></textarea>-->
-<!--            </mat-form-field>-->
-<!--          </div>-->
+          <!--          <div class="form-col">-->
+          <!--            <mat-form-field appearance="fill" class="example-full-width">-->
+          <!--              <mat-hint style="color: red">TT Người đại diện: Nếu có ủy quyền, hãy nhập nội dung thay thế, không sẽ nhận-->
+          <!--                dữ liệu mặc định-->
+          <!--              </mat-hint>-->
+          <!--              <mat-label>Thông tin người đại diện: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành</mat-label>-->
+          <!--              <textarea matInput formControlName="nguoiDaiDien" rows="3"-->
+          <!--                        placeholder="PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành"></textarea>-->
+          <!--            </mat-form-field>-->
+          <!--          </div>-->
           <br>
           <br>
           <div class="section-row">
@@ -112,7 +112,7 @@
                 </div>
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
-                    <mat-label>Nơi cấp khách hàng: </mat-label>
+                    <mat-label>Nơi cấp khách hàng:</mat-label>
                     <mat-select formControlName="noiCapCCCDKhachHang">
                       <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
                       <mat-option value="Bộ công an">Bộ công an</mat-option>
@@ -171,7 +171,7 @@
                 </div>
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
-                    <mat-label>Nơi cấp người thân: </mat-label>
+                    <mat-label>Nơi cấp người thân:</mat-label>
                     <mat-select formControlName="noiCapCCCDNguoiThan">
                       <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
                       <mat-option value="Bộ công an">Bộ công an</mat-option>
@@ -308,13 +308,15 @@
               <mat-form-field>
                 <mat-label>Chọn Nội Dung Ngoài Bìa:</mat-label>
                 <mat-select formControlName="noiDungNgoaiBia">
-                  <mat-option class="option-blue" value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu nhà ở và tài sản khác gắn liền với đất">
+                  <mat-option class="option-blue"
+                              value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu nhà ở và tài sản khác gắn liền với đất">
                     GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT QUYỀN SỞ HỮU NHÀ Ở VÀ TÀI SẢN KHÁC GẮN LIỀN VỚI ĐẤT
                   </mat-option>
                   <mat-option class="option-red" value="Giấy chứng nhận quyền sử dụng đất">
                     GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT
                   </mat-option>
-                  <mat-option class="option-green" value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu tài sản gắn liền với đất">
+                  <mat-option class="option-green"
+                              value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu tài sản gắn liền với đất">
                     GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT QUYỂN SỞ HỮU TÀI SẢN GẮN LIỀN VỚI ĐẤT
                   </mat-option>
                 </mat-select>
@@ -458,10 +460,11 @@
             </div>
           </div>
           <h2>Nhập thêm thông tin GIẤY ĐỀ NGHỊ VAY VỐN</h2>
-          <mat-checkbox formControlName="checkHopDongBaoLanh"><span style="color: red">Tích chọn nếu là hợp đồng bảo lãnh</span></mat-checkbox>
+          <mat-checkbox formControlName="checkHopDongBaoLanh"><span style="color: red">Tích chọn nếu là hợp đồng bảo lãnh</span>
+          </mat-checkbox>
           <div class="section-row">
             <div class="section-col">
-              <h2>{{titleNguoiBaoLanh1}}</h2>
+              <h2>{{ titleNguoiBaoLanh1 }}</h2>
               <div class="form-row-3">
                 <div class="form-col">
                   <mat-form-field appearance="fill">
@@ -506,7 +509,7 @@
                 </div>
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
-                    <mat-label>Nơi cấp cccd bảo lãnh 1: </mat-label>
+                    <mat-label>Nơi cấp cccd bảo lãnh 1:</mat-label>
                     <mat-select formControlName="noiCapCCCDDungTenBiaDo1">
                       <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
                       <mat-option value="Bộ công an">Bộ công an</mat-option>
@@ -524,7 +527,7 @@
               </div>
             </div>
             <div class="section-col">
-              <h2>{{titleNguoiBaoLanh2}}</h2>
+              <h2>{{ titleNguoiBaoLanh2 }}</h2>
               <div class="form-row-3">
                 <div class="form-col checkbox-input-col">
                   <mat-checkbox formControlName="checkNguoiDungTenBiaDo2"></mat-checkbox>
@@ -564,7 +567,7 @@
                 </div>
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
-                    <mat-label>Nơi cấp cccd bảo lãnh 2: </mat-label>
+                    <mat-label>Nơi cấp cccd bảo lãnh 2:</mat-label>
                     <mat-select formControlName="noiCapCCCDDungTenBiaDo2">
                       <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
                       <mat-option value="Bộ công an">Bộ công an</mat-option>
@@ -588,7 +591,8 @@
                   <mat-checkbox formControlName="checkNguoiMangTenBiaDo"></mat-checkbox>
                   <mat-form-field appearance="fill">
                     <mat-label>Nội dung sang tên</mat-label>
-                    <textarea matInput formControlName="nguoiMangTen" placeholder="mang tên bà Đặng Thị Hà. Ngày 18/11/2025, Chi nhánh Văn phòng đăng ký đất đai Chí Linh xác nhận chuyển nhượng cho ông Nguyễn Đình Nam CC số 030084018290 và bà Nguyễn Thị Thu Huế  CCCD số 031189020545 theo hồ sơ số 002575.CN.007"></textarea>
+                    <textarea matInput formControlName="nguoiMangTen"
+                              placeholder="mang tên bà Đặng Thị Hà. Ngày 18/11/2025, Chi nhánh Văn phòng đăng ký đất đai Chí Linh xác nhận chuyển nhượng cho ông Nguyễn Đình Nam CC số 030084018290 và bà Nguyễn Thị Thu Huế  CCCD số 031189020545 theo hồ sơ số 002575.CN.007"></textarea>
                   </mat-form-field>
                 </div>
               </div>
@@ -667,13 +671,13 @@
               <table class="table table-bordered">
                 <tbody>
                 <tr *ngFor="let row of table1.controls; let i = index" [formGroupName]="i">
-                  <td><input matInput formControlName="col1"></td>
-                  <td><input matInput formControlName="col2"></td>
-                  <td><input matInput formControlName="col3"></td>
-                  <td><input matInput formControlName="col4"></td>
-                  <td><input matInput formControlName="col5"></td>
-                  <td><input matInput formControlName="col6" readonly></td>
-                  <td><input matInput formControlName="col7" readonly></td>
+                  <td><input matInput formControlName="col1" class="form-control"></td>
+                  <td><input matInput formControlName="col2" class="form-control"></td>
+                  <td><input matInput formControlName="col3" class="form-control"></td>
+                  <td><input matInput formControlName="col4" class="form-control"></td>
+                  <td><input matInput formControlName="col5" class="form-control"></td>
+                  <td><input matInput formControlName="col6" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col7" readonly class="form-control"></td>
                 </tr>
                 </tbody>
               </table>
@@ -683,13 +687,13 @@
               <table class="table table-bordered">
                 <tbody>
                 <tr *ngFor="let row of table2.controls; let i = index" [formGroupName]="i">
-                  <td><input matInput formControlName="col1"></td>
-                  <td><input matInput formControlName="col2"></td>
-                  <td><input matInput formControlName="col3"></td>
-                  <td><input matInput formControlName="col4"></td>
-                  <td><input matInput formControlName="col5"></td>
-                  <td><input matInput formControlName="col6" readonly></td>
-                  <td><input matInput formControlName="col7" readonly></td>
+                  <td><input matInput formControlName="col1" class="form-control"></td>
+                  <td><input matInput formControlName="col2" class="form-control"></td>
+                  <td><input matInput formControlName="col3" class="form-control"></td>
+                  <td><input matInput formControlName="col4" class="form-control"></td>
+                  <td><input matInput formControlName="col5" class="form-control"></td>
+                  <td><input matInput formControlName="col6" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col7" readonly class="form-control"></td>
                 </tr>
                 </tbody>
               </table>
@@ -699,20 +703,159 @@
               <table class="table table-bordered">
                 <tbody>
                 <tr *ngFor="let row of table3.controls; let i = index" [formGroupName]="i">
-                  <td><input matInput formControlName="col1"></td>
-                  <td><input matInput formControlName="col2"></td>
-                  <td><input matInput formControlName="col3"></td>
-                  <td><input matInput formControlName="col4"></td>
-                  <td><input matInput formControlName="col5"></td>
-                  <td><input matInput formControlName="col6" readonly></td>
-                  <td><input matInput formControlName="col7" readonly></td>
+                  <td><input matInput formControlName="col1" class="form-control"></td>
+                  <td><input matInput formControlName="col2" class="form-control"></td>
+                  <td><input matInput formControlName="col3" class="form-control"></td>
+                  <td><input matInput formControlName="col4" class="form-control"></td>
+                  <td><input matInput formControlName="col5" class="form-control"></td>
+                  <td><input matInput formControlName="col6" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col7" readonly class="form-control"></td>
                 </tr>
                 </tbody>
               </table>
             </div>
           </div>
+          <h2>Nhập thông tin: PHƯƠNG ÁN VAY VỐN</h2>
+          <div class="form-row">
+            <div formGroupName="pavvRequest" class="form-col checkbox-input-col">
+              <mat-form-field appearance="fill">
+                <mat-label>Tên phương án</mat-label>
+                <input matInput formControlName="name" placeholder="">
+              </mat-form-field>
+              <mat-checkbox formControlName="checkAddress">Địa điểm</mat-checkbox>
+              <mat-form-field appearance="fill">
+                <mat-label>Địa điểm thực hiện phương án</mat-label>
+                <input matInput formControlName="address" placeholder="">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Lý do:</mat-label>
+                <textarea matInput formControlName="reason" placeholder=""></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+          <div *ngIf="formGroup.get('loaiVay')?.value === 'NGẮN HẠN (Thỏa thuận)'" formArrayName="hanMucTable">
+            <h3>Bảng hạn mức</h3>
+            <button class="btn btn-primary mb-2" type="button" (click)="addChiPhiRow()">
+              + Thêm hàng
+            </button>
+
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th>Hàng</th> <!-- cột số thứ tự phụ -->
+                <th>STT</th>
+                <th>Danh mục</th>
+                <th>Đơn vị</th>
+                <th>Số lượng</th>
+                <th>Đơn giá (đồng)</th>
+                <th>Thành tiền (đồng)</th>
+                <th>Merge</th>
+                <th>Hành động</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let row of chiPhiRows; let i = index" [formGroup]="row">
+
+                <!-- Cột số thứ tự phụ -->
+                <td class="text-center fw-bold">{{ i+1 }}</td>
+
+                <!-- Nếu merge -->
+                <ng-container *ngIf="row.get('merge')?.value; else normalRow">
+                  <td [attr.colspan]="(row.get('mergeTargets')?.value?.length || 1)" class="fw-bold">
+                    <input formControlName="mergedValue" class="form-control">
+                  </td>
+                  <td>
+                    <input type="text"
+                           [value]="row.get('thanhTien')?.value"
+                           (input)="onInputChange($event, row, 'thanhTien')"
+                           (blur)="formatOnBlur(row, 'thanhTien')"
+                           class="form-control">
+
+                    <input type="checkbox"
+                           [checked]="row.get('isTotal')?.value"
+                           (change)="toggleIsTotal(row, $event)">
+                    <ng-container *ngIf="row.get('isTotal')?.value">
+                      <select multiple formControlName="sumTargets" class="form-select"
+                              (change)="updateTotalRow(row)">
+                        <ng-container *ngFor="let r of chiPhiRows; let j = index">
+                          <option [value]="j" *ngIf="r !== row">Hàng {{j+1}}</option>
+                        </ng-container>
+                      </select>
+                    </ng-container>
+                  </td>
+                </ng-container>
+
+                <!-- Nếu không merge -->
+                <ng-template #normalRow>
+                  <td><input formControlName="stt" class="form-control"></td>
+                  <td><input formControlName="danhMuc" class="form-control"></td>
+                  <td><input formControlName="donVi" class="form-control"></td>
+                  <td>
+                    <input type="text"
+                           [value]="row.get('soLuong')?.value"
+                           (input)="onInputChange($event, row, 'soLuong')"
+                           (blur)="formatOnBlur(row, 'soLuong')"
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="text"
+                           [value]="row.get('donGia')?.value"
+                           (input)="onInputChange($event, row, 'donGia')"
+                           (blur)="formatOnBlur(row, 'donGia')"
+                           class="form-control">
+                  </td>
+                  <td>
+                    <input type="text"
+                           [value]="row.get('thanhTien')?.value"
+                           (input)="onInputChange($event, row, 'thanhTien')"
+                           (blur)="formatOnBlur(row, 'thanhTien')"
+                           class="form-control">
+                    <label>Tính tổng</label>
+                    <input type="checkbox"
+                           [checked]="row.get('isTotal')?.value"
+                           (change)="toggleIsTotal(row, $event)">
+                    <ng-container *ngIf="row.get('isTotal')?.value">
+                      <select multiple formControlName="sumTargets" class="form-select"
+                              (change)="updateTotalRow(row)">
+                        <ng-container *ngFor="let r of chiPhiRows; let j = index">
+                          <option [value]="j" *ngIf="r !== row">Hàng {{j+1}}</option>
+                        </ng-container>
+                      </select>
+                    </ng-container>
+                  </td>
+                </ng-template>
+
+                <!-- Merge control -->
+                <td>
+                  <label>Merge</label>
+                  <input type="checkbox"
+                         [checked]="row.get('merge')?.value"
+                         (change)="toggleMerge(i, $event)">
+                  <ng-container *ngIf="row.get('merge')?.value">
+                    <select multiple formControlName="mergeTargets" class="form-select"
+                            (change)="updateMergedRow(row)">
+                      <option value="stt">STT</option>
+                      <option value="danhMuc">Danh mục</option>
+                      <option value="donVi">Đơn vị</option>
+                      <option value="soLuong">Số lượng</option>
+                      <option value="donGia">Đơn giá</option>
+                    </select>
+                  </ng-container>
+                </td>
+
+                <!-- Hành động -->
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="removeChiPhiRow(i)">Xóa</button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
 
 
+
+
+
+          </div>
           <br>
           <!--          <button mat-raised-button color="primary" type="submit">Tạo hợp đồng</button>-->
           <button mat-raised-button color="primary" type="submit">Xem trước File</button>
@@ -729,8 +872,10 @@
         <div class="form-col checkbox-input-col">
           <input type="file" multiple (change)="onFilesSelected($event)"/>
 
-          <div *ngIf="fileAvatarUrls.length > 0" style="margin-top: 10px; display: flex; flex-direction: column; gap: 15px;">
-            <div *ngFor="let file of fileAvatarUrls; let i = index" style="display: flex; flex-direction: column; align-items: flex-start;">
+          <div *ngIf="fileAvatarUrls.length > 0"
+               style="margin-top: 10px; display: flex; flex-direction: column; gap: 15px;">
+            <div *ngFor="let file of fileAvatarUrls; let i = index"
+                 style="display: flex; flex-direction: column; align-items: flex-start;">
               <h3>Ảnh {{ i + 1 }}</h3>
               <img [src]="file.fileUrl"
                    style="max-width: 800px; height: auto; border-radius: 8px; margin-bottom: 10px;">

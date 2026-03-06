@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {CreditContractService} from "../../../service/credit-contract.service";
 import {CreditContract} from "../../../model/CreditContract";
 import {ConvertMoney} from "../../../config/ConvertMoney";
@@ -7,7 +7,7 @@ import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
 import {UploadMultipleAvatarService} from "../../../service/upload-multiple-avatar.service";
 import {FileMetadataEntity} from "../../../model/FileMetadataEntity";
 import {ActivatedRoute} from "@angular/router";
-import {TableRequest} from "../../../model/TableRequest";
+import {MergeInfo, TableRequest} from "../../../model/TableRequest";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
 
@@ -161,6 +161,12 @@ export class CreateCreditContractComponent implements OnInit {
         ketCauXayDung: [{value: 'Mái bằng', disabled: true}],
         fromTime: [{value: '', disabled: true}]
       }),
+      pavvRequest: this.fb.group({
+        name: [''],
+        address: [{value: '', disabled: true}],
+        checkAddress: [false],
+        reason: ['']
+      }),
       fromTime: [{value: '', disabled: true}],
       loaiDat: [{value: '+ Đất ở tại đô thị: 50m²; + Đất trồng cây lâu năm 55,3m²', disabled: true}],
       nhaCoDinh: [{value: '- Nhà ở cố định:    m²;  loại nhà:      ; \nĐược định giá 0 đồng', disabled: true}],
@@ -191,7 +197,9 @@ export class CreateCreditContractComponent implements OnInit {
       nguoiMangTen: [{value: 'mang tên ...', disabled: true}],
       table1: this.fb.array([]),
       table2: this.fb.array([]),
-      table3: this.fb.array([])
+      table3: this.fb.array([]),
+      hanMucTable: this.fb.array([]),
+      chiPhiTable: this.fb.array([])
     });
   }
 
@@ -283,6 +291,12 @@ export class CreateCreditContractComponent implements OnInit {
         dienTichTS: contract.tsbdRequest?.dienTichTS ?? '',
         ketCauXayDung: contract.tsbdRequest?.ketCauXayDung ?? '',
         fromTime: contract.tsbdRequest?.fromTime ?? ''
+      },
+      pavvRequest: {
+        checkAddress: contract.pavvRequest?.checkAddress ?? false,
+        name: contract.pavvRequest?.name ?? '',
+        address: contract.pavvRequest?.addres ?? '',
+        reason: contract.pavvRequest?.reason ?? ''
       }
     });
   }
@@ -355,7 +369,6 @@ export class CreateCreditContractComponent implements OnInit {
       this.formGroup.get('choVay')?.disable();
     }
     if (contract.tsbdRequest?.checkTaiSanGanLienVoiDat) {
-      console.log('')
       this.formGroup.get('tsbdRequest.dienTichTS')?.enable();
       this.formGroup.get('tsbdRequest.ketCauXayDung')?.enable();
       this.formGroup.get('tsbdRequest.fromTime')?.enable();
@@ -424,6 +437,15 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
   private setupValueChangeListeners(): void {
+    this.formGroup.get('muchDichVay')?.valueChanges.subscribe(value => {
+      console.log('value much dich vay -->', value);
+      this.formGroup.get('pavvRequest.name')?.setValue(value, {emitEvent: false});
+    });
+    this.formGroup.get('diaChiThuongTruKhachHang')?.valueChanges.subscribe(value => {
+      console.log('value much dich vay -->', value);
+      this.formGroup.get('pavvRequest.address')?.setValue(value, {emitEvent: false});
+    });
+
     this.formGroup.get('tienSo')?.valueChanges.subscribe(rawValue => {
       if (rawValue) {
         const num = Number(String(rawValue).replace(/\./g, ''));
@@ -431,7 +453,12 @@ export class CreateCreditContractComponent implements OnInit {
       } else {
         this.tienChu = '';
       }
+
+      // Sau khi tính được số tiền bằng chữ, cập nhật vào lý do
+      const reasonText = `Lý do thực hiện phương án: Gia đình tôi có nhu cầu ... Vì vậy gia đình tôi lập phương án xin Quỹ tín dụng Thái Học cho chúng tôi vay số tiền là:  ${rawValue} đồng (Bằng chữ: ${this.tienChu})`;
+      (this.formGroup.get('pavvRequest') as FormGroup).get('reason')?.setValue(reasonText, {emitEvent: false});
     });
+
 
     this.formGroup.get('landItems')?.valueChanges.subscribe(() => {
       this.calculateTongTaiSanBD();
@@ -504,6 +531,10 @@ export class CreateCreditContractComponent implements OnInit {
         if (checked) ctrl?.enable(); else ctrl?.disable();
       });
     });
+    (this.formGroup.get('pavvRequest.checkAddress') as FormControl)?.valueChanges.subscribe(checked => {
+      const controls = this.formGroup.get('pavvRequest.address');
+      checked ? controls?.enable() : controls?.disable();
+    });
 
 
     this.formGroup.get('checkGhiChu')?.valueChanges.subscribe(checked => {
@@ -520,7 +551,64 @@ export class CreateCreditContractComponent implements OnInit {
         control?.setValue('');
       }
     });
+    this.formGroup.get('loaiVay')?.valueChanges.subscribe(value => {
+      const hanMucTable = this.formGroup.get('hanMucTable') as FormArray;
+      hanMucTable.clear();
+
+      if (value === 'NGẮN HẠN (Thỏa thuận)') {
+        this.initHanMucTable(hanMucTable);
+      }
+    });
+
   }
+
+  initHanMucTable(hanMucTable: FormArray) {
+    // Cấu hình mặc định cho từng hàng
+    const defaultRows = [
+      {
+        col1: '1',
+        col2: 'Nhập đầu vào',
+        col3: 'Thanh toán cho nhà cung cấp',
+        col4: '30',
+        col5: ''
+      },
+      {col1: '2', col2: 'Tồn kho', col3: 'Giai đoạn lưu kho', col4: '224', col5: ''},
+      {col1: '3', col2: 'Thu hồi vốn', col3: '(công nợ với khách hàng)', col4: '50', col5: ''},
+      {col1: 'Tổng số ngày bình quân', col2: '', col3: '', col4: '304', col5: ''} // hàng cuối merge cột
+    ];
+
+    // Tạo FormGroup cho từng hàng
+    defaultRows.forEach(row => {
+      hanMucTable.push(this.fb.group({
+        col1: [row.col1],
+        col2: [row.col2],
+        col3: [row.col3],
+        col4: [row.col4],
+        col5: [row.col5],
+      }));
+    });
+  }
+  // initChiPhiTable(chiPhiTable: FormArray) {
+  //   const defaultRows = [
+  //     { stt: 'I', danhMuc: 'Chi phí trực tiếp', donVi: '', soLuong: '', donGia: '', thanhTien: '1000000', formula: '', merge: { fromCol: 1, toCol: 5 } },
+  //     { stt: '1', danhMuc: 'Giống gà', donVi: '', soLuong: '', donGia: '', thanhTien: '500000', formula: '', merge: null },
+  //     { stt: '2', danhMuc: 'Thức ăn', donVi: '', soLuong: '', donGia: '', thanhTien: '500000', formula: '', merge: null }
+  //   ];
+  //
+  //   defaultRows.forEach(row => {
+  //     chiPhiTable.push(this.fb.group({
+  //       stt: [row.stt],
+  //       danhMuc: [row.danhMuc],
+  //       donVi: [row.donVi],
+  //       soLuong: [row.soLuong],
+  //       donGia: [row.donGia],
+  //       thanhTien: [row.thanhTien],
+  //       formula: [row.formula],
+  //       merge: [row.merge] // thêm thông tin merge
+  //     }));
+  //   });
+  // }
+
 
   syncField(source: string, target: string) {
     this.formGroup.get(source)?.valueChanges.subscribe(value => {
@@ -581,6 +669,8 @@ export class CreateCreditContractComponent implements OnInit {
       table1: this.buildTableRequest(this.table1),
       table2: this.buildTableRequest(this.table2),
       table3: this.buildTableRequest(this.table3),
+      hanMucTable: this.buildHanMucTableRequest(this.hanMucTable),
+      chiPhiTable: this.buildChiPhiTableRequest(this.chiPhiTable),
       giaTriQuyenSuDungDat: this.giaTriQuyenSuDungDat
     };
     this.creditContractService.previewContract(payload).subscribe(urls => {
@@ -639,6 +729,8 @@ export class CreateCreditContractComponent implements OnInit {
       table1: this.buildTableRequest(this.table1),
       table2: this.buildTableRequest(this.table2),
       table3: this.buildTableRequest(this.table3),
+      hanMucTable: this.buildHanMucTableRequest(this.hanMucTable),
+      chiPhiTable: this.buildChiPhiTableRequest(this.chiPhiTable),
       giaTriQuyenSuDungDat: this.giaTriQuyenSuDungDat
     };
     console.log('playload -->', payload)
@@ -826,7 +918,113 @@ export class CreateCreditContractComponent implements OnInit {
       row2T3.get('col5')?.valueChanges.subscribe(() => this.updateCol6(row2T3));
       table3.push(row2T3);
     }
+    const chiPhiTable = this.chiPhiTable;
+    if (chiPhiTable.length === 0) {
+      const row1 = this.createChiPhiRow({
+        stt: 'I',
+        danhMuc: 'Chi phí trực tiếp',
+        donVi: '',
+        soLuong: '',
+        donGia: '',
+        thanhTien: '1000000',
+        formula: 'SUM(rows[1..2].thanhTien)',
+        merge: { fromCol: 1, toCol: 5 }
+      });
+      chiPhiTable.push(row1);
+
+      const row2 = this.createChiPhiRow({
+        stt: '1',
+        danhMuc: 'Giống gà',
+        donVi: '',
+        soLuong: '',
+        donGia: '',
+        thanhTien: '500000',
+        formula: '',
+        merge: null
+      });
+      chiPhiTable.push(row2);
+
+      const row3 = this.createChiPhiRow({
+        stt: '2',
+        danhMuc: 'Thức ăn',
+        donVi: '',
+        soLuong: '',
+        donGia: '',
+        thanhTien: '500000',
+        formula: '',
+        merge: null
+      });
+      chiPhiTable.push(row3);
+    }
   }
+  createChiPhiRow(data: any = {}): FormGroup {
+    const row = this.fb.group({
+      stt: [data.stt || ''],
+      danhMuc: [data.danhMuc || ''],
+      donVi: [data.donVi || ''],
+      soLuong: [data.soLuong || ''],
+      donGia: [data.donGia || ''],
+      thanhTien: [data.thanhTien || ''],
+      isTotal: [data.isTotal || false],
+      sumTargets: [data.sumTargets || []],
+      merge: [data.merge || null]
+    });
+
+    // Nếu không phải ô tổng thì tính Thành tiền = Số lượng × Đơn giá
+    row.get('soLuong')?.valueChanges.subscribe(() => this.updateThanhTien(row));
+    row.get('donGia')?.valueChanges.subscribe(() => this.updateThanhTien(row));
+
+    return row;
+  }
+
+  addChiPhiRow() {
+    // Tự động đánh số STT tăng dần
+    const nextStt = this.chiPhiTable.length + 1;
+    this.chiPhiTable.push(this.createChiPhiRow({ stt: nextStt }));
+  }
+
+  removeChiPhiRow(index: number) {
+    this.chiPhiTable.removeAt(index);
+  }
+
+
+
+
+
+
+  formatNumber(value: number): string {
+    return value.toLocaleString('vi-VN'); // ví dụ: 10000 -> "10.000"
+  }
+
+
+  updateThanhTien(row: FormGroup) {
+    const soLuong = this.parseNumber(row.get('soLuong')?.value);
+    const donGia = this.parseNumber(row.get('donGia')?.value);
+    const thanhTien = soLuong * donGia;
+
+    // set lại giá trị đã format để hiển thị đẹp
+    row.get('thanhTien')?.setValue(thanhTien.toLocaleString('vi-VN'), { emitEvent: false });
+  }
+
+
+  updateTotalRow(totalRow: FormGroup) {
+    const sumTargets = totalRow.get('sumTargets')?.value || [];
+    let sum = 0;
+
+    sumTargets.forEach((index: number) => {
+      const targetRow = this.chiPhiRows[index];
+      if (targetRow) {
+        const thanhTien = this.parseNumber(targetRow.get('thanhTien')?.value);
+        sum += thanhTien;
+      }
+    });
+
+    // set lại giá trị đã format để hiển thị đẹp
+    totalRow.get('thanhTien')?.setValue(sum.toLocaleString('vi-VN'), { emitEvent: false });
+  }
+
+
+
 
 
   updateCol6(row: FormGroup) {
@@ -855,6 +1053,18 @@ export class CreateCreditContractComponent implements OnInit {
     return this.formGroup.get('table3') as FormArray;
   }
 
+  get hanMucTable(): FormArray {
+    return this.formGroup.get('hanMucTable') as FormArray;
+  }
+  get chiPhiTable(): FormArray {
+    return this.formGroup.get('chiPhiTable') as FormArray;
+  }
+
+  // get chiPhiTableGroups(): FormGroup[] {
+  //   return this.chiPhiTable.controls as FormGroup[];
+  // }
+
+
   buildTableRequest(table: FormArray): any {
     const rows: string[][] = table.controls.map((row: any) => {
       return [
@@ -878,6 +1088,55 @@ export class CreateCreditContractComponent implements OnInit {
     };
   }
 
+  buildHanMucTableRequest(table: FormArray): TableRequest {
+    const rows: string[][] = table.controls.map((row: any) => {
+      return [
+        row.get('col1')?.value || '',
+        row.get('col2')?.value || '',
+        row.get('col3')?.value || '',
+        row.get('col4')?.value || '',
+        row.get('col5')?.value || ''
+      ];
+    });
+    return {
+      drawTable: true,
+      headers: ['STT', 'Giai đoạn', 'Chi tiết', 'Thời gian bình quân (ngày)', 'Ghi chú'],
+      rows,
+      tableType: 'hanMuc'
+    };
+  }
+  buildChiPhiTableRequest(table: FormArray): TableRequest {
+    const rows: string[][] = table.controls.map(ctrl => {
+      const row = ctrl as FormGroup;
+      return [
+        row.get('stt')?.value || '',
+        row.get('danhMuc')?.value || '',
+        row.get('donVi')?.value || '',
+        row.get('soLuong')?.value || '',
+        row.get('donGia')?.value || '',
+        row.get('thanhTien')?.value || ''
+      ];
+    });
+
+    const merges: MergeInfo[] = table.controls.map((ctrl, idx) => {
+      const row = ctrl as FormGroup;
+      return {
+        rowIndex: idx,
+        mergeTargets: row.get('mergeTargets')?.value || [],
+        mergedValue: row.get('mergedValue')?.value || ''
+      };
+    }).filter(m => m.mergeTargets.length > 0);
+
+    return {
+      drawTable: true,
+      headers: ['STT', 'Danh mục', 'Đơn vị', 'Số lượng', 'Đơn giá (đồng)', 'Thành tiền (đồng)'],
+      rows,
+      merges,
+      tableType: 'chiPhi'
+    };
+  }
+
+
   get giaTriQuyenSuDungDat(): number {
     const table = this.table3;
     if (!table || table.length < 2) {
@@ -892,4 +1151,103 @@ export class CreateCreditContractComponent implements OnInit {
 
     return row1 + row2;
   }
+
+  setTotalRow(index: number, event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const formula = select.value;
+
+    const row = this.chiPhiTable.at(index) as FormGroup;
+    if (formula) {
+      row.patchValue({ formula, isTotal: true });
+    } else {
+      row.patchValue({ formula: '', isTotal: false });
+    }
+  }
+
+  toggleIsTotal(row: FormGroup, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const checked = input.checked;
+
+    row.patchValue({ isTotal: checked });
+    this.updateThanhTien(row);
+  }
+  updateMergedRow(row: FormGroup) {
+    const targets: string[] = row.get('mergeTargets')?.value || [];
+    const merged = targets.map(t => row.get(t)?.value).join(' | ');
+    row.get('mergedValue')?.setValue(merged, { emitEvent: false });
+  }
+
+  toggleMerge(i: number, event: any) {
+    const checked = event.target.checked;
+    const row = this.chiPhiRows[i];
+    row.get('merge')?.setValue(checked);
+
+    if (checked) {
+      if (!row.get('mergeTargets')) {
+        row.addControl('mergeTargets', this.fb.control([]));
+      }
+      if (!row.get('mergedValue')) {
+        row.addControl('mergedValue', this.fb.control(''));
+      }
+
+      // Lắng nghe thay đổi mergedValue -> cập nhật ngược lại các cột gốc
+      row.get('mergedValue')?.valueChanges.subscribe((val: string) => {
+        const targets: string[] = row.get('mergeTargets')?.value || [];
+        const parts = val.split('|').map((p: string) => p.trim());
+        targets.forEach((t, idx) => {
+          if (row.get(t)) {
+            row.get(t)?.setValue(parts[idx] || '');
+          }
+        });
+      });
+
+      // Lắng nghe thay đổi cột gốc -> cập nhật mergedValue
+      ['stt','danhMuc','donVi','soLuong','donGia'].forEach(field => {
+        if (row.get(field)) {
+          row.get(field)?.valueChanges.subscribe(() => {
+            this.updateMergedRow(row);
+          });
+        }
+      });
+    } else {
+      row.removeControl('mergeTargets');
+      row.removeControl('mergedValue');
+    }
+  }
+
+  get chiPhiRows(): FormGroup[] {
+    return this.chiPhiTable.controls as FormGroup[];
+  }
+
+
+  onInputChange(event: any, row: FormGroup, controlName: string) {
+    const rawValue = event.target.value.replace(/\./g, '');
+    row.get(controlName)?.setValue(rawValue);
+
+    // Nếu thay đổi số lượng hoặc đơn giá thì cập nhật thành tiền
+    if (controlName === 'soLuong' || controlName === 'donGia') {
+      this.updateThanhTien(row);
+    }
+  }
+
+
+  formatOnBlur(row: FormGroup, controlName: string) {
+    const value = row.get(controlName)?.value;
+    if (value) {
+      const num = parseInt(value.toString().replace(/\./g, ''), 10);
+      if (!isNaN(num)) {
+        // set lại giá trị đã format vào FormControl
+        row.get(controlName)?.setValue(num.toLocaleString('vi-VN'), { emitEvent: false });
+      }
+    }
+  }
+// Hàm tiện ích: bỏ dấu chấm và chuyển về số
+  private parseNumber(value: any): number {
+    if (!value) return 0;
+    const raw = value.toString().replace(/\./g, '');
+    const num = parseInt(raw, 10);
+    return isNaN(num) ? 0 : num;
+  }
+
+
 }

@@ -161,3 +161,8 @@ mat-form-field {
 .option-orange { background: orange; }
 .option-purple { background: purple; }
 .option-brown { background: brown; }
+.fw-bold {
+  font-weight: bold;
+}
+
+

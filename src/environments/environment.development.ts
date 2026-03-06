@@ -1,5 +1,5 @@
 export const environment = {
-  API: 'http://localhost:8443/',
+  API: 'http://localhost:8080/api/',
   // API: 'http://163.223.12.221:8080/quy_tin_dung/',
   // API: 'https://qtdndthaihoc.com/api/',
 

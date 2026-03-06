@@ -1,6 +1,7 @@
 import {FileMetadataEntity} from "./FileMetadataEntity";
 import {TableRequest} from "./TableRequest";
 import {CreditContractTSBD} from "./CreditContractTSBD";
+import {CreditContractPAVV} from "./CreditContractPAVV";
 
 
 export class CreditContract {
@@ -56,6 +57,8 @@ export class CreditContract {
   table1?: TableRequest;
   table2?: TableRequest;
   table3?: TableRequest;
+  hanMucTable?: TableRequest;
+  chiPhiTable?: TableRequest;
   checkOption?: boolean;
   soHopDongTD?: string;
   checkNguoiDungTenBiaDo2?:boolean;
@@ -96,6 +99,7 @@ export class CreditContract {
   ngayBaoDam?: string;
   soBBXetDuyetChoVay?: string;
   tsbdRequest?: CreditContractTSBD;
+  pavvRequest?: CreditContractPAVV;
   constructor(contractDate: string, nguoiDaiDien?: string, tenKhachHang?: string,
               namSinhKhachHang?: string, sdtKhachHang?: string, sttvKhachHang?: string,
               cccdKhachHang?: string, ngayCapCCCDKhachHang?: string,
