@@ -65,6 +65,8 @@ export class CreateCreditContractComponent implements OnInit {
         this.loadTableArray(contract.table1, this.table1, 7);
         this.loadTableArray(contract.table2, this.table2, 7);
         this.loadTableArray(contract.table3, this.table3, 7);
+        this.loadTableArray(contract.hanMucTable, this.hanMucTable, 7);
+        this.loadChiPhiTable(contract.chiPhiTable, this.chiPhiTable);
         // File avatars
         this.fileAvatarUrls = contract.fileAvatarUrls ?? [];
         // Các control enable/disable theo checkbox
@@ -90,6 +92,11 @@ export class CreateCreditContractComponent implements OnInit {
 
     // Khởi tạo bảng rỗng nếu cần
     this.initTables();
+    const lastRow = this.chiPhiTable.at(this.chiPhiTable.length - 1) as FormGroup;
+    lastRow.get('thanhTien')?.valueChanges.subscribe(() => {
+      this.syncTongVonToPavvRequest();
+      this.syncTongVonLuuDong();
+    });
   }
 
   /* ---------- Helper methods ---------- */
@@ -132,7 +139,7 @@ export class CreateCreditContractComponent implements OnInit {
       soThuaDat: [''],
       noiDungNgoaiBia: [''],
       soBanDo: [''],
-      diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương Nay là Phường Chu Văn An, thành phố Hải Phòng'],
+      diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương nay là phường Chu Văn An, thành phố Hải Phòng'],
       dienTichDatSo: [''],
       thoiHanVay: [''],
       dienTichDatChu: [''],
@@ -165,7 +172,11 @@ export class CreateCreditContractComponent implements OnInit {
         name: [''],
         address: [{value: '', disabled: true}],
         checkAddress: [false],
-        reason: ['']
+        reason: [''],
+        tongVon: [''],
+        tongVonLuuDong: [''],
+        vonTuCo: [''],
+        vonKhac: ['']
       }),
       fromTime: [{value: '', disabled: true}],
       loaiDat: [{value: '+ Đất ở tại đô thị: 50m²; + Đất trồng cây lâu năm 55,3m²', disabled: true}],
@@ -237,6 +248,7 @@ export class CreateCreditContractComponent implements OnInit {
       soHopDongTD: contract.soHopDongTD,
       nguoiDaiDien: contract.nguoiDaiDien,
       tenKhachHang: contract.tenKhachHang,
+      thoiHanVay: contract.thoiHanVay,
       gtkh: contract.gtkh,
       noiDungNgoaiBia: contract.noiDungNgoaiBia,
       namSinhKhachHang: contract.namSinhKhachHang,
@@ -253,6 +265,13 @@ export class CreateCreditContractComponent implements OnInit {
       ngayCapCCCDNguoiThan: contract.ngayCapCCCDNguoiThan,
       noiCapCCCDNguoiThan: contract.noiCapCCCDKhachHang,
       diaChiThuongTruNguoiThan: contract.diaChiThuongTruNguoiThan,
+      dungTenBiaDo1: contract.dungTenBiaDo1,
+      gioiTinhDungTenBiaDo1: contract.gioiTinhDungTenBiaDo1,
+      namSinhDungTenBiaDo1: contract.namSinhDungTenBiaDo1,
+      cccdDungTenBiaDo1: contract.cccdDungTenBiaDo1,
+      ngayCapCCCDDungTenBiaDo1: contract.ngayCapCCCDDungTenBiaDo1,
+      noiCapCCCDDungTenBiaDo1: contract.noiCapCCCDDungTenBiaDo1,
+      diaChiThuongTruDungTenBiaDo1: contract.diaChiThuongTruDungTenBiaDo1,
       quanHe: contract.quanHe,
       tienSo: contract.tienSo,
       muchDichVay: contract.muchDichVay,
@@ -296,10 +315,45 @@ export class CreateCreditContractComponent implements OnInit {
         checkAddress: contract.pavvRequest?.checkAddress ?? false,
         name: contract.pavvRequest?.name ?? '',
         address: contract.pavvRequest?.addres ?? '',
-        reason: contract.pavvRequest?.reason ?? ''
+        reason: contract.pavvRequest?.reason ?? '',
+        tongVon: contract.pavvRequest?.tongVon ?? '',
+        tongVonLuuDong: contract.pavvRequest?.tongVonLuuDong ?? '',
+        vonTuCo: contract.pavvRequest?.vonTuCo ?? '',
+        vonKhac: contract.pavvRequest?.vonKhac ?? ''
       }
     });
   }
+  private syncTongVonToPavvRequest(): void {
+    if (this.chiPhiTable.length === 0) return;
+
+    const lastRow = this.chiPhiTable.at(this.chiPhiTable.length - 1) as FormGroup;
+    const tongVon = lastRow.get('thanhTien')?.value;
+
+    (this.formGroup.get('pavvRequest') as FormGroup)
+      .get('tongVon')
+      ?.setValue(tongVon);
+  }
+  private syncTongVonLuuDong(): void {
+    if (this.chiPhiTable.length < 2) return;
+
+    const lastRow = this.chiPhiTable.at(this.chiPhiTable.length - 1) as FormGroup;
+    const prevRow = this.chiPhiTable.at(this.chiPhiTable.length - 2) as FormGroup;
+
+    const tongVonStr = lastRow.get('thanhTien')?.value || '0';
+    const prevStr = prevRow.get('thanhTien')?.value || '0';
+
+    const tongVon = parseFloat(tongVonStr.toString().replace(/\./g, ''));
+    const prevValue = parseFloat(prevStr.toString().replace(/\./g, ''));
+
+    const tongVonLuuDong = tongVon - prevValue;
+
+    (this.formGroup.get('pavvRequest') as FormGroup)
+      .get('tongVonLuuDong')
+      ?.setValue(this.formatNumber(tongVonLuuDong)); // dùng lại hàm formatNumber
+  }
+
+
+
 
   private loadTableRequest(tableRequest: any): void {
     if (!tableRequest) {
@@ -328,6 +382,25 @@ export class CreateCreditContractComponent implements OnInit {
     // set hasTable control
     this.formGroup.patchValue({hasTable: !!tableRequest.drawTable});
   }
+  loadChiPhiTable(tableData: { rows: string[][] } | undefined, formArray: FormArray) {
+    formArray.clear();
+    if (!tableData || !tableData.rows) {
+      return;
+    }
+
+    tableData.rows.forEach(rowData => {
+      const group = this.fb.group({
+        stt: [rowData[0] || ''],
+        danhMuc: [rowData[1] || ''],
+        donVi: [rowData[2] || ''],
+        soLuong: [rowData[3] || ''],
+        donGia: [rowData[4] || ''],
+        thanhTien: [rowData[5] || '']
+      });
+      formArray.push(group);
+    });
+  }
+
 
   loadTableArray(tableData: { rows: string[][] } | undefined, table: FormArray, colCount: number) {
     table.clear();
@@ -380,6 +453,10 @@ export class CreateCreditContractComponent implements OnInit {
       this.formGroup.get('tsbdRequest.dienTichTS')?.disable();
       this.formGroup.get('tsbdRequest.ketCauXayDung')?.disable();
       this.formGroup.get('tsbdRequest.fromTime')?.disable();
+    }
+    if(contract.pavvRequest?.checkAddress){
+      this.formGroup.get('pavvRequest.address')?.enable();
+      this.formGroup.get('pavvRequest.address')?.setValue(contract.pavvRequest.address);
     }
 
 
@@ -588,28 +665,6 @@ export class CreateCreditContractComponent implements OnInit {
       }));
     });
   }
-  // initChiPhiTable(chiPhiTable: FormArray) {
-  //   const defaultRows = [
-  //     { stt: 'I', danhMuc: 'Chi phí trực tiếp', donVi: '', soLuong: '', donGia: '', thanhTien: '1000000', formula: '', merge: { fromCol: 1, toCol: 5 } },
-  //     { stt: '1', danhMuc: 'Giống gà', donVi: '', soLuong: '', donGia: '', thanhTien: '500000', formula: '', merge: null },
-  //     { stt: '2', danhMuc: 'Thức ăn', donVi: '', soLuong: '', donGia: '', thanhTien: '500000', formula: '', merge: null }
-  //   ];
-  //
-  //   defaultRows.forEach(row => {
-  //     chiPhiTable.push(this.fb.group({
-  //       stt: [row.stt],
-  //       danhMuc: [row.danhMuc],
-  //       donVi: [row.donVi],
-  //       soLuong: [row.soLuong],
-  //       donGia: [row.donGia],
-  //       thanhTien: [row.thanhTien],
-  //       formula: [row.formula],
-  //       merge: [row.merge] // thêm thông tin merge
-  //     }));
-  //   });
-  // }
-
-
   syncField(source: string, target: string) {
     this.formGroup.get(source)?.valueChanges.subscribe(value => {
       console.log('value -->', value)
@@ -657,7 +712,8 @@ export class CreateCreditContractComponent implements OnInit {
       rows,
       drawTable: this.formGroup.get('hasTable')?.value
     };
-
+    this.syncTongVonToPavvRequest();
+    this.syncTongVonLuuDong();
     const payload: CreditContract = {
       ...this.formGroup.value,
       contractDate: formattedDate,
@@ -671,7 +727,7 @@ export class CreateCreditContractComponent implements OnInit {
       table3: this.buildTableRequest(this.table3),
       hanMucTable: this.buildHanMucTableRequest(this.hanMucTable),
       chiPhiTable: this.buildChiPhiTableRequest(this.chiPhiTable),
-      giaTriQuyenSuDungDat: this.giaTriQuyenSuDungDat
+      giaTriQuyenSuDungDat: this.giaTriQuyenSuDungDat,
     };
     this.creditContractService.previewContract(payload).subscribe(urls => {
       this.fileUrls = urls;
@@ -718,6 +774,8 @@ export class CreateCreditContractComponent implements OnInit {
       rows,
       drawTable: this.formGroup.get('hasTable')?.value
     };
+    this.syncTongVonToPavvRequest();
+    this.syncTongVonLuuDong();
     const payload: CreditContract = {
       ...this.formGroup.value,
       contractDate: formattedDate,
@@ -928,7 +986,8 @@ export class CreateCreditContractComponent implements OnInit {
         donGia: '',
         thanhTien: '1000000',
         formula: 'SUM(rows[1..2].thanhTien)',
-        merge: { fromCol: 1, toCol: 5 }
+        mergeTargets: [],
+        merge: null
       });
       chiPhiTable.push(row1);
 
@@ -940,6 +999,7 @@ export class CreateCreditContractComponent implements OnInit {
         donGia: '',
         thanhTien: '500000',
         formula: '',
+        mergeTargets: [],
         merge: null
       });
       chiPhiTable.push(row2);
@@ -952,6 +1012,7 @@ export class CreateCreditContractComponent implements OnInit {
         donGia: '',
         thanhTien: '500000',
         formula: '',
+        mergeTargets: [],
         merge: null
       });
       chiPhiTable.push(row3);
@@ -967,7 +1028,9 @@ export class CreateCreditContractComponent implements OnInit {
       thanhTien: [data.thanhTien || ''],
       isTotal: [data.isTotal || false],
       sumTargets: [data.sumTargets || []],
-      merge: [data.merge || null]
+      merge: [data.merge || null],
+      mergeTargets: [data.mergeTargets || []],   // thêm vào
+      mergedValue: [data.mergedValue || '']
     });
 
     // Nếu không phải ô tổng thì tính Thành tiền = Số lượng × Đơn giá
@@ -1059,6 +1122,13 @@ export class CreateCreditContractComponent implements OnInit {
   get chiPhiTable(): FormArray {
     return this.formGroup.get('chiPhiTable') as FormArray;
   }
+  getTongVon(): any {
+    if (this.chiPhiTable.length === 0) return null;
+    const lastRow = this.chiPhiTable.at(this.chiPhiTable.length - 1) as FormGroup;
+    return lastRow.get('thanhTien')?.value;
+  }
+
+
 
   // get chiPhiTableGroups(): FormGroup[] {
   //   return this.chiPhiTable.controls as FormGroup[];

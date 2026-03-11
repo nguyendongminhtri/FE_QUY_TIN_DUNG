@@ -489,12 +489,12 @@
                     <input matInput formControlName="namSinhDungTenBiaDo1" placeholder="01/08/1984">
                   </mat-form-field>
                 </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Số điện thoại</mat-label>
-                    <input matInput formControlName="phoneDungTenBiaDo1" placeholder="0343304666">
-                  </mat-form-field>
-                </div>
+<!--                <div class="form-col-3">-->
+<!--                  <mat-form-field appearance="fill">-->
+<!--                    <mat-label>Số điện thoại</mat-label>-->
+<!--                    <input matInput formControlName="phoneDungTenBiaDo1" placeholder="0343304666">-->
+<!--                  </mat-form-field>-->
+<!--                </div>-->
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
                     <mat-label>Số CCCD</mat-label>
@@ -728,17 +728,24 @@
                 <input matInput formControlName="address" placeholder="">
               </mat-form-field>
               <mat-form-field appearance="fill">
+                <mat-label>Vốn tự có lũy kế: </mat-label>
+                <input matInput formControlName="vonTuCo" placeholder="">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Vốn khác:</mat-label>
+                <input matInput formControlName="vonKhac" placeholder="">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
                 <mat-label>Lý do:</mat-label>
                 <textarea matInput formControlName="reason" placeholder=""></textarea>
               </mat-form-field>
             </div>
           </div>
-          <div *ngIf="formGroup.get('loaiVay')?.value === 'NGẮN HẠN (Thỏa thuận)'" formArrayName="hanMucTable">
+          <div formArrayName="hanMucTable">
             <h3>Bảng hạn mức</h3>
             <button class="btn btn-primary mb-2" type="button" (click)="addChiPhiRow()">
               + Thêm hàng
             </button>
-
             <table class="table table-bordered">
               <thead>
               <tr>
@@ -755,9 +762,8 @@
               </thead>
               <tbody>
               <tr *ngFor="let row of chiPhiRows; let i = index" [formGroup]="row">
-
                 <!-- Cột số thứ tự phụ -->
-                <td class="text-center fw-bold">{{ i+1 }}</td>
+                <td class="text-center fw-bold">{{ i + 1 }}</td>
 
                 <!-- Nếu merge -->
                 <ng-container *ngIf="row.get('merge')?.value; else normalRow">
@@ -778,7 +784,7 @@
                       <select multiple formControlName="sumTargets" class="form-select"
                               (change)="updateTotalRow(row)">
                         <ng-container *ngFor="let r of chiPhiRows; let j = index">
-                          <option [value]="j" *ngIf="r !== row">Hàng {{j+1}}</option>
+                          <option [value]="j" *ngIf="r !== row">Hàng {{ j + 1 }}</option>
                         </ng-container>
                       </select>
                     </ng-container>
@@ -818,7 +824,7 @@
                       <select multiple formControlName="sumTargets" class="form-select"
                               (change)="updateTotalRow(row)">
                         <ng-container *ngFor="let r of chiPhiRows; let j = index">
-                          <option [value]="j" *ngIf="r !== row">Hàng {{j+1}}</option>
+                          <option [value]="j" *ngIf="r !== row">Hàng {{ j + 1 }}</option>
                         </ng-container>
                       </select>
                     </ng-container>
@@ -850,11 +856,6 @@
               </tr>
               </tbody>
             </table>
-
-
-
-
-
           </div>
           <br>
           <!--          <button mat-raised-button color="primary" type="submit">Tạo hợp đồng</button>-->
