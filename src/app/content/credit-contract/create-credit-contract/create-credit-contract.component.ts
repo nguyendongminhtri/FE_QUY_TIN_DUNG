@@ -62,10 +62,10 @@ export class CreateCreditContractComponent implements OnInit {
         this.contractUpdate = contract;
         // Patch các field đơn giản (strings, booleans, dates)
         this.patchSimpleFields(contract);
-        this.loadTableArray(contract.table1, this.table1, 7);
-        this.loadTableArray(contract.table2, this.table2, 7);
-        this.loadTableArray(contract.table3, this.table3, 7);
-        this.loadTableArray(contract.hanMucTable, this.hanMucTable, 7);
+        this.loadTableArray(contract.table1, this.table1, 7, 'table1');
+        this.loadTableArray(contract.table2, this.table2, 7, 'table2');
+        this.loadTableArray(contract.table3, this.table3, 7, 'table3');
+        this.loadTableArray(contract.hanMucTable, this.hanMucTable, 7, 'table1');
         this.loadChiPhiTable(contract.chiPhiTable, this.chiPhiTable);
         // File avatars
         this.fileAvatarUrls = contract.fileAvatarUrls ?? [];
@@ -139,7 +139,7 @@ export class CreateCreditContractComponent implements OnInit {
       soThuaDat: [''],
       noiDungNgoaiBia: [''],
       soBanDo: [''],
-      diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương nay là phường Chu Văn An, thành phố Hải Phòng'],
+      diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương (nay là phường Chu Văn An, thành phố Hải Phòng)'],
       dienTichDatSo: [''],
       thoiHanVay: [''],
       dienTichDatChu: [''],
@@ -206,8 +206,10 @@ export class CreateCreditContractComponent implements OnInit {
       diaChiThuongTruDungTenBiaDo2: [{value: '', disabled: true}],
       checkNguoiMangTenBiaDo: [false],
       nguoiMangTen: [{value: 'mang tên ...', disabled: true}],
-      table1: this.fb.array([]),
-      table2: this.fb.array([]),
+
+      table1: this.fb.array<FormGroup>([]),
+
+      table2: this.fb.array<FormGroup>([]),
       table3: this.fb.array([]),
       hanMucTable: this.fb.array([]),
       chiPhiTable: this.fb.array([])
@@ -264,6 +266,7 @@ export class CreateCreditContractComponent implements OnInit {
       noiCapCCCDKhachHang: contract.noiCapCCCDKhachHang,
       ngayCapCCCDNguoiThan: contract.ngayCapCCCDNguoiThan,
       noiCapCCCDNguoiThan: contract.noiCapCCCDKhachHang,
+      soBBXetDuyetChoVay: contract.soBBXetDuyetChoVay,
       diaChiThuongTruNguoiThan: contract.diaChiThuongTruNguoiThan,
       dungTenBiaDo1: contract.dungTenBiaDo1,
       gioiTinhDungTenBiaDo1: contract.gioiTinhDungTenBiaDo1,
@@ -323,6 +326,7 @@ export class CreateCreditContractComponent implements OnInit {
       }
     });
   }
+
   private syncTongVonToPavvRequest(): void {
     if (this.chiPhiTable.length === 0) return;
 
@@ -333,6 +337,7 @@ export class CreateCreditContractComponent implements OnInit {
       .get('tongVon')
       ?.setValue(tongVon);
   }
+
   private syncTongVonLuuDong(): void {
     if (this.chiPhiTable.length < 2) return;
 
@@ -351,8 +356,6 @@ export class CreateCreditContractComponent implements OnInit {
       .get('tongVonLuuDong')
       ?.setValue(this.formatNumber(tongVonLuuDong)); // dùng lại hàm formatNumber
   }
-
-
 
 
   private loadTableRequest(tableRequest: any): void {
@@ -382,6 +385,7 @@ export class CreateCreditContractComponent implements OnInit {
     // set hasTable control
     this.formGroup.patchValue({hasTable: !!tableRequest.drawTable});
   }
+
   loadChiPhiTable(tableData: { rows: string[][] } | undefined, formArray: FormArray) {
     formArray.clear();
     if (!tableData || !tableData.rows) {
@@ -402,7 +406,12 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
 
-  loadTableArray(tableData: { rows: string[][] } | undefined, table: FormArray, colCount: number) {
+  loadTableArray(
+    tableData: { rows: string[][] } | undefined,
+    table: FormArray,
+    colCount: number,
+    tableType: 'table1' | 'table2' | 'table3'
+  ) {
     table.clear();
     if (!tableData || !tableData.rows) {
       return;
@@ -419,15 +428,42 @@ export class CreateCreditContractComponent implements OnInit {
         }
       }
 
-      // Gắn listener để tính col7 khi col2 hoặc col5 thay đổi
-      row.get('col2')?.valueChanges.subscribe(() => this.updateCol6(row));
-      row.get('col5')?.valueChanges.subscribe(() => this.updateCol6(row));
+      if (tableType === 'table1' || tableType === 'table3') {
+        // Table1 & Table3: col7 = col2 * col5
+        row.get('col2')?.valueChanges.subscribe(() => this.updateTable1Row(row));
+        row.get('col5')?.valueChanges.subscribe(() => this.updateTable1Row(row));
+        this.updateTable1Row(row);
+      }
+
+      if (tableType === 'table2') {
+        // Table2: col2 = col7 / col6
+        row.get('col5')?.valueChanges.subscribe(() => this.updateTable2Row(row));
+        row.get('col7')?.valueChanges.subscribe(() => this.updateTable2Row(row));
+        this.updateTable2Row(row);
+      }
 
       table.push(row);
-
-      // Tính lại col7 ngay sau khi patch
-      this.updateCol6(row);
     });
+  }
+
+
+  updateTable1Row(row: FormGroup) {
+    const col2 = this.parseNumber(row.get('col2')?.value);
+    const col5 = this.parseNumber(row.get('col5')?.value);
+    const result = col2 * col5;
+    row.get('col7')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
+  }
+
+  updateTable2Row(row: FormGroup) {
+    console.log('========== updateTable2Row ============== ');
+    const col7 = this.parseNumber(row.get('col7')?.value);
+    const col5 = this.parseNumber(row.get('col5')?.value);
+
+    if (col5 > 0) {
+      const result = Math.round(col7 / col5);
+      console.log('result --------->', result);
+      row.get('col2')?.setValue(result.toLocaleString('vi-VN'), { emitEvent: false });
+    }
   }
 
 
@@ -454,7 +490,7 @@ export class CreateCreditContractComponent implements OnInit {
       this.formGroup.get('tsbdRequest.ketCauXayDung')?.disable();
       this.formGroup.get('tsbdRequest.fromTime')?.disable();
     }
-    if(contract.pavvRequest?.checkAddress){
+    if (contract.pavvRequest?.checkAddress) {
       this.formGroup.get('pavvRequest.address')?.enable();
       this.formGroup.get('pavvRequest.address')?.setValue(contract.pavvRequest.address);
     }
@@ -665,6 +701,7 @@ export class CreateCreditContractComponent implements OnInit {
       }));
     });
   }
+
   syncField(source: string, target: string) {
     this.formGroup.get(source)?.valueChanges.subscribe(value => {
       console.log('value -->', value)
@@ -920,10 +957,15 @@ export class CreateCreditContractComponent implements OnInit {
 
     const tongTaiSanBD = new Intl.NumberFormat('vi-VN').format(total);
     const tongTaiSanBDChu = this.convertMoney.numberToVietnameseWordsMoney(total);
+
     // ✅ cập nhật trực tiếp vào form controls
     this.formGroup.patchValue({tongTaiSanBD, tongTaiSanBDChu});
 
+    // Ví dụ: cập nhật col7 của dòng đầu tiên
+    const firstRow = this.table2.at(0) as FormGroup;
+    firstRow.get('col7')?.setValue(tongTaiSanBD, {emitEvent: false});
   }
+
 
   createRow(defaults: { col1?: string, col3?: string, col5?: string } = {}): FormGroup {
     return this.fb.group({
@@ -933,7 +975,7 @@ export class CreateCreditContractComponent implements OnInit {
       col4: ['x'],
       col5: [''],
       col6: ['m²'],
-      col7: [{value: '', disabled: true}]
+      col7: [{value: '', disabled: false}]
     });
   }
 
@@ -941,39 +983,39 @@ export class CreateCreditContractComponent implements OnInit {
     const table1 = this.table1;
     if (table1.length === 0) {
       const row1T1 = this.createRow({col1: 'Giá đất ở của nhà nước quy định', col3: 'đ/m²'});
-      row1T1.get('col2')?.valueChanges.subscribe(() => this.updateCol6(row1T1));
-      row1T1.get('col5')?.valueChanges.subscribe(() => this.updateCol6(row1T1));
+      row1T1.get('col2')?.valueChanges.subscribe(() => this.updateTable1Row(row1T1));
+      row1T1.get('col5')?.valueChanges.subscribe(() => this.updateTable1Row(row1T1));
       table1.push(row1T1);
 
       const row2T1 = this.createRow({col1: 'Giá đất khác', col3: 'đ/m²'});
-      row2T1.get('col2')?.valueChanges.subscribe(() => this.updateCol6(row2T1));
-      row2T1.get('col5')?.valueChanges.subscribe(() => this.updateCol6(row2T1));
+      row2T1.get('col2')?.valueChanges.subscribe(() => this.updateTable1Row(row2T1));
+      row2T1.get('col5')?.valueChanges.subscribe(() => this.updateTable1Row(row2T1));
       table1.push(row2T1);
     }
 
     const table2 = this.table2;
     if (table2.length === 0) {
       const row1T2 = this.createRow({col1: 'Giá đất trên thị trường', col3: 'đ/m²'});
-      row1T2.get('col2')?.valueChanges.subscribe(() => this.updateCol6(row1T2));
-      row1T2.get('col5')?.valueChanges.subscribe(() => this.updateCol6(row1T2));
+      row1T2.get('col5')?.valueChanges.subscribe(() => this.updateTable2Row(row1T2));
+      row1T2.get('col7')?.valueChanges.subscribe(() => this.updateTable2Row(row1T2));
       table2.push(row1T2);
 
       const row2T2 = this.createRow({col1: 'Giá đất khác', col3: 'đ/m²'});
-      row2T2.get('col2')?.valueChanges.subscribe(() => this.updateCol6(row2T2));
-      row2T2.get('col5')?.valueChanges.subscribe(() => this.updateCol6(row2T2));
+      row2T2.get('col5')?.valueChanges.subscribe(() => this.updateTable2Row(row2T2));
+      row2T2.get('col7')?.valueChanges.subscribe(() => this.updateTable2Row(row2T2));
       table2.push(row2T2);
     }
 
     const table3 = this.table3;
     if (table3.length === 0) {
       const row1T3 = this.createRow({col1: 'Giá đất trên thị trường', col3: 'đ/m²'});
-      row1T3.get('col2')?.valueChanges.subscribe(() => this.updateCol6(row1T3));
-      row1T3.get('col5')?.valueChanges.subscribe(() => this.updateCol6(row1T3));
+      row1T3.get('col2')?.valueChanges.subscribe(() => this.updateTable1Row(row1T3));
+      row1T3.get('col5')?.valueChanges.subscribe(() => this.updateTable1Row(row1T3));
       table3.push(row1T3);
 
       const row2T3 = this.createRow({col1: 'Giá đất khác', col3: 'đ/m²'});
-      row2T3.get('col2')?.valueChanges.subscribe(() => this.updateCol6(row2T3));
-      row2T3.get('col5')?.valueChanges.subscribe(() => this.updateCol6(row2T3));
+      row2T3.get('col2')?.valueChanges.subscribe(() => this.updateTable1Row(row2T3));
+      row2T3.get('col5')?.valueChanges.subscribe(() => this.updateTable1Row(row2T3));
       table3.push(row2T3);
     }
     const chiPhiTable = this.chiPhiTable;
@@ -1018,6 +1060,7 @@ export class CreateCreditContractComponent implements OnInit {
       chiPhiTable.push(row3);
     }
   }
+
   createChiPhiRow(data: any = {}): FormGroup {
     const row = this.fb.group({
       stt: [data.stt || ''],
@@ -1043,16 +1086,12 @@ export class CreateCreditContractComponent implements OnInit {
   addChiPhiRow() {
     // Tự động đánh số STT tăng dần
     const nextStt = this.chiPhiTable.length + 1;
-    this.chiPhiTable.push(this.createChiPhiRow({ stt: nextStt }));
+    this.chiPhiTable.push(this.createChiPhiRow({stt: nextStt}));
   }
 
   removeChiPhiRow(index: number) {
     this.chiPhiTable.removeAt(index);
   }
-
-
-
-
 
 
   formatNumber(value: number): string {
@@ -1064,52 +1103,37 @@ export class CreateCreditContractComponent implements OnInit {
     const soLuong = this.parseNumber(row.get('soLuong')?.value);
     const donGia = this.parseNumber(row.get('donGia')?.value);
     const thanhTien = soLuong * donGia;
-
-    // set lại giá trị đã format để hiển thị đẹp
-    row.get('thanhTien')?.setValue(thanhTien.toLocaleString('vi-VN'), { emitEvent: false });
+    row.get('thanhTien')?.setValue(thanhTien.toLocaleString('vi-VN'), {emitEvent: false});
   }
 
 
   updateTotalRow(totalRow: FormGroup) {
     const sumTargets = totalRow.get('sumTargets')?.value || [];
     let sum = 0;
-
     sumTargets.forEach((index: number) => {
       const targetRow = this.chiPhiRows[index];
       if (targetRow) {
-        const thanhTien = this.parseNumber(targetRow.get('thanhTien')?.value);
-        sum += thanhTien;
+        sum += this.parseNumber(targetRow.get('thanhTien')?.value);
       }
     });
-
-    // set lại giá trị đã format để hiển thị đẹp
-    totalRow.get('thanhTien')?.setValue(sum.toLocaleString('vi-VN'), { emitEvent: false });
+    totalRow.get('thanhTien')?.setValue(sum.toLocaleString('vi-VN'), {emitEvent: false});
   }
-
-
-
 
 
   updateCol6(row: FormGroup) {
-    const rawCol2 = row.get('col2')?.value || '0';
-    const rawCol5 = row.get('col5')?.value || '0';
-
-    const col2 = Number(String(rawCol2).replace(/\./g, ''));
-    const col5 = Number(String(rawCol5).replace(/\./g, ''));
-
+    const col2 = this.parseNumber(row.get('col2')?.value);
+    const col5 = this.parseNumber(row.get('col5')?.value);
     const result = col2 * col5;
-
-    // Format lại kết quả có dấu chấm
-    const formatted = result.toLocaleString('vi-VN');
-    row.get('col7')?.setValue(formatted, {emitEvent: false});
+    row.get('col7')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
   }
 
-  get table1(): FormArray {
-    return this.formGroup.get('table1') as FormArray;
+  get table1(): FormArray<FormGroup> {
+    return this.formGroup.get('table1') as FormArray<FormGroup>;
   }
 
-  get table2(): FormArray {
-    return this.formGroup.get('table2') as FormArray;
+
+  get table2(): FormArray<FormGroup> {
+    return this.formGroup.get('table2') as FormArray<FormGroup>;
   }
 
   get table3(): FormArray {
@@ -1119,15 +1143,16 @@ export class CreateCreditContractComponent implements OnInit {
   get hanMucTable(): FormArray {
     return this.formGroup.get('hanMucTable') as FormArray;
   }
+
   get chiPhiTable(): FormArray {
     return this.formGroup.get('chiPhiTable') as FormArray;
   }
+
   getTongVon(): any {
     if (this.chiPhiTable.length === 0) return null;
     const lastRow = this.chiPhiTable.at(this.chiPhiTable.length - 1) as FormGroup;
     return lastRow.get('thanhTien')?.value;
   }
-
 
 
   // get chiPhiTableGroups(): FormGroup[] {
@@ -1175,6 +1200,7 @@ export class CreateCreditContractComponent implements OnInit {
       tableType: 'hanMuc'
     };
   }
+
   buildChiPhiTableRequest(table: FormArray): TableRequest {
     const rows: string[][] = table.controls.map(ctrl => {
       const row = ctrl as FormGroup;
@@ -1228,9 +1254,9 @@ export class CreateCreditContractComponent implements OnInit {
 
     const row = this.chiPhiTable.at(index) as FormGroup;
     if (formula) {
-      row.patchValue({ formula, isTotal: true });
+      row.patchValue({formula, isTotal: true});
     } else {
-      row.patchValue({ formula: '', isTotal: false });
+      row.patchValue({formula: '', isTotal: false});
     }
   }
 
@@ -1238,13 +1264,14 @@ export class CreateCreditContractComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const checked = input.checked;
 
-    row.patchValue({ isTotal: checked });
+    row.patchValue({isTotal: checked});
     this.updateThanhTien(row);
   }
+
   updateMergedRow(row: FormGroup) {
     const targets: string[] = row.get('mergeTargets')?.value || [];
     const merged = targets.map(t => row.get(t)?.value).join(' | ');
-    row.get('mergedValue')?.setValue(merged, { emitEvent: false });
+    row.get('mergedValue')?.setValue(merged, {emitEvent: false});
   }
 
   toggleMerge(i: number, event: any) {
@@ -1272,7 +1299,7 @@ export class CreateCreditContractComponent implements OnInit {
       });
 
       // Lắng nghe thay đổi cột gốc -> cập nhật mergedValue
-      ['stt','danhMuc','donVi','soLuong','donGia'].forEach(field => {
+      ['stt', 'danhMuc', 'donVi', 'soLuong', 'donGia'].forEach(field => {
         if (row.get(field)) {
           row.get(field)?.valueChanges.subscribe(() => {
             this.updateMergedRow(row);
@@ -1304,18 +1331,25 @@ export class CreateCreditContractComponent implements OnInit {
   formatOnBlur(row: FormGroup, controlName: string) {
     const value = row.get(controlName)?.value;
     if (value) {
-      const num = parseInt(value.toString().replace(/\./g, ''), 10);
+      const num = this.parseNumber(value);
       if (!isNaN(num)) {
-        // set lại giá trị đã format vào FormControl
-        row.get(controlName)?.setValue(num.toLocaleString('vi-VN'), { emitEvent: false });
+        row.get(controlName)?.setValue(
+          num.toLocaleString('vi-VN'),
+          {emitEvent: false}
+        );
       }
     }
   }
+
+
 // Hàm tiện ích: bỏ dấu chấm và chuyển về số
-  private parseNumber(value: any): number {
+  parseNumber(value: any): number {
     if (!value) return 0;
-    const raw = value.toString().replace(/\./g, '');
-    const num = parseInt(raw, 10);
+    // bỏ dấu chấm phân cách nghìn
+    let raw = value.toString().replace(/\./g, '');
+    // thay dấu phẩy bằng dấu chấm để parse float
+    raw = raw.replace(/,/g, '.');
+    const num = parseFloat(raw);
     return isNaN(num) ? 0 : num;
   }
 

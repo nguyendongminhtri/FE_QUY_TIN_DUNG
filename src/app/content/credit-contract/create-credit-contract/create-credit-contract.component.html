@@ -489,12 +489,12 @@
                     <input matInput formControlName="namSinhDungTenBiaDo1" placeholder="01/08/1984">
                   </mat-form-field>
                 </div>
-<!--                <div class="form-col-3">-->
-<!--                  <mat-form-field appearance="fill">-->
-<!--                    <mat-label>Số điện thoại</mat-label>-->
-<!--                    <input matInput formControlName="phoneDungTenBiaDo1" placeholder="0343304666">-->
-<!--                  </mat-form-field>-->
-<!--                </div>-->
+                <!--                <div class="form-col-3">-->
+                <!--                  <mat-form-field appearance="fill">-->
+                <!--                    <mat-label>Số điện thoại</mat-label>-->
+                <!--                    <input matInput formControlName="phoneDungTenBiaDo1" placeholder="0343304666">-->
+                <!--                  </mat-form-field>-->
+                <!--                </div>-->
                 <div class="form-col-3">
                   <mat-form-field appearance="fill">
                     <mat-label>Số CCCD</mat-label>
@@ -615,13 +615,13 @@
 + Đất ao: 300m²; được định giá là: 2.500.000.000 đồng"></textarea>
               </mat-form-field>
             </div>
-            <div class="form-col checkbox-input-col">
-              <mat-checkbox formControlName="checkNhaCoDinh"></mat-checkbox>
-              <mat-form-field appearance="fill">
-                <mat-label>Nhà cố định</mat-label>
-                <textarea matInput formControlName="nhaCoDinh" placeholder=""></textarea>
-              </mat-form-field>
-            </div>
+            <!--            <div class="form-col checkbox-input-col">-->
+            <!--              <mat-checkbox formControlName="checkNhaCoDinh"></mat-checkbox>-->
+            <!--              <mat-form-field appearance="fill">-->
+            <!--                <mat-label>Nhà cố định</mat-label>-->
+            <!--                <textarea matInput formControlName="nhaCoDinh" placeholder=""></textarea>-->
+            <!--              </mat-form-field>-->
+            <!--            </div>-->
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Tổng giá trị tài sản bìa đỏ (VNĐ)</mat-label>
@@ -672,10 +672,24 @@
                 <tbody>
                 <tr *ngFor="let row of table1.controls; let i = index" [formGroupName]="i">
                   <td><input matInput formControlName="col1" class="form-control"></td>
-                  <td><input matInput formControlName="col2" class="form-control"></td>
+                  <!-- col2 -->
+                  <td>
+                    <input type="text"
+                           [value]="row.get('col2')?.value"
+                           (input)="onInputChange($event, row, 'col2')"
+                           (blur)="formatOnBlur(row, 'col2')"
+                           class="form-control">
+                  </td>
                   <td><input matInput formControlName="col3" class="form-control"></td>
                   <td><input matInput formControlName="col4" class="form-control"></td>
-                  <td><input matInput formControlName="col5" class="form-control"></td>
+                  <!-- col2 -->
+                  <td>
+                    <input type="text"
+                           [value]="row.get('col5')?.value"
+                           (input)="onInputChange($event, row, 'col5')"
+                           (blur)="formatOnBlur(row, 'col5')"
+                           class="form-control">
+                  </td>
                   <td><input matInput formControlName="col6" readonly class="form-control"></td>
                   <td><input matInput formControlName="col7" readonly class="form-control"></td>
                 </tr>
@@ -693,7 +707,11 @@
                   <td><input matInput formControlName="col4" class="form-control"></td>
                   <td><input matInput formControlName="col5" class="form-control"></td>
                   <td><input matInput formControlName="col6" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col7" readonly class="form-control"></td>
+                  <td><input type="text"
+                             [value]="row.get('col7')?.value"
+                             (input)="onInputChange($event, row, 'col7')"
+                             (blur)="formatOnBlur(row, 'col7')"
+                             class="form-control"></td>
                 </tr>
                 </tbody>
               </table>
@@ -708,8 +726,8 @@
                   <td><input matInput formControlName="col3" class="form-control"></td>
                   <td><input matInput formControlName="col4" class="form-control"></td>
                   <td><input matInput formControlName="col5" class="form-control"></td>
-                  <td><input matInput formControlName="col6" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col7" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col6" class="form-control"></td>
+                  <td><input matInput formControlName="col7" class="form-control"></td>
                 </tr>
                 </tbody>
               </table>
@@ -728,7 +746,7 @@
                 <input matInput formControlName="address" placeholder="">
               </mat-form-field>
               <mat-form-field appearance="fill">
-                <mat-label>Vốn tự có lũy kế: </mat-label>
+                <mat-label>Vốn tự có lũy kế:</mat-label>
                 <input matInput formControlName="vonTuCo" placeholder="">
               </mat-form-field>
               <mat-form-field appearance="fill">
