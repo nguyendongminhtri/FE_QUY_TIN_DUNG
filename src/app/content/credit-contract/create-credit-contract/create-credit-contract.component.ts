@@ -29,7 +29,7 @@ export class CreateCreditContractComponent implements OnInit {
   titleNguoiBaoLanh1 = 'Người đứng tên bìa đỏ 1';
   titleNguoiBaoLanh2 = 'Người đứng tên bìa đỏ 2';
   contractUpdate: any;
-
+  phuong = ''
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -139,7 +139,7 @@ export class CreateCreditContractComponent implements OnInit {
       soThuaDat: [''],
       noiDungNgoaiBia: [''],
       soBanDo: [''],
-      diaChiThuaDat: [', huyện Chí Linh, tỉnh Hải Dương (nay là phường Chu Văn An, thành phố Hải Phòng)'],
+      diaChiThuaDat: [', Chí Linh, Hải Dương (nay là phường Chu Văn An, thành phố Hải Phòng)'],
       dienTichDatSo: [''],
       thoiHanVay: [''],
       dienTichDatChu: [''],
@@ -165,8 +165,8 @@ export class CreateCreditContractComponent implements OnInit {
       tsbdRequest: this.fb.group({
         checkTaiSanGanLienVoiDat: [false],
         dienTichTS: [{value: '', disabled: true}],
-        ketCauXayDung: [{value: 'Mái bằng', disabled: true}],
-        fromTime: [{value: '', disabled: true}]
+        ketCauXayDung: [{value: 'bê tông', disabled: true}],
+        loaiNha: [{value: 'kiên cố', disabled: true}]
       }),
       pavvRequest: this.fb.group({
         name: [''],
@@ -178,7 +178,6 @@ export class CreateCreditContractComponent implements OnInit {
         vonTuCo: [''],
         vonKhac: ['']
       }),
-      fromTime: [{value: '', disabled: true}],
       loaiDat: [{value: '+ Đất ở tại đô thị: 50m²; + Đất trồng cây lâu năm 55,3m²', disabled: true}],
       nhaCoDinh: [{value: '- Nhà ở cố định:    m²;  loại nhà:      ; \nĐược định giá 0 đồng', disabled: true}],
       checkNguoiDungTenBiaDo2: [false],
@@ -213,6 +212,16 @@ export class CreateCreditContractComponent implements OnInit {
       table3: this.fb.array([]),
       hanMucTable: this.fb.array([]),
       chiPhiTable: this.fb.array([])
+    });
+    // Lắng nghe thay đổi của nguoiDaiDien
+    this.formGroup.get('nguoiDaiDien')?.valueChanges.subscribe(value => {
+      if (value === 'gd') {
+        this.phuong = 'Thái Học';
+      } else if (value === 'pgd') {
+        this.phuong = 'Lê Đại Hành';
+      } else {
+        this.phuong = '';
+      }
     });
   }
 
@@ -312,7 +321,7 @@ export class CreateCreditContractComponent implements OnInit {
         checkTaiSanGanLienVoiDat: contract.tsbdRequest?.checkTaiSanGanLienVoiDat ?? false,
         dienTichTS: contract.tsbdRequest?.dienTichTS ?? '',
         ketCauXayDung: contract.tsbdRequest?.ketCauXayDung ?? '',
-        fromTime: contract.tsbdRequest?.fromTime ?? ''
+        loaiNha: contract.tsbdRequest?.loaiNha ?? ''
       },
       pavvRequest: {
         checkAddress: contract.pavvRequest?.checkAddress ?? false,
@@ -325,6 +334,7 @@ export class CreateCreditContractComponent implements OnInit {
         vonKhac: contract.pavvRequest?.vonKhac ?? ''
       }
     });
+    this.updateTableFromLandItems()
   }
 
   private syncTongVonToPavvRequest(): void {
@@ -445,14 +455,47 @@ export class CreateCreditContractComponent implements OnInit {
       table.push(row);
     });
   }
-
+//CẬP NHẬT THÔNG TIN TABLE1  XÁC ĐỊNH GIÁ TRỊ TSBĐ
 
   updateTable1Row(row: FormGroup) {
+    console.log('== updateTable1 ==')
     const col2 = this.parseNumber(row.get('col2')?.value);
     const col5 = this.parseNumber(row.get('col5')?.value);
     const result = col2 * col5;
     row.get('col7')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
   }
+
+  updateTableFromLandItems() {
+    console.log('----- updateTableFromLandItems --------')
+    const landItems = this.formGroup.get('landItems')?.value;
+    console.log('landItems:: ', landItems);
+    if (!landItems) return;
+    const regex = /:\s*([\d\.]+)\s*m²/g;
+    let totalOther = 0;
+    let firstArea = 0;
+
+    const matches = [...landItems.matchAll(regex)];
+    matches.forEach((match, index) => {
+      const value = Number(match[1]);
+      if (index === 0) {
+        firstArea = value;
+      } else {
+        totalOther += value;
+      }
+    });
+    console.log('firsArea -->', firstArea)
+    // cập nhật vào table1
+    const firstRow = this.table1.at(0) as FormGroup;
+    firstRow.get('col5')?.setValue(firstArea || 0, {emitEvent: false});
+    this.updateTable1Row(firstRow); // tự động tính col7
+
+    if (this.table1.length > 1) {
+      const secondRow = this.table1.at(1) as FormGroup;
+      secondRow.get('col5')?.setValue(totalOther || 0, {emitEvent: false});
+      this.updateTable1Row(secondRow); // tự động tính col7
+    }
+  }
+
 
   updateTable2Row(row: FormGroup) {
     console.log('========== updateTable2Row ============== ');
@@ -480,15 +523,15 @@ export class CreateCreditContractComponent implements OnInit {
     if (contract.tsbdRequest?.checkTaiSanGanLienVoiDat) {
       this.formGroup.get('tsbdRequest.dienTichTS')?.enable();
       this.formGroup.get('tsbdRequest.ketCauXayDung')?.enable();
-      this.formGroup.get('tsbdRequest.fromTime')?.enable();
+      this.formGroup.get('tsbdRequest.loaiNha')?.enable();
 
       this.formGroup.get('tsbdRequest.dienTichTS')?.setValue(contract.tsbdRequest.dienTichTS);
       this.formGroup.get('tsbdRequest.ketCauXayDung')?.setValue(contract.tsbdRequest.ketCauXayDung);
-      this.formGroup.get('tsbdRequest.fromTime')?.setValue(contract.tsbdRequest.fromTime);
+      this.formGroup.get('tsbdRequest.loaiNha')?.setValue(contract.tsbdRequest.loaiNha);
     } else {
       this.formGroup.get('tsbdRequest.dienTichTS')?.disable();
       this.formGroup.get('tsbdRequest.ketCauXayDung')?.disable();
-      this.formGroup.get('tsbdRequest.fromTime')?.disable();
+      this.formGroup.get('tsbdRequest.loaiNha')?.disable();
     }
     if (contract.pavvRequest?.checkAddress) {
       this.formGroup.get('pavvRequest.address')?.enable();
@@ -568,13 +611,14 @@ export class CreateCreditContractComponent implements OnInit {
       }
 
       // Sau khi tính được số tiền bằng chữ, cập nhật vào lý do
-      const reasonText = `Lý do thực hiện phương án: Gia đình tôi có nhu cầu ... Vì vậy gia đình tôi lập phương án xin Quỹ tín dụng Thái Học cho chúng tôi vay số tiền là:  ${rawValue} đồng (Bằng chữ: ${this.tienChu})`;
+      const reasonText = `Lý do thực hiện phương án: Gia đình tôi có nhu cầu mở rộng sản xuất kinh doanh. Vì vậy gia đình tôi lập phương án xin Quỹ tín dụng Thái Học cho chúng tôi vay số tiền là:  ${rawValue} đồng (Bằng chữ: ${this.tienChu})`;
       (this.formGroup.get('pavvRequest') as FormGroup).get('reason')?.setValue(reasonText, {emitEvent: false});
     });
 
 
     this.formGroup.get('landItems')?.valueChanges.subscribe(() => {
       this.calculateTongTaiSanBD();
+      this.updateTableFromLandItems();
     });
 
     this.formGroup.get('dienTichDatSo')?.valueChanges.subscribe(rawValue => {
@@ -638,7 +682,7 @@ export class CreateCreditContractComponent implements OnInit {
       });
     });
     (this.formGroup.get('tsbdRequest.checkTaiSanGanLienVoiDat') as FormControl)?.valueChanges.subscribe(checked => {
-      const controls = ['dienTichTS', 'ketCauXayDung', 'fromTime'];
+      const controls = ['dienTichTS', 'ketCauXayDung', 'loaiNha'];
       controls.forEach(c => {
         const ctrl = this.formGroup.get(`tsbdRequest.${c}`);
         if (checked) ctrl?.enable(); else ctrl?.disable();

@@ -254,12 +254,12 @@
                 <input matInput formControlName="soBBXetDuyetChoVay" placeholder="118/2025">
               </mat-form-field>
             </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Ngày kết thúc hợp đồng</mat-label>
-                <input matInput formControlName="ngayKetThucKyHanVay" placeholder="11/11/2028">
-              </mat-form-field>
-            </div>
+<!--            <div class="form-col">-->
+<!--              <mat-form-field appearance="fill">-->
+<!--                <mat-label>Ngày kết thúc hợp đồng</mat-label>-->
+<!--                <input matInput formControlName="ngayKetThucKyHanVay" placeholder="11/11/2028">-->
+<!--              </mat-form-field>-->
+<!--            </div>-->
           </div>
           <mat-checkbox formControlName="hasTable">Có bảng kỳ hạn vay</mat-checkbox>
           <div *ngIf="formGroup.get('hasTable')?.value" class="table-section">
@@ -657,17 +657,17 @@
                 <input matInput formControlName="dienTichTS" placeholder="">
               </mat-form-field>
               <mat-form-field appearance="fill">
-                <mat-label>Kết cấu xây dựng</mat-label>
-                <input matInput formControlName="ketCauXayDung" placeholder="">
+                <mat-label>Loại Nhà</mat-label>
+                <input matInput formControlName="loaiNha" placeholder="">
               </mat-form-field>
               <mat-form-field appearance="fill">
-                <mat-label>Từ năm</mat-label>
-                <input matInput formControlName="fromTime" placeholder="">
+                <mat-label>Kết cấu xây dựng</mat-label>
+                <input matInput formControlName="ketCauXayDung" placeholder="">
               </mat-form-field>
             </div>
 
             <div formArrayName="table1">
-              <b>Giá đất theo giá UBND tỉnh Hải Dương quy định: </b>
+              <b>Giá đất theo giá UBND thành phố Hải Phòng quy định: </b>
               <table class="table table-bordered">
                 <tbody>
                 <tr *ngFor="let row of table1.controls; let i = index" [formGroupName]="i">
@@ -697,7 +697,7 @@
               </table>
             </div>
             <div formArrayName="table2">
-              <b>Căn cứ giá đất trên thị trường phường Thái Học tại thời điểm xác định giá tài sản: </b>
+              <b>Căn cứ giá đất trên thị trường {{phuong}} tại thời điểm xác định giá tài sản: </b>
               <table class="table table-bordered">
                 <tbody>
                 <tr *ngFor="let row of table2.controls; let i = index" [formGroupName]="i">
