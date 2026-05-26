@@ -207,9 +207,8 @@ export class CreateCreditContractComponent implements OnInit {
       nguoiMangTen: [{value: 'mang tên ...', disabled: true}],
 
       table1: this.fb.array<FormGroup>([]),
-
       table2: this.fb.array<FormGroup>([]),
-      table3: this.fb.array([]),
+      table3: this.fb.array<FormGroup>([]),
       hanMucTable: this.fb.array([]),
       chiPhiTable: this.fb.array([])
     });
@@ -334,7 +333,11 @@ export class CreateCreditContractComponent implements OnInit {
         vonKhac: contract.pavvRequest?.vonKhac ?? ''
       }
     });
-    this.updateTableFromLandItems()
+    // this.formGroup.get('landItems')?.valueChanges.subscribe(() => {
+    //   this.calculateTongTaiSanBD();
+    //   this.updateTableFromLandItems(this.table1, this.updateTable1Row.bind(this));
+    //   this.updateTableFromLandItems(this.table2, this.updateTable2Row.bind(this));
+    // });
   }
 
   private syncTongVonToPavvRequest(): void {
@@ -415,7 +418,6 @@ export class CreateCreditContractComponent implements OnInit {
     });
   }
 
-
   loadTableArray(
     tableData: { rows: string[][] } | undefined,
     table: FormArray,
@@ -427,72 +429,120 @@ export class CreateCreditContractComponent implements OnInit {
       return;
     }
 
-    tableData.rows.forEach(rowData => {
-      const row = this.createRow();
+    tableData.rows.forEach((rowData, rowIndex) => {
+      // Nếu là table1 và row thứ 2 thì khởi tạo với mặc định col2 = '85.000'
+      const row = (tableType === 'table1' && rowIndex === 1)
+        ? this.createRow({ col2: '85.000' })
+        : this.createRow();
 
-      // Patch dữ liệu vào các cột
+      // Patch dữ liệu vào các cột, nhưng bỏ qua col2 của row2 nếu value = 0 hoặc rỗng
       for (let i = 0; i < colCount; i++) {
         const key = `col${i + 1}`;
-        if (rowData[i] !== undefined) {
-          row.get(key)?.setValue(rowData[i]);
+        const value = rowData[i];
+        console.log(`Row ${rowIndex} key=${key}, incoming value=`, value);
+
+        if (tableType === 'table1' && rowIndex === 1 && key === 'col2') {
+          // ✅ Giữ mặc định nếu dữ liệu đầu vào là 0 hoặc rỗng
+          if (value && value !== '0') {
+            row.get(key)?.setValue(value);
+          }
+        } else {
+          if (value !== undefined && value !== null && value !== '') {
+            row.get(key)?.setValue(value);
+          }
         }
       }
 
-      if (tableType === 'table1' || tableType === 'table3') {
-        // Table1 & Table3: col7 = col2 * col5
+      // Đăng ký sự kiện và cập nhật theo loại bảng
+      if (tableType === 'table1') {
         row.get('col2')?.valueChanges.subscribe(() => this.updateTable1Row(row));
         row.get('col5')?.valueChanges.subscribe(() => this.updateTable1Row(row));
         this.updateTable1Row(row);
       }
 
       if (tableType === 'table2') {
-        // Table2: col2 = col7 / col6
         row.get('col5')?.valueChanges.subscribe(() => this.updateTable2Row(row));
         row.get('col7')?.valueChanges.subscribe(() => this.updateTable2Row(row));
         this.updateTable2Row(row);
       }
+      if (tableType === 'table3') {
+        row.get('col5')?.valueChanges.subscribe(() => this.updateTable3Row(row));
+        row.get('col7')?.valueChanges.subscribe(() => this.updateTable3Row(row));
+        this.updateTable3Row(row);
+      }
 
       table.push(row);
     });
-  }
-//CẬP NHẬT THÔNG TIN TABLE1  XÁC ĐỊNH GIÁ TRỊ TSBĐ
 
+    // ✅ Sau khi load xong, đảm bảo row2 của table1 luôn có col2 = '85.000'
+    if (tableType === 'table1' && table.length > 1) {
+      const row2 = table.at(1) as FormGroup;
+      if (!row2.get('col2')?.value || row2.get('col2')?.value === '0') {
+        row2.get('col2')?.setValue('85.000', { emitEvent: false });
+      }
+      console.log('== After loadTableArray ==');
+      console.log('Row2 col2 final value:', row2.get('col2')?.value);
+      console.log('Row2 col5 final value:', row2.get('col5')?.value);
+      console.log('Row2 col7 final value:', row2.get('col7')?.value);
+    }
+  }
+
+
+
+//CẬP NHẬT THÔNG TIN TABLE1  XÁC ĐỊNH GIÁ TRỊ TSBĐ
+// Hàm tính toán cho table1
   updateTable1Row(row: FormGroup) {
-    console.log('== updateTable1 ==')
+    console.log('== updateTable1 ==');
     const col2 = this.parseNumber(row.get('col2')?.value);
     const col5 = this.parseNumber(row.get('col5')?.value);
+
+    // Nếu thiếu dữ liệu thì bỏ qua, không ghi đè col2
+    if (!col2 || !col5) return;
+
     const result = col2 * col5;
-    row.get('col7')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
+    row.get('col7')?.setValue(result.toLocaleString('vi-VN'), { emitEvent: false });
   }
 
-  updateTableFromLandItems() {
-    console.log('----- updateTableFromLandItems --------')
+
+
+// Cập nhật table từ landItems
+  updateTableFromLandItems(table: FormArray, updateRowFn: (row: FormGroup) => void) {
     const landItems = this.formGroup.get('landItems')?.value;
-    console.log('landItems:: ', landItems);
     if (!landItems) return;
-    const regex = /:\s*([\d\.]+)\s*m²/g;
-    let totalOther = 0;
-    let firstArea = 0;
 
-    const matches = [...landItems.matchAll(regex)];
-    matches.forEach((match, index) => {
-      const value = Number(match[1]);
-      if (index === 0) {
-        firstArea = value;
-      } else {
-        totalOther += value;
-      }
+    const regexArea = /:\s*([\d\.]+)\s*m²/g;
+    const regexValue = /được định giá(?: là)?:\s*([\d\.]+)/g;
+
+    let firstArea = 0, totalOtherArea = 0;
+    let firstValue = 0, totalOtherValue = 0;
+
+    const matchesArea = [...landItems.matchAll(regexArea)];
+    const matchesValue = [...landItems.matchAll(regexValue)];
+
+    matchesArea.forEach((match, index) => {
+      const value = Number(match[1].replace(/\./g, ''));
+      if (index === 0) firstArea = value;
+      else totalOtherArea += value;
     });
-    console.log('firsArea -->', firstArea)
-    // cập nhật vào table1
-    const firstRow = this.table1.at(0) as FormGroup;
-    firstRow.get('col5')?.setValue(firstArea || 0, {emitEvent: false});
-    this.updateTable1Row(firstRow); // tự động tính col7
 
-    if (this.table1.length > 1) {
-      const secondRow = this.table1.at(1) as FormGroup;
-      secondRow.get('col5')?.setValue(totalOther || 0, {emitEvent: false});
-      this.updateTable1Row(secondRow); // tự động tính col7
+    matchesValue.forEach((match, index) => {
+      const value = Number(match[1].replace(/\./g, ''));
+      if (index === 0) firstValue = value;
+      else totalOtherValue += value;
+    });
+
+    if (table.length > 0) {
+      const firstRow = table.at(0) as FormGroup;
+      firstRow?.get('col5')?.setValue(firstArea || 0, { emitEvent: false });
+      firstRow?.get('col7')?.setValue((firstValue || 0).toLocaleString('vi-VN'), { emitEvent: false });
+      updateRowFn(firstRow);
+    }
+
+    if (table.length > 1) {
+      const secondRow = table.at(1) as FormGroup;
+      secondRow?.get('col5')?.setValue(totalOtherArea || 0, { emitEvent: false });
+      secondRow?.get('col7')?.setValue((totalOtherValue || 0).toLocaleString('vi-VN'), { emitEvent: false });
+      updateRowFn(secondRow);
     }
   }
 
@@ -505,6 +555,17 @@ export class CreateCreditContractComponent implements OnInit {
     if (col5 > 0) {
       const result = Math.round(col7 / col5);
       console.log('result --------->', result);
+      row.get('col2')?.setValue(result.toLocaleString('vi-VN'), { emitEvent: false });
+    }
+  }
+  updateTable3Row(row: FormGroup) {
+    console.log('========== updateTable3Row ============== ');
+    const col7 = this.parseNumber(row.get('col7')?.value);
+    const col5 = this.parseNumber(row.get('col5')?.value);
+
+    if (col5 > 0) {
+      const result = Math.round(col7 / col5);
+      console.log('result (table3) --------->', result);
       row.get('col2')?.setValue(result.toLocaleString('vi-VN'), { emitEvent: false });
     }
   }
@@ -618,8 +679,13 @@ export class CreateCreditContractComponent implements OnInit {
 
     this.formGroup.get('landItems')?.valueChanges.subscribe(() => {
       this.calculateTongTaiSanBD();
-      this.updateTableFromLandItems();
+      this.updateTableFromLandItems(this.table1, this.updateTable1Row.bind(this));
+      this.updateTableFromLandItems(this.table2, this.updateTable2Row.bind(this));
+      this.updateTableFromLandItems(this.table3, this.updateTable3Row.bind(this));
     });
+    this.updateTableFromLandItems(this.table2, this.updateTable2Row.bind(this));
+
+
 
     this.formGroup.get('dienTichDatSo')?.valueChanges.subscribe(rawValue => {
       if (rawValue) {
@@ -985,9 +1051,12 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
   calculateTongTaiSanBD() {
+    console.log('== calculateTongTaiSanBD ==');
+
     const landItems = this.formGroup.get('landItems')?.value;
     if (!landItems) return;
 
+    // Regex bắt các giá trị định giá
     const regex = /định giá là:\s*([\d\.]+)\s*đồng/g;
     let total = 0;
 
@@ -999,29 +1068,41 @@ export class CreateCreditContractComponent implements OnInit {
       }
     }
 
+    // Format số và chuyển sang chữ
     const tongTaiSanBD = new Intl.NumberFormat('vi-VN').format(total);
     const tongTaiSanBDChu = this.convertMoney.numberToVietnameseWordsMoney(total);
 
     // ✅ cập nhật trực tiếp vào form controls
-    this.formGroup.patchValue({tongTaiSanBD, tongTaiSanBDChu});
+    this.formGroup.patchValue({ tongTaiSanBD, tongTaiSanBDChu });
 
-    // Ví dụ: cập nhật col7 của dòng đầu tiên
-    const firstRow = this.table2.at(0) as FormGroup;
-    firstRow.get('col7')?.setValue(tongTaiSanBD, {emitEvent: false});
+    // ✅ cập nhật col7 của dòng đầu tiên table2 (nếu có)
+    if (this.table2 && this.table2.length > 0) {
+      const firstRow = this.table2.at(0) as FormGroup;
+      if (firstRow?.get('col7')) {
+        firstRow.get('col7')?.setValue(tongTaiSanBD, { emitEvent: false });
+      }
+    }
   }
 
 
-  createRow(defaults: { col1?: string, col3?: string, col5?: string } = {}): FormGroup {
+
+  createRow(defaults?: {
+    col1?: string;
+    col2?: string;   // ✅ thêm col2 vào type
+    col3?: string;
+    col5?: string;
+  }): FormGroup {
     return this.fb.group({
-      col1: [defaults.col1 || ''],
-      col2: [''],
-      col3: [defaults.col3 || ''],
-      col4: ['x'],
-      col5: [''],
-      col6: ['m²'],
-      col7: [{value: '', disabled: false}]
+      col1: [defaults?.col1 || ''],
+      col2: [defaults?.col2 || ''], // ✅ khởi tạo col2
+      col3: [defaults?.col3 || ''],
+      col4: [''],
+      col5: [defaults?.col5 || ''],
+      col6: [''],
+      col7: ['']
     });
   }
+
 
   initTables() {
     const table1 = this.table1;
@@ -1031,8 +1112,14 @@ export class CreateCreditContractComponent implements OnInit {
       row1T1.get('col5')?.valueChanges.subscribe(() => this.updateTable1Row(row1T1));
       table1.push(row1T1);
 
-      const row2T1 = this.createRow({col1: 'Giá đất khác', col3: 'đ/m²'});
+      // const row2T1 = this.createRow({col1: 'Giá đất khác', col3: 'đ/m²'});
+      const row2T1 = this.createRow({
+        col1: 'Giá đất khác',
+        col2: '85.000',   // ✅ mặc định
+        col3: 'đ/m²'
+      });
       row2T1.get('col2')?.valueChanges.subscribe(() => this.updateTable1Row(row2T1));
+      console.log('row2T1 col2 default:', row2T1.get('col2')?.value);
       row2T1.get('col5')?.valueChanges.subscribe(() => this.updateTable1Row(row2T1));
       table1.push(row2T1);
     }
@@ -1180,9 +1267,10 @@ export class CreateCreditContractComponent implements OnInit {
     return this.formGroup.get('table2') as FormArray<FormGroup>;
   }
 
-  get table3(): FormArray {
-    return this.formGroup.get('table3') as FormArray;
+  get table3(): FormArray<FormGroup> {
+    return this.formGroup.get('table3') as FormArray<FormGroup>;
   }
+
 
   get hanMucTable(): FormArray {
     return this.formGroup.get('hanMucTable') as FormArray;
@@ -1371,31 +1459,44 @@ export class CreateCreditContractComponent implements OnInit {
     }
   }
 
-
-  formatOnBlur(row: FormGroup, controlName: string) {
-    const value = row.get(controlName)?.value;
-    if (value) {
-      const num = this.parseNumber(value);
-      if (!isNaN(num)) {
-        row.get(controlName)?.setValue(
-          num.toLocaleString('vi-VN'),
-          {emitEvent: false}
-        );
-      }
+// Hàm format khi blur
+  formatOnBlur(row: FormGroup, col: string) {
+    const control = row.get(col);
+    if (!control) return;
+    const raw = control.value;
+    if (!raw) return; // giữ nguyên nếu rỗng
+    const num = this.parseNumber(raw);
+    if (!isNaN(num)) {
+      control.setValue(num.toLocaleString('vi-VN'), { emitEvent: false });
     }
   }
+
+
+
 
 
 // Hàm tiện ích: bỏ dấu chấm và chuyển về số
   parseNumber(value: any): number {
     if (!value) return 0;
-    // bỏ dấu chấm phân cách nghìn
-    let raw = value.toString().replace(/\./g, '');
-    // thay dấu phẩy bằng dấu chấm để parse float
-    raw = raw.replace(/,/g, '.');
-    const num = parseFloat(raw);
+    const num = Number(String(value).replace(/\./g, ''));
     return isNaN(num) ? 0 : num;
   }
+
+
+
+  insertM2(textarea: HTMLTextAreaElement) {
+    const start = textarea.selectionStart || 0;
+    const end = textarea.selectionEnd || 0;
+    const current = textarea.value;
+
+    // Chèn ký tự m² vào đúng vị trí con trỏ
+    const newValue = current.substring(0, start) + 'm²' + current.substring(end);
+
+    // Cập nhật lại textarea và FormControl
+    textarea.value = newValue;
+    this.formGroup.get('landItems')?.setValue(newValue);
+  }
+
 
 
 }

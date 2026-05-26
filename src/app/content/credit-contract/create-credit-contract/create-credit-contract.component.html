@@ -254,12 +254,12 @@
                 <input matInput formControlName="soBBXetDuyetChoVay" placeholder="118/2025">
               </mat-form-field>
             </div>
-<!--            <div class="form-col">-->
-<!--              <mat-form-field appearance="fill">-->
-<!--                <mat-label>Ngày kết thúc hợp đồng</mat-label>-->
-<!--                <input matInput formControlName="ngayKetThucKyHanVay" placeholder="11/11/2028">-->
-<!--              </mat-form-field>-->
-<!--            </div>-->
+            <!--            <div class="form-col">-->
+            <!--              <mat-form-field appearance="fill">-->
+            <!--                <mat-label>Ngày kết thúc hợp đồng</mat-label>-->
+            <!--                <input matInput formControlName="ngayKetThucKyHanVay" placeholder="11/11/2028">-->
+            <!--              </mat-form-field>-->
+            <!--            </div>-->
           </div>
           <mat-checkbox formControlName="hasTable">Có bảng kỳ hạn vay</mat-checkbox>
           <div *ngIf="formGroup.get('hasTable')?.value" class="table-section">
@@ -607,13 +607,19 @@
               </mat-form-field>
             </div>
             <div class="form-col">
+              <button mat-raised-button color="primary" (click)="insertM2(landItemsInput)">
+                m²
+              </button>
               <mat-form-field appearance="fill" class="example-full-width">
                 <mat-label>Thông tin các loại đất</mat-label>
-                <textarea matInput formControlName="landItems" rows="5"
+                <textarea matInput #landItemsInput formControlName="landItems" rows="5"
                           placeholder="+ Đất ở: 120m²; được định giá là: 1.200.000.000 đồng
 + Đất LNK: 300m²; được định giá là: 2.500.000.000 đồng
 + Đất ao: 300m²; được định giá là: 2.500.000.000 đồng"></textarea>
               </mat-form-field>
+
+
+
             </div>
             <!--            <div class="form-col checkbox-input-col">-->
             <!--              <mat-checkbox formControlName="checkNhaCoDinh"></mat-checkbox>-->
@@ -672,14 +678,13 @@
                 <tbody>
                 <tr *ngFor="let row of table1.controls; let i = index" [formGroupName]="i">
                   <td><input matInput formControlName="col1" class="form-control"></td>
-                  <!-- col2 -->
                   <td>
-                    <input type="text"
-                           [value]="row.get('col2')?.value"
-                           (input)="onInputChange($event, row, 'col2')"
+                    <input matInput formControlName="col2"
                            (blur)="formatOnBlur(row, 'col2')"
                            class="form-control">
                   </td>
+
+
                   <td><input matInput formControlName="col3" class="form-control"></td>
                   <td><input matInput formControlName="col4" class="form-control"></td>
                   <!-- col2 -->
@@ -697,7 +702,7 @@
               </table>
             </div>
             <div formArrayName="table2">
-              <b>Căn cứ giá đất trên thị trường {{phuong}} tại thời điểm xác định giá tài sản: </b>
+              <b>Căn cứ giá đất trên thị trường {{ phuong }} tại thời điểm xác định giá tài sản: </b>
               <table class="table table-bordered">
                 <tbody>
                 <tr *ngFor="let row of table2.controls; let i = index" [formGroupName]="i">
@@ -707,11 +712,13 @@
                   <td><input matInput formControlName="col4" class="form-control"></td>
                   <td><input matInput formControlName="col5" class="form-control"></td>
                   <td><input matInput formControlName="col6" readonly class="form-control"></td>
-                  <td><input type="text"
+                  <td>
+                    <input type="text"
                              [value]="row.get('col7')?.value"
                              (input)="onInputChange($event, row, 'col7')"
                              (blur)="formatOnBlur(row, 'col7')"
-                             class="form-control"></td>
+                             class="form-control">
+                  </td>
                 </tr>
                 </tbody>
               </table>
@@ -727,8 +734,16 @@
                   <td><input matInput formControlName="col4" class="form-control"></td>
                   <td><input matInput formControlName="col5" class="form-control"></td>
                   <td><input matInput formControlName="col6" class="form-control"></td>
-                  <td><input matInput formControlName="col7" class="form-control"></td>
+                  <td>
+                    <input type="text"
+                           [value]="row.get('col7')?.value"
+                           (input)="onInputChange($event, row, 'col7')"
+                           (blur)="formatOnBlur(row, 'col7')"
+                           class="form-control">
+                  </td>
                 </tr>
+
+
                 </tbody>
               </table>
             </div>
