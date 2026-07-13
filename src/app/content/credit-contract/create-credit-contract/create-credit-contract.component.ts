@@ -782,35 +782,56 @@ export class CreateCreditContractComponent implements OnInit {
         this.initHanMucTable(hanMucTable);
       }
     });
-
   }
-
   initHanMucTable(hanMucTable: FormArray) {
-    // Cấu hình mặc định cho từng hàng
     const defaultRows = [
       {
         col1: '1',
-        col2: 'Nhập đầu vào',
-        col3: 'Thanh toán cho nhà cung cấp',
-        col4: '30',
-        col5: ''
+        col2: 'Mua đầu vào (phải trả cho người bán hàng)',
+        col3: 'Thanh toán tiền \n(trả cho người bán)\n',
+        col4: '1',
+        col5: '- Áp dụng hình thức trả ngay khi mua hàng để hưởng giá đầu vào thấp, nên thời gian thanh toán cho người bán bình quân là 1 ngày.'
       },
-      {col1: '2', col2: 'Tồn kho', col3: 'Giai đoạn lưu kho', col4: '224', col5: ''},
-      {col1: '3', col2: 'Thu hồi vốn', col3: '(công nợ với khách hàng)', col4: '50', col5: ''},
-      {col1: 'Tổng số ngày bình quân', col2: '', col3: '', col4: '304', col5: ''} // hàng cuối merge cột
+      {
+        col1: '2',
+        col2: 'Tồn kho',
+        col3: 'Thời gian lưu kho',
+        col4: '255',
+        col5: '- Dự kiến nhập hàng số lượng lớn để giảm giá đầu vào và đa dạng hóa chủng loại để đáp ứng được nhu cầu của khách hàng mua nên dự kiến hàng tồn kho tăng.'
+      },
+      {
+        col1: '3',
+        col2: 'Tiêu thụ (phải thu khách hàng)',
+        col3: 'Chính sách trả chậm',
+        col4: '48',
+        col5: '- Thỏa thuận và đảm bảo cạnh tranh, dự kiến tăng thời hạn trả chậm cho các khách hàng mua hàng thường xuyên và số lượng lớn nên thời gian dự kiến tăng.'
+      },
+      // Hai hàng cuối chỉ cần 3 cột
+      { col1: "Số ngày bình quân:", col4: "304", col5: "" },
+      { col1: "Vòng quay vốn lưu động", col4: "1.2", col5: "" }
     ];
 
-    // Tạo FormGroup cho từng hàng
-    defaultRows.forEach(row => {
-      hanMucTable.push(this.fb.group({
-        col1: [row.col1],
-        col2: [row.col2],
-        col3: [row.col3],
-        col4: [row.col4],
-        col5: [row.col5],
-      }));
+    defaultRows.forEach((row, index) => {
+      if (index < 3) {
+        // Hàng bình thường: đủ 5 cột
+        hanMucTable.push(this.fb.group({
+          col1: [row.col1],
+          col2: [row.col2],
+          col3: [row.col3],
+          col4: [row.col4],
+          col5: [row.col5],
+        }));
+      } else {
+        // Hai hàng cuối: chỉ 3 cột
+        hanMucTable.push(this.fb.group({
+          col1: [row.col1],
+          col4: [row.col4],
+          col5: [row.col5],
+        }));
+      }
     });
   }
+
 
   syncField(source: string, target: string) {
     this.formGroup.get(source)?.valueChanges.subscribe(value => {
@@ -1322,16 +1343,39 @@ export class CreateCreditContractComponent implements OnInit {
         row.get('col2')?.value || '',
         row.get('col3')?.value || '',
         row.get('col4')?.value || '',
-        row.get('col5')?.value || ''
+        row.get('col5')?.value || '',
       ];
     });
+
+    // Cấu hình merge cho 2 hàng cuối
+    const merges = [
+      {
+        rowIndex: 3, // hàng thứ 4 (index bắt đầu từ 0)
+        mergeTargets: ["0", "1", "2"], // gộp 3 cột đầu
+        mergedValue: "Số ngày bình quân:"
+      },
+      {
+        rowIndex: 4, // hàng thứ 5
+        mergeTargets: ["0", "1", "2"],
+        mergedValue: "Vòng quay vốn lưu động"
+      }
+    ];
+
     return {
       drawTable: true,
-      headers: ['STT', 'Giai đoạn', 'Chi tiết', 'Thời gian bình quân (ngày)', 'Ghi chú'],
+      headers: [
+        'STT',
+        'Giai đoạn',
+        'Chi tiết',
+        'Thời gian bình quân (ngày)',
+        'Ghi chú'
+      ],
       rows,
+      merges,
       tableType: 'hanMuc'
     };
   }
+
 
   buildChiPhiTableRequest(table: FormArray): TableRequest {
     const rows: string[][] = table.controls.map(ctrl => {

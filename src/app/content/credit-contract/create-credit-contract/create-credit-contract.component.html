@@ -774,8 +774,48 @@
               </mat-form-field>
             </div>
           </div>
-          <div formArrayName="hanMucTable">
+<!--          CHỈ HIỆN THỊ VỚI HỢP ĐỒNG HẠN MỨC-->
+          <div *ngIf="formGroup.get('loaiVay')?.value === 'NGẮN HẠN (Thỏa thuận)'" formArrayName="hanMucTable">
             <h3>Bảng hạn mức</h3>
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th>Hàng</th>
+                <th>STT</th>
+                <th>Giai đoạn</th>
+                <th>Chi tiết</th>
+                <th>Thời gian bình quân (ngày)</th>
+                <th>Ghi chú</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let row of hanMucTable.controls; let i = index" [formGroupName]="i">
+                <td class="text-center fw-bold">{{ i + 1 }}</td>
+
+                <!-- Nếu là hàng 4 hoặc 5 (index 3 hoặc 4) thì gộp 3 cột đầu -->
+                <ng-container *ngIf="i === 3 || i === 4; else normalRow">
+                  <td colspan="3" class="fw-bold">
+                    <input formControlName="col1" class="form-control">
+                  </td>
+                  <td><input formControlName="col4" class="form-control"></td>
+                  <td><input formControlName="col5" class="form-control"></td>
+                </ng-container>
+
+                <!-- Các hàng bình thường -->
+                <ng-template #normalRow>
+                  <td><input formControlName="col1" class="form-control"></td>
+                  <td><input formControlName="col2" class="form-control"></td>
+                  <td><input formControlName="col3" class="form-control"></td>
+                  <td><input formControlName="col4" class="form-control"></td>
+                  <td><input formControlName="col5" class="form-control"></td>
+                </ng-template>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div formArrayName="chiPhiTable">
+            <h3>Bảng chi phí</h3>
             <button class="btn btn-primary mb-2" type="button" (click)="addChiPhiRow()">
               + Thêm hàng
             </button>
