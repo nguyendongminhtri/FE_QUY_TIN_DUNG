@@ -10,13 +10,15 @@ import {ActivatedRoute} from "@angular/router";
 import {MergeInfo, TableRequest} from "../../../model/TableRequest";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
-
+import {Subscription} from "rxjs";
+const COLUMN_ORDER = ['stt', 'danhMuc', 'donVi', 'soLuong', 'donGia'];
 @Component({
   selector: 'app-create-credit-contract',
   templateUrl: './create-credit-contract.component.html',
   styleUrls: ['./create-credit-contract.component.css']
 })
 export class CreateCreditContractComponent implements OnInit {
+  private mergeSubscriptions: { [key: number]: Subscription[] } = {};
   formGroup!: FormGroup;
   fileUrls: string[] = [];
   fileAvatarUrls: FileMetadataEntity[] = [];
@@ -223,7 +225,16 @@ export class CreateCreditContractComponent implements OnInit {
       }
     });
   }
+  // Toggle merge
+  toggleMerge(index: number, event: any) {
+    const checked = event.target.checked;
+    const row = this.chiPhiRows[index];
+    row.patchValue({ merge: checked });
 
+    if (!checked) {
+      row.patchValue({ mergeTargets: [], mergedValue: '' });
+    }
+  }
   private setupSyncFields(): void {
     this.syncField('tenKhachHang', 'dungTenBiaDo1');
     this.syncField('gtkh', 'gioiTinhDungTenBiaDo1');
@@ -333,11 +344,6 @@ export class CreateCreditContractComponent implements OnInit {
         vonKhac: contract.pavvRequest?.vonKhac ?? ''
       }
     });
-    // this.formGroup.get('landItems')?.valueChanges.subscribe(() => {
-    //   this.calculateTongTaiSanBD();
-    //   this.updateTableFromLandItems(this.table1, this.updateTable1Row.bind(this));
-    //   this.updateTableFromLandItems(this.table2, this.updateTable2Row.bind(this));
-    // });
   }
 
   private syncTongVonToPavvRequest(): void {
@@ -398,21 +404,29 @@ export class CreateCreditContractComponent implements OnInit {
     // set hasTable control
     this.formGroup.patchValue({hasTable: !!tableRequest.drawTable});
   }
-
-  loadChiPhiTable(tableData: { rows: string[][] } | undefined, formArray: FormArray) {
+  loadChiPhiTable(tableData: { rows: string[][], merges?: MergeInfo[] } | undefined, formArray: FormArray) {
     formArray.clear();
     if (!tableData || !tableData.rows) {
       return;
     }
 
-    tableData.rows.forEach(rowData => {
+    tableData.rows.forEach((rowData, idx) => {
+      const mergeInfo = tableData.merges?.find(m => m.rowIndex === idx);
+
       const group = this.fb.group({
         stt: [rowData[0] || ''],
         danhMuc: [rowData[1] || ''],
         donVi: [rowData[2] || ''],
         soLuong: [rowData[3] || ''],
         donGia: [rowData[4] || ''],
-        thanhTien: [rowData[5] || '']
+        thanhTien: [rowData[5] || ''],
+
+        // thêm các control phục vụ merge và tính tổng
+        merge: [!!mergeInfo],
+        mergeTargets: [mergeInfo?.mergeTargets || []],
+        mergedValue: [mergeInfo?.mergedValue || ''],
+        isTotal: [false],
+        sumTargets: [[]]
       });
       formArray.push(group);
     });
@@ -672,7 +686,7 @@ export class CreateCreditContractComponent implements OnInit {
       }
 
       // Sau khi tính được số tiền bằng chữ, cập nhật vào lý do
-      const reasonText = `Lý do thực hiện phương án: Gia đình tôi có nhu cầu mở rộng sản xuất kinh doanh. Vì vậy gia đình tôi lập phương án xin Quỹ tín dụng Thái Học cho chúng tôi vay số tiền là:  ${rawValue} đồng (Bằng chữ: ${this.tienChu})`;
+      const reasonText = `- Lý do thực hiện phương án: Gia đình tôi có nhu cầu mở rộng sản xuất kinh doanh nên cần một lượng vốn lưu động, vốn tự có của gia đình chưa đáp ứng đủ vốn kinh doanh. Vì vậy gia đình chúng tôi lập phương án đề nghị QTD Thái Học cho chúng tôi vay số tiền là:  ${rawValue} đồng (Bằng chữ: ${this.tienChu})`;
       (this.formGroup.get('pavvRequest') as FormGroup).get('reason')?.setValue(reasonText, {emitEvent: false});
     });
 
@@ -1235,14 +1249,27 @@ export class CreateCreditContractComponent implements OnInit {
     return row;
   }
 
+  // Thêm một hàng mới
   addChiPhiRow() {
-    // Tự động đánh số STT tăng dần
-    const nextStt = this.chiPhiTable.length + 1;
-    this.chiPhiTable.push(this.createChiPhiRow({stt: nextStt}));
+    const row = this.fb.group({
+      stt: [''],
+      danhMuc: [''],
+      donVi: [''],
+      soLuong: [0],
+      donGia: [0],
+      thanhTien: [0],
+      merge: [false],
+      mergeTargets: [[]],
+      mergedValue: [''],
+      sum: [false],
+      sumTargets: [[]]
+    });
+    this.chiPhiRows.push(row);
   }
 
+// Xóa hàng
   removeChiPhiRow(index: number) {
-    this.chiPhiTable.removeAt(index);
+    this.chiPhiRows.splice(index, 1);
   }
 
 
@@ -1375,6 +1402,41 @@ export class CreateCreditContractComponent implements OnInit {
       tableType: 'hanMuc'
     };
   }
+// Toggle tính tổng
+  toggleSum(index: number, event: any) {
+    const checked = event.target.checked;
+    const row = this.chiPhiRows[index];
+    row.patchValue({ sum: checked });
+
+    if (!checked) {
+      row.patchValue({ sumTargets: [] });
+    }
+  }
+// Chọn cột để tính tổng
+  onSumTargetChange(row: FormGroup, option: string, event: any) {
+    const checked = event.target.checked;
+    let targets = row.get('sumTargets')?.value || [];
+
+    if (checked) {
+      if (!targets.includes(option)) targets.push(option);
+    } else {
+      targets = targets.filter((t: string) => t !== option);
+    }
+
+    row.patchValue({ sumTargets: targets });
+    this.calculateSum(option);
+  }
+// Hàm tính tổng cho toàn bộ bảng theo cột
+  calculateSum(option: string) {
+    let total = 0;
+    this.chiPhiRows.forEach(row => {
+      if (row.get('sum')?.value && row.get('sumTargets')?.value?.includes(option)) {
+        const value = Number(row.get(option)?.value) || 0;
+        total += value;
+      }
+    });
+    console.log(`Tổng ${option}:`, total);
+  }
 
 
   buildChiPhiTableRequest(table: FormArray): TableRequest {
@@ -1407,7 +1469,19 @@ export class CreateCreditContractComponent implements OnInit {
       tableType: 'chiPhi'
     };
   }
+// Chọn cột để merge
+  onMergeTargetChange(row: FormGroup, option: string, event: any) {
+    const checked = event.target.checked;
+    let targets = row.get('mergeTargets')?.value || [];
 
+    if (checked) {
+      if (!targets.includes(option)) targets.push(option);
+    } else {
+      targets = targets.filter((t: string) => t !== option);
+    }
+
+    row.patchValue({ mergeTargets: targets });
+  }
 
   get giaTriQuyenSuDungDat(): number {
     const table = this.table3;
@@ -1424,99 +1498,65 @@ export class CreateCreditContractComponent implements OnInit {
     return row1 + row2;
   }
 
-  setTotalRow(index: number, event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const formula = select.value;
-
-    const row = this.chiPhiTable.at(index) as FormGroup;
-    if (formula) {
-      row.patchValue({formula, isTotal: true});
-    } else {
-      row.patchValue({formula: '', isTotal: false});
-    }
-  }
-
-  toggleIsTotal(row: FormGroup, event: Event) {
-    const input = event.target as HTMLInputElement;
-    const checked = input.checked;
-
-    row.patchValue({isTotal: checked});
-    this.updateThanhTien(row);
-  }
 
   updateMergedRow(row: FormGroup) {
     const targets: string[] = row.get('mergeTargets')?.value || [];
-    const merged = targets.map(t => row.get(t)?.value).join(' | ');
-    row.get('mergedValue')?.setValue(merged, {emitEvent: false});
-  }
 
-  toggleMerge(i: number, event: any) {
-    const checked = event.target.checked;
-    const row = this.chiPhiRows[i];
-    row.get('merge')?.setValue(checked);
-
-    if (checked) {
-      if (!row.get('mergeTargets')) {
-        row.addControl('mergeTargets', this.fb.control([]));
-      }
-      if (!row.get('mergedValue')) {
-        row.addControl('mergedValue', this.fb.control(''));
-      }
-
-      // Lắng nghe thay đổi mergedValue -> cập nhật ngược lại các cột gốc
-      row.get('mergedValue')?.valueChanges.subscribe((val: string) => {
-        const targets: string[] = row.get('mergeTargets')?.value || [];
-        const parts = val.split('|').map((p: string) => p.trim());
-        targets.forEach((t, idx) => {
-          if (row.get(t)) {
-            row.get(t)?.setValue(parts[idx] || '');
-          }
-        });
-      });
-
-      // Lắng nghe thay đổi cột gốc -> cập nhật mergedValue
-      ['stt', 'danhMuc', 'donVi', 'soLuong', 'donGia'].forEach(field => {
-        if (row.get(field)) {
-          row.get(field)?.valueChanges.subscribe(() => {
-            this.updateMergedRow(row);
-          });
-        }
-      });
-    } else {
-      row.removeControl('mergeTargets');
-      row.removeControl('mergedValue');
+    if (targets.length === 0) {
+      row.get('mergedValue')?.setValue('', { emitEvent: false });
+      return;
     }
+
+    // Lấy toàn bộ giá trị của các cột được chọn merge
+    const values = targets.map(t => (row.get(t)?.value || '').toString().trim());
+
+    // Loại bỏ các ô trống ở cuối mảng để tránh sinh ra " | | " thừa
+    while (values.length > 0 && values[values.length - 1] === '') {
+      values.pop();
+    }
+
+    row.get('mergedValue')?.setValue(values.join(' | '), { emitEvent: false });
   }
 
   get chiPhiRows(): FormGroup[] {
     return this.chiPhiTable.controls as FormGroup[];
   }
+// Xử lý nhập liệu
+  onInputChange(event: any, row: FormGroup, field: string) {
+    // Loại bỏ ký tự không phải số
+    const rawValue = event.target.value.toString().replace(/[^\d]/g, '') || '0';
+    const value = Number(rawValue);
 
+    if (field === 'soLuong' || field === 'donGia') {
+      // Patch lại giá trị số lượng hoặc đơn giá
+      row.patchValue({ [field]: value });
 
-  onInputChange(event: any, row: FormGroup, controlName: string) {
-    const rawValue = event.target.value.replace(/\./g, '');
-    row.get(controlName)?.setValue(rawValue);
-
-    // Nếu thay đổi số lượng hoặc đơn giá thì cập nhật thành tiền
-    if (controlName === 'soLuong' || controlName === 'donGia') {
-      this.updateThanhTien(row);
+      // Tính lại thành tiền
+      const soLuong = Number((row.get('soLuong')?.value || '0').toString().replace(/[^\d]/g, ''));
+      const donGia = Number((row.get('donGia')?.value || '0').toString().replace(/[^\d]/g, ''));
+      const thanhTien = soLuong * donGia;
+      row.patchValue({ thanhTien: thanhTien });
+    } else if (field === 'thanhTien') {
+      row.patchValue({ [field]: value });
     }
   }
 
-// Hàm format khi blur
-  formatOnBlur(row: FormGroup, col: string) {
-    const control = row.get(col);
-    if (!control) return;
-    const raw = control.value;
-    if (!raw) return; // giữ nguyên nếu rỗng
-    const num = this.parseNumber(raw);
-    if (!isNaN(num)) {
-      control.setValue(num.toLocaleString('vi-VN'), { emitEvent: false });
+// Format khi blur (hiển thị dạng tiền tệ)
+  formatOnBlur(row: FormGroup, field: string) {
+    let rawValue = row.get(field)?.value?.toString().replace(/[^\d]/g, '') || '0';
+    let value = Number(rawValue);
+
+    if (field === 'soLuong' || field === 'donGia') {
+      row.patchValue({ [field]: value.toLocaleString('vi-VN') });
+      // Sau khi format, tính lại thành tiền
+      const soLuong = Number((row.get('soLuong')?.value || '0').toString().replace(/[^\d]/g, ''));
+      const donGia = Number((row.get('donGia')?.value || '0').toString().replace(/[^\d]/g, ''));
+      const thanhTien = soLuong * donGia;
+      row.patchValue({ thanhTien: thanhTien.toLocaleString('vi-VN') });
+    } else if (field === 'thanhTien') {
+      row.patchValue({ [field]: value.toLocaleString('vi-VN') });
     }
   }
-
-
-
 
 
 // Hàm tiện ích: bỏ dấu chấm và chuyển về số
