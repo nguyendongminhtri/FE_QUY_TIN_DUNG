@@ -419,13 +419,13 @@ export class CreateCreditContractComponent implements OnInit {
         donVi: [rowData[2] || ''],
         soLuong: [rowData[3] || ''],
         donGia: [rowData[4] || ''],
-        thanhTien: [rowData[5] || ''],
+        thanhTien: [Number(rowData[5]) || 0],
 
         // thêm các control phục vụ merge và tính tổng
         merge: [!!mergeInfo],
         mergeTargets: [mergeInfo?.mergeTargets || []],
         mergedValue: [mergeInfo?.mergedValue || ''],
-        isTotal: [false],
+        sum: [false],
         sumTargets: [[]]
       });
       formArray.push(group);
@@ -1402,42 +1402,46 @@ export class CreateCreditContractComponent implements OnInit {
       tableType: 'hanMuc'
     };
   }
-// Toggle tính tổng
+
+  // TÍNH TỔNG CÁC HÀNG
   toggleSum(index: number, event: any) {
+    const row = this.chiPhiTable.at(index) as FormGroup;
     const checked = event.target.checked;
-    const row = this.chiPhiRows[index];
-    row.patchValue({ sum: checked });
+    row.get('sum')?.setValue(checked);
 
     if (!checked) {
-      row.patchValue({ sumTargets: [] });
+      row.get('sumTargets')?.setValue([]);
+      row.get('thanhTien')?.setValue(0);
     }
   }
-// Chọn cột để tính tổng
-  onSumTargetChange(row: FormGroup, option: string, event: any) {
-    const checked = event.target.checked;
-    let targets = row.get('sumTargets')?.value || [];
+  onSumRowChange(row: FormGroup, targetIndex: number, event: any) {
+    let sumTargets: number[] = row.get('sumTargets')?.value || [];
 
-    if (checked) {
-      if (!targets.includes(option)) targets.push(option);
+    if (event.target.checked) {
+      sumTargets.push(targetIndex);
     } else {
-      targets = targets.filter((t: string) => t !== option);
+      sumTargets = sumTargets.filter((idx: number) => idx !== targetIndex);
     }
 
-    row.patchValue({ sumTargets: targets });
-    this.calculateSum(option);
-  }
-// Hàm tính tổng cho toàn bộ bảng theo cột
-  calculateSum(option: string) {
-    let total = 0;
-    this.chiPhiRows.forEach(row => {
-      if (row.get('sum')?.value && row.get('sumTargets')?.value?.includes(option)) {
-        const value = Number(row.get(option)?.value) || 0;
-        total += value;
-      }
-    });
-    console.log(`Tổng ${option}:`, total);
-  }
+    row.get('sumTargets')?.setValue(sumTargets);
 
+    // Tính lại tổng thành tiền
+    let total = 0;
+    sumTargets.forEach((idx: number) => {
+      const otherRow = this.chiPhiTable.at(idx) as FormGroup;
+      let rawValue = otherRow.get('thanhTien')?.value || 0;
+
+      if (typeof rawValue === 'string') {
+        rawValue = rawValue.replace(/[^\d]/g, '');
+      }
+
+      const thanhTien = isNaN(Number(rawValue)) ? 0 : Number(rawValue);
+      total += thanhTien;
+    });
+
+    // Format lại giống hàm formatOnBlur
+    row.patchValue({ thanhTien: total.toLocaleString('vi-VN') });
+  }
 
   buildChiPhiTableRequest(table: FormArray): TableRequest {
     const rows: string[][] = table.controls.map(ctrl => {
@@ -1523,23 +1527,14 @@ export class CreateCreditContractComponent implements OnInit {
   }
 // Xử lý nhập liệu
   onInputChange(event: any, row: FormGroup, field: string) {
-    // Loại bỏ ký tự không phải số
-    const rawValue = event.target.value.toString().replace(/[^\d]/g, '') || '0';
-    const value = Number(rawValue);
+    const value = event.target.value.replace(/\./g, '');
+    row.get(field)?.setValue(value);
 
-    if (field === 'soLuong' || field === 'donGia') {
-      // Patch lại giá trị số lượng hoặc đơn giá
-      row.patchValue({ [field]: value });
-
-      // Tính lại thành tiền
-      const soLuong = Number((row.get('soLuong')?.value || '0').toString().replace(/[^\d]/g, ''));
-      const donGia = Number((row.get('donGia')?.value || '0').toString().replace(/[^\d]/g, ''));
-      const thanhTien = soLuong * donGia;
-      row.patchValue({ thanhTien: thanhTien });
-    } else if (field === 'thanhTien') {
-      row.patchValue({ [field]: value });
-    }
+    const soLuong = Number(row.get('soLuong')?.value || 0);
+    const donGia = Number(row.get('donGia')?.value || 0);
+    row.get('thanhTien')?.setValue(soLuong * donGia);
   }
+
 
 // Format khi blur (hiển thị dạng tiền tệ)
   formatOnBlur(row: FormGroup, field: string) {
@@ -1558,15 +1553,12 @@ export class CreateCreditContractComponent implements OnInit {
     }
   }
 
-
 // Hàm tiện ích: bỏ dấu chấm và chuyển về số
   parseNumber(value: any): number {
     if (!value) return 0;
     const num = Number(String(value).replace(/\./g, ''));
     return isNaN(num) ? 0 : num;
   }
-
-
 
   insertM2(textarea: HTMLTextAreaElement) {
     const start = textarea.selectionStart || 0;
@@ -1580,7 +1572,4 @@ export class CreateCreditContractComponent implements OnInit {
     textarea.value = newValue;
     this.formGroup.get('landItems')?.setValue(newValue);
   }
-
-
-
 }
