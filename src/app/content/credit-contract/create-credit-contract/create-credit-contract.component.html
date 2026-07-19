@@ -41,7 +41,7 @@
                 <mat-label>Chọn Người đại diện:</mat-label>
                 <mat-select formControlName="nguoiDaiDien">
                   <mat-option value="gd">PHÙNG THỊ LOAN</mat-option>
-                  <mat-option value="pgd">VŨ THANH HẢI</mat-option>
+                  <mat-option value="pgd">DƯƠNG QUANG TUẤN</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -261,7 +261,7 @@
             <!--              </mat-form-field>-->
             <!--            </div>-->
           </div>
-          <mat-checkbox formControlName="hasTable">Có bảng kỳ hạn vay</mat-checkbox>
+          <mat-checkbox formControlName="hasTable"><span style="color: red">Tích chọn nếu có bảng kỳ hạn vay</span></mat-checkbox>
           <div *ngIf="formGroup.get('hasTable')?.value" class="table-section">
             <h3>Tiêu đề bảng</h3>
             <div class="table-row-headers" formArrayName="tableHeaders">
@@ -813,6 +813,7 @@
               </tbody>
             </table>
           </div>
+
           <div formArrayName="chiPhiTable">
             <h3>Bảng chi phí</h3>
             <button class="btn btn-primary mb-2" type="button" (click)="addChiPhiRow()">
@@ -840,89 +841,6 @@
                 <!-- Hàng -->
                 <td class="text-center fw-bold">{{ i + 1 }}</td>
 
-                <!-- Nếu merge -->
-<!--                <ng-container *ngIf="row.get('merge')?.value; else normalRow">-->
-<!--                  &lt;!&ndash; Ô gộp &ndash;&gt;-->
-<!--                  <td-->
-<!--                    [attr.colspan]="(row.get('mergeTargets')?.value?.length || 0) + 1"-->
-<!--                    class="fw-bold"-->
-<!--                  >-->
-<!--                    <input formControlName="mergedValue" class="form-control" />-->
-<!--                  </td>-->
-
-<!--                  &lt;!&ndash; Các cột còn lại &ndash;&gt;-->
-<!--                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('stt')">-->
-<!--                    <input formControlName="stt" class="form-control readonly-cell" readonly />-->
-<!--                  </td>-->
-<!--                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('danhMuc')">-->
-<!--                    <input formControlName="danhMuc" class="form-control readonly-cell" readonly />-->
-<!--                  </td>-->
-<!--                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('donVi')">-->
-<!--                    <input formControlName="donVi" class="form-control readonly-cell" readonly />-->
-<!--                  </td>-->
-<!--                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('soLuong')">-->
-<!--                    <input formControlName="soLuong"-->
-<!--                           (input)="onInputChange($event, row, 'soLuong')"-->
-<!--                           (blur)="formatOnBlur(row, 'soLuong')"-->
-<!--                           class="form-control readonly-cell" readonly />-->
-<!--                  </td>-->
-<!--                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('donGia')">-->
-<!--                    <input formControlName="donGia"-->
-<!--                           (input)="onInputChange($event, row, 'donGia')"-->
-<!--                           (blur)="formatOnBlur(row, 'donGia')"-->
-<!--                           class="form-control readonly-cell" readonly />-->
-<!--                  </td>-->
-
-<!--                  &lt;!&ndash; Thành tiền &ndash;&gt;-->
-<!--                  <td>-->
-<!--                    <input type="text"-->
-<!--                           [value]="row.get('thanhTien')?.value"-->
-<!--                           (input)="onInputChange($event, row, 'thanhTien')"-->
-<!--                           (blur)="formatOnBlur(row, 'thanhTien')"-->
-<!--                           class="form-control" />-->
-<!--                  </td>-->
-
-<!--                  &lt;!&ndash; Merge control &ndash;&gt;-->
-<!--                  <td>-->
-<!--                    <div class="d-flex align-items-center gap-1">-->
-<!--                      <label class="mb-0">Merge</label>-->
-<!--                      <input type="checkbox"-->
-<!--                             [checked]="row.get('merge')?.value"-->
-<!--                             (change)="toggleMerge(i, $event)" />-->
-<!--                    </div>-->
-<!--                    <div class="form-check"-->
-<!--                         *ngFor="let option of ['stt','danhMuc','donVi','soLuong','donGia']">-->
-<!--                      <input type="checkbox"-->
-<!--                             class="form-check-input"-->
-<!--                             [checked]="row.get('mergeTargets')?.value?.includes(option)"-->
-<!--                             (change)="onMergeTargetChange(row, option, $event)" />-->
-<!--                      <label class="form-check-label" style="font-size: 12px;">{{ option }}</label>-->
-<!--                    </div>-->
-<!--                  </td>-->
-
-<!--                  &lt;!&ndash; Sum control &ndash;&gt;-->
-<!--                  <td>-->
-<!--                    <div class="d-flex align-items-center gap-1">-->
-<!--                      <label class="mb-0">Tính tổng</label>-->
-<!--                      <input type="checkbox"-->
-<!--                             [checked]="row.get('sum')?.value"-->
-<!--                             (change)="toggleSum(i, $event)" />-->
-<!--                    </div>-->
-<!--                    <div class="form-check"-->
-<!--                         *ngFor="let option of ['soLuong','donGia','thanhTien']">-->
-<!--                      <input type="checkbox"-->
-<!--                             class="form-check-input"-->
-<!--                             [checked]="row.get('sumTargets')?.value?.includes(option)"-->
-<!--                             (change)="onSumTargetChange(row, option, $event)" />-->
-<!--                      <label class="form-check-label" style="font-size: 12px;">{{ option }}</label>-->
-<!--                    </div>-->
-<!--                  </td>-->
-
-<!--                  &lt;!&ndash; Hành động &ndash;&gt;-->
-<!--                  <td>-->
-<!--                    <button class="btn btn-danger btn-sm" (click)="removeChiPhiRow(i)">Xóa</button>-->
-<!--                  </td>-->
-<!--                </ng-container>-->
                 <ng-container *ngIf="row.get('merge')?.value; else normalRow">
                   <!-- Ô gộp -->
                   <td
@@ -943,28 +861,27 @@
                     <input formControlName="donVi" class="form-control readonly-cell" readonly />
                   </td>
                   <td *ngIf="!row.get('mergeTargets')?.value?.includes('soLuong')">
-                    <input formControlName="soLuong"
+                    <input type="text"
+                           [value]="formatCurrency(row.get('soLuong')?.value)"
                            (input)="onInputChange($event, row, 'soLuong')"
-                           (blur)="formatOnBlur(row, 'soLuong')"
                            class="form-control readonly-cell" readonly />
                   </td>
                   <td *ngIf="!row.get('mergeTargets')?.value?.includes('donGia')">
-                    <input formControlName="donGia"
+                    <input type="text"
+                           [value]="formatCurrency(row.get('donGia')?.value)"
                            (input)="onInputChange($event, row, 'donGia')"
-                           (blur)="formatOnBlur(row, 'donGia')"
                            class="form-control readonly-cell" readonly />
                   </td>
 
-                  <!-- Thành tiền (luôn giữ nguyên cột riêng) -->
+                  <!-- Thành tiền -->
                   <td>
                     <input type="text"
-                           [value]="row.get('thanhTien')?.value"
-                           (input)="onInputChange($event, row, 'thanhTien')"
-                           (blur)="formatOnBlur(row, 'thanhTien')"
+                           [value]="formatCurrency(row.get('thanhTien')?.value)"
+                           readonly
                            class="form-control" />
                   </td>
 
-                  <!-- Merge control (luôn giữ nguyên cột riêng) -->
+                  <!-- Merge control -->
                   <td>
                     <div class="d-flex align-items-center gap-1">
                       <label class="mb-0">Merge</label>
@@ -982,7 +899,7 @@
                     </div>
                   </td>
 
-                  <!-- Sum control (luôn giữ nguyên cột riêng) -->
+                  <!-- Sum control -->
                   <td>
                     <div class="d-flex align-items-center gap-1">
                       <label class="mb-0">Tính tổng</label>
@@ -990,11 +907,9 @@
                              [checked]="row.get('sum')?.value"
                              (change)="toggleSum(i, $event)" />
                     </div>
-
-                    <!-- Khi bật tính tổng thì hiển thị danh sách các hàng khác -->
                     <div *ngIf="row.get('sum')?.value">
-                      <div class="form-check" *ngFor="let otherRow of chiPhiRows; let j = index">
-                        <ng-container *ngIf="j !== i">
+                      <ng-container *ngFor="let otherRow of chiPhiRows; let j = index">
+                        <div class="form-check" *ngIf="isRowAvailableForSum(i, j)">
                           <input type="checkbox"
                                  class="form-check-input"
                                  [checked]="row.get('sumTargets')?.value?.includes(j)"
@@ -1002,11 +917,10 @@
                           <label class="form-check-label" style="font-size: 12px;">
                             Hàng {{ j + 1 }}
                           </label>
-                        </ng-container>
-                      </div>
+                        </div>
+                      </ng-container>
                     </div>
                   </td>
-
 
                   <!-- Hành động -->
                   <td>
@@ -1020,21 +934,21 @@
                   <td><input formControlName="danhMuc" class="form-control" /></td>
                   <td><input formControlName="donVi" class="form-control" /></td>
                   <td>
-                    <input formControlName="soLuong"
+                    <input type="text"
+                           [value]="formatCurrency(row.get('soLuong')?.value)"
                            (input)="onInputChange($event, row, 'soLuong')"
-                           (blur)="formatOnBlur(row, 'soLuong')"
                            class="form-control" />
                   </td>
                   <td>
-                    <input formControlName="donGia"
+                    <input type="text"
+                           [value]="formatCurrency(row.get('donGia')?.value)"
                            (input)="onInputChange($event, row, 'donGia')"
-                           (blur)="formatOnBlur(row, 'donGia')"
                            class="form-control" />
                   </td>
                   <td>
-                    <input formControlName="thanhTien"
-                           (input)="onInputChange($event, row, 'thanhTien')"
-                           (blur)="formatOnBlur(row, 'thanhTien')"
+                    <input type="text"
+                           [value]="formatCurrency(row.get('thanhTien')?.value)"
+                           readonly
                            class="form-control" />
                   </td>
                   <td>
@@ -1057,6 +971,59 @@
               </tbody>
             </table>
           </div>
+          <div formArrayName="thuNhapTable">
+            <h3>Bảng Thu nhập dự kiến</h3>
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th>Nội dung</th>
+                <th>Đơn vị</th>
+                <th>Số lượng</th>
+                <th>Đơn giá (đồng)</th>
+                <th>Thành tiền (đồng)</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let row of thuNhapRows; let i = index" [formGroup]="row">
+                <!-- Nếu là hàng tổng cộng -->
+                <ng-container *ngIf="i === thuNhapRows.length - 1; else normalRow">
+                  <td colspan="4" class="fw-bold text-end">{{ row.get('noiDung')?.value }}</td>
+                  <td>
+                    <input type="text"
+                           [value]="formatCurrency(tongThuNhap)"
+                           readonly
+                           class="form-control fw-bold" />
+                  </td>
+                </ng-container>
+
+                <!-- Các hàng nhập liệu -->
+                <ng-template #normalRow>
+                  <td><input formControlName="noiDung" class="form-control" /></td>
+                  <td><input formControlName="donVi" class="form-control" /></td>
+                  <td>
+                    <input type="text"
+                           [value]="formatCurrency(row.get('soLuong')?.value)"
+                           (input)="onInputChange($event, row, 'soLuong')"
+                           class="form-control" />
+                  </td>
+                  <td>
+                    <input type="text"
+                           [value]="formatCurrency(row.get('donGia')?.value)"
+                           (input)="onInputChange($event, row, 'donGia')"
+                           class="form-control" />
+                  </td>
+                  <td>
+                    <input type="text"
+                           [value]="formatCurrency(row.get('thanhTien')?.value)"
+                           readonly
+                           class="form-control" />
+                  </td>
+                </ng-template>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
 
           <br>
           <!--          <button mat-raised-button color="primary" type="submit">Tạo hợp đồng</button>-->

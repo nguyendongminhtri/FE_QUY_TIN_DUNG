@@ -44,6 +44,7 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('this mode --->', this.mode)
     // Lấy id từ route
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -69,6 +70,7 @@ export class CreateCreditContractComponent implements OnInit {
         this.loadTableArray(contract.table3, this.table3, 7, 'table3');
         this.loadTableArray(contract.hanMucTable, this.hanMucTable, 7, 'table1');
         this.loadChiPhiTable(contract.chiPhiTable, this.chiPhiTable);
+        this.loadThuNhapTable(contract.thuNhapDuKienTable, this.thuNhapTable)
         // File avatars
         this.fileAvatarUrls = contract.fileAvatarUrls ?? [];
         // Các control enable/disable theo checkbox
@@ -87,6 +89,8 @@ export class CreateCreditContractComponent implements OnInit {
           this.loadTableRequest(contract.tableRequest);
         }
       });
+    } else {
+      this.initThuNhapTable()
     }
 
     // Các listener khác (valueChanges)
@@ -99,6 +103,7 @@ export class CreateCreditContractComponent implements OnInit {
       this.syncTongVonToPavvRequest();
       this.syncTongVonLuuDong();
     });
+    // this.initThuNhapTable()
   }
 
   /* ---------- Helper methods ---------- */
@@ -212,7 +217,8 @@ export class CreateCreditContractComponent implements OnInit {
       table2: this.fb.array<FormGroup>([]),
       table3: this.fb.array<FormGroup>([]),
       hanMucTable: this.fb.array([]),
-      chiPhiTable: this.fb.array([])
+      chiPhiTable: this.fb.array([]),
+      thuNhapTable: this.fb.array([])
     });
     // Lắng nghe thay đổi của nguoiDaiDien
     this.formGroup.get('nguoiDaiDien')?.valueChanges.subscribe(value => {
@@ -404,7 +410,15 @@ export class CreateCreditContractComponent implements OnInit {
     // set hasTable control
     this.formGroup.patchValue({hasTable: !!tableRequest.drawTable});
   }
-  loadChiPhiTable(tableData: { rows: string[][], merges?: MergeInfo[] } | undefined, formArray: FormArray) {
+  private parseNumber(val: string | undefined): number {
+    if (!val) return 0;
+    return Number(val.replace(/\./g, '')) || 0;
+  }
+
+  loadChiPhiTable(
+    tableData: { rows: string[][], merges?: MergeInfo[] } | undefined,
+    formArray: FormArray
+  ) {
     formArray.clear();
     if (!tableData || !tableData.rows) {
       return;
@@ -413,24 +427,30 @@ export class CreateCreditContractComponent implements OnInit {
     tableData.rows.forEach((rowData, idx) => {
       const mergeInfo = tableData.merges?.find(m => m.rowIndex === idx);
 
+      const soLuong = this.parseNumber(rowData[3]);
+      const donGia = this.parseNumber(rowData[4]);
+      const thanhTien = rowData[5] ? this.parseNumber(rowData[5]) : soLuong * donGia;
+
       const group = this.fb.group({
         stt: [rowData[0] || ''],
         danhMuc: [rowData[1] || ''],
         donVi: [rowData[2] || ''],
-        soLuong: [rowData[3] || ''],
-        donGia: [rowData[4] || ''],
-        thanhTien: [Number(rowData[5]) || 0],
+        soLuong: [soLuong],
+        donGia: [donGia],
+        thanhTien: [thanhTien],
 
-        // thêm các control phục vụ merge và tính tổng
         merge: [!!mergeInfo],
         mergeTargets: [mergeInfo?.mergeTargets || []],
         mergedValue: [mergeInfo?.mergedValue || ''],
         sum: [false],
         sumTargets: [[]]
       });
+
       formArray.push(group);
     });
   }
+
+
 
   loadTableArray(
     tableData: { rows: string[][] } | undefined,
@@ -909,6 +929,7 @@ export class CreateCreditContractComponent implements OnInit {
       table3: this.buildTableRequest(this.table3),
       hanMucTable: this.buildHanMucTableRequest(this.hanMucTable),
       chiPhiTable: this.buildChiPhiTableRequest(this.chiPhiTable),
+      thuNhapDuKienTable: this.buildThuNhapTableRequest(this.thuNhapTable),
       giaTriQuyenSuDungDat: this.giaTriQuyenSuDungDat,
     };
     this.creditContractService.previewContract(payload).subscribe(urls => {
@@ -971,6 +992,7 @@ export class CreateCreditContractComponent implements OnInit {
       table3: this.buildTableRequest(this.table3),
       hanMucTable: this.buildHanMucTableRequest(this.hanMucTable),
       chiPhiTable: this.buildChiPhiTableRequest(this.chiPhiTable),
+      thuNhapDuKienTable: this.buildThuNhapTableRequest(this.thuNhapTable),
       giaTriQuyenSuDungDat: this.giaTriQuyenSuDungDat
     };
     console.log('playload -->', payload)
@@ -1286,26 +1308,6 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
 
-  updateTotalRow(totalRow: FormGroup) {
-    const sumTargets = totalRow.get('sumTargets')?.value || [];
-    let sum = 0;
-    sumTargets.forEach((index: number) => {
-      const targetRow = this.chiPhiRows[index];
-      if (targetRow) {
-        sum += this.parseNumber(targetRow.get('thanhTien')?.value);
-      }
-    });
-    totalRow.get('thanhTien')?.setValue(sum.toLocaleString('vi-VN'), {emitEvent: false});
-  }
-
-
-  updateCol6(row: FormGroup) {
-    const col2 = this.parseNumber(row.get('col2')?.value);
-    const col5 = this.parseNumber(row.get('col5')?.value);
-    const result = col2 * col5;
-    row.get('col7')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
-  }
-
   get table1(): FormArray<FormGroup> {
     return this.formGroup.get('table1') as FormArray<FormGroup>;
   }
@@ -1327,17 +1329,6 @@ export class CreateCreditContractComponent implements OnInit {
   get chiPhiTable(): FormArray {
     return this.formGroup.get('chiPhiTable') as FormArray;
   }
-
-  getTongVon(): any {
-    if (this.chiPhiTable.length === 0) return null;
-    const lastRow = this.chiPhiTable.at(this.chiPhiTable.length - 1) as FormGroup;
-    return lastRow.get('thanhTien')?.value;
-  }
-
-
-  // get chiPhiTableGroups(): FormGroup[] {
-  //   return this.chiPhiTable.controls as FormGroup[];
-  // }
 
 
   buildTableRequest(table: FormArray): any {
@@ -1503,37 +1494,41 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
 
-  updateMergedRow(row: FormGroup) {
-    const targets: string[] = row.get('mergeTargets')?.value || [];
-
-    if (targets.length === 0) {
-      row.get('mergedValue')?.setValue('', { emitEvent: false });
-      return;
-    }
-
-    // Lấy toàn bộ giá trị của các cột được chọn merge
-    const values = targets.map(t => (row.get(t)?.value || '').toString().trim());
-
-    // Loại bỏ các ô trống ở cuối mảng để tránh sinh ra " | | " thừa
-    while (values.length > 0 && values[values.length - 1] === '') {
-      values.pop();
-    }
-
-    row.get('mergedValue')?.setValue(values.join(' | '), { emitEvent: false });
-  }
-
   get chiPhiRows(): FormGroup[] {
     return this.chiPhiTable.controls as FormGroup[];
   }
-// Xử lý nhập liệu
   onInputChange(event: any, row: FormGroup, field: string) {
-    const value = event.target.value.replace(/\./g, '');
+    const raw = event.target.value.replace(/\./g, '');
+    const value = Number(raw) || 0;
     row.get(field)?.setValue(value);
 
     const soLuong = Number(row.get('soLuong')?.value || 0);
     const donGia = Number(row.get('donGia')?.value || 0);
-    row.get('thanhTien')?.setValue(soLuong * donGia);
+    const thanhTien = soLuong * donGia;
+    row.get('thanhTien')?.setValue(thanhTien);
+
+    // cập nhật các hàng cha liên quan
+    const changedIndex = this.chiPhiRows.indexOf(row);
+    this.updateParentRows(changedIndex);
   }
+
+  private updateParentRows(changedIndex: number) {
+    this.chiPhiRows.forEach((parentRow: FormGroup, parentIndex: number) => {
+      if (parentRow.get('sum')?.value) {
+        const sumTargets: number[] = parentRow.get('sumTargets')?.value || [];
+        if (sumTargets.includes(changedIndex)) {
+          // Tính lại tổng từ các hàng con
+          let total = 0;
+          sumTargets.forEach(idx => {
+            const childRow = this.chiPhiRows[idx] as FormGroup;
+            total += Number(childRow.get('thanhTien')?.value || 0);
+          });
+          parentRow.get('thanhTien')?.setValue(total);
+        }
+      }
+    });
+  }
+
 
 
 // Format khi blur (hiển thị dạng tiền tệ)
@@ -1553,13 +1548,6 @@ export class CreateCreditContractComponent implements OnInit {
     }
   }
 
-// Hàm tiện ích: bỏ dấu chấm và chuyển về số
-  parseNumber(value: any): number {
-    if (!value) return 0;
-    const num = Number(String(value).replace(/\./g, ''));
-    return isNaN(num) ? 0 : num;
-  }
-
   insertM2(textarea: HTMLTextAreaElement) {
     const start = textarea.selectionStart || 0;
     const end = textarea.selectionEnd || 0;
@@ -1572,4 +1560,125 @@ export class CreateCreditContractComponent implements OnInit {
     textarea.value = newValue;
     this.formGroup.get('landItems')?.setValue(newValue);
   }
+  isRowAvailableForSum(currentIndex: number, targetIndex: number): boolean {
+    if (currentIndex === targetIndex) return false;
+
+    const targetRow = this.chiPhiTable.at(targetIndex) as FormGroup;
+
+    // Nếu hàng target đã nằm trong sumTargets của bất kỳ hàng khác thì ẩn đi (hàng con)
+    for (let i = 0; i < this.chiPhiTable.length; i++) {
+      if (i === currentIndex) continue;
+      const otherRow = this.chiPhiTable.at(i) as FormGroup;
+      const sumTargets = otherRow.get('sumTargets')?.value || [];
+      if (sumTargets.includes(targetIndex)) {
+        return false; // hàng con bị ẩn
+      }
+    }
+
+    // Hàng cha (sum = true) vẫn hiển thị
+    return true;
+  }
+
+  formatCurrency(value: number | null | undefined): string {
+    if (!value) return '0';
+    return value.toLocaleString('vi-VN'); // 1000000 -> "1.000.000"
+  }
+  get thuNhapTable(): FormArray {
+    return this.formGroup.get('thuNhapTable') as FormArray;
+  }
+
+  get thuNhapRows(): FormGroup[] {
+    return this.thuNhapTable.controls as FormGroup[];
+  }
+  loadThuNhapTable(tableRequest: TableRequest | undefined, formArray: FormArray): void {
+    formArray.clear(); // 👉 clear trước để tránh dư hàng
+
+    if (!tableRequest || !tableRequest.rows || tableRequest.rows.length === 0) {
+      // Nếu không có dữ liệu từ backend thì khởi tạo mặc định
+      this.initThuNhapTable();
+      return;
+    }
+
+    // Patch dữ liệu từ backend
+    tableRequest.rows.forEach((row: string[]) => {
+      const group = this.fb.group({
+        noiDung: [row[0] || ''],
+        donVi: [row[1] || ''],
+        soLuong: [Number(row[2]) || 0],
+        donGia: [Number(row[3]) || 0],
+        thanhTien: [Number(row[4]) || 0]
+      });
+      formArray.push(group);
+    });
+  }
+  buildThuNhapTableRequest(table: FormArray): TableRequest {
+    const rows = table.controls.map(ctrl => {
+      const row = ctrl as FormGroup;
+      return [
+        row.get('noiDung')?.value || '',
+        row.get('donVi')?.value || '',
+        row.get('soLuong')?.value || '',
+        row.get('donGia')?.value || '',
+        row.get('thanhTien')?.value || ''
+      ];
+    });
+
+    // Tính tổng thành tiền
+    let tong = 0;
+    rows.forEach((r, idx) => {
+      if (idx < rows.length - 1) {
+        tong += parseInt(r[4].toString().replace(/\./g, '') || '0', 10);
+      }
+    });
+    rows[rows.length - 1] = ['Tổng cộng:', '', '', '', tong.toString()];
+
+    return {
+      headers: ["Nội dung","Đơn vị","Số lượng","Đơn giá","Thành tiền"],
+      rows,
+      drawTable: true,
+      tableType: 'thuNhapDuKien',
+      merges: [
+        {
+          rowIndex: rows.length - 1, // hàng cuối
+          mergeTargets: ["noiDung","donVi","soLuong","donGia"], // merge 4 cột đầu
+          mergedValue: "Tổng cộng:"
+        }
+      ]
+    };
+  }
+
+
+  initThuNhapTable() {
+    const formArray = this.thuNhapTable;
+    formArray.clear();
+
+    // 2 hàng nhập dữ liệu (hàng 2 và hàng 3)
+    for (let i = 0; i < 2; i++) {
+      const group = this.fb.group({
+        noiDung: [''],
+        donVi: [''],
+        soLuong: [0],
+        donGia: [0],
+        thanhTien: [0]
+      });
+      formArray.push(group);
+    }
+
+    // Hàng tổng cộng (readonly)
+    const totalGroup = this.fb.group({
+      noiDung: ['Tổng cộng:'],
+      donVi: [''],
+      soLuong: [0],
+      donGia: [0],
+      thanhTien: [0]
+    });
+    formArray.push(totalGroup);
+  }
+  get tongThuNhap(): number {
+    return this.thuNhapRows
+      .slice(0, this.thuNhapRows.length - 1) // bỏ hàng cuối
+      .reduce((sum, row) => sum + (row.get('thanhTien')?.value || 0), 0);
+  }
+
+
 }

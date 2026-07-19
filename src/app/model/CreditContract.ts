@@ -59,6 +59,7 @@ export class CreditContract {
   table3?: TableRequest;
   hanMucTable?: TableRequest;
   chiPhiTable?: TableRequest;
+  thuNhapDuKienTable?: TableRequest;
   checkOption?: boolean;
   soHopDongTD?: string;
   checkNguoiDungTenBiaDo2?:boolean;
