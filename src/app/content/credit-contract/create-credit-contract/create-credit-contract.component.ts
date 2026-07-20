@@ -1680,5 +1680,24 @@ export class CreateCreditContractComponent implements OnInit {
       .reduce((sum, row) => sum + (row.get('thanhTien')?.value || 0), 0);
   }
 
+  addThuNhapRow(): void {
+    const formArray = this.thuNhapTable;
+    // Chèn trước hàng tổng cộng
+    formArray.insert(formArray.length - 1, this.fb.group({
+      noiDung: [''],
+      donVi: [''],
+      soLuong: [0],
+      donGia: [0],
+      thanhTien: [0]
+    }));
+  }
+
+  removeThuNhapRow(index: number): void {
+    const formArray = this.thuNhapTable;
+    // Không cho xóa hàng tổng cộng
+    if (index < formArray.length - 1) {
+      formArray.removeAt(index);
+    }
+  }
 
 }

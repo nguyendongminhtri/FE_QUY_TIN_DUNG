@@ -971,58 +971,61 @@
               </tbody>
             </table>
           </div>
-          <div formArrayName="thuNhapTable">
-            <h3>Bảng Thu nhập dự kiến</h3>
-            <table class="table table-bordered">
-              <thead>
-              <tr>
-                <th>Nội dung</th>
-                <th>Đơn vị</th>
-                <th>Số lượng</th>
-                <th>Đơn giá (đồng)</th>
-                <th>Thành tiền (đồng)</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let row of thuNhapRows; let i = index" [formGroup]="row">
-                <!-- Nếu là hàng tổng cộng -->
-                <ng-container *ngIf="i === thuNhapRows.length - 1; else normalRow">
-                  <td colspan="4" class="fw-bold text-end">{{ row.get('noiDung')?.value }}</td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(tongThuNhap)"
-                           readonly
-                           class="form-control fw-bold" />
-                  </td>
-                </ng-container>
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th>Nội dung</th>
+              <th>Đơn vị</th>
+              <th>Số lượng</th>
+              <th>Đơn giá (đồng)</th>
+              <th>Thành tiền (đồng)</th>
+              <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let row of thuNhapRows; let i = index" [formGroup]="row">
+              <ng-container *ngIf="i === thuNhapRows.length - 1; else normalRow">
+                <td colspan="4" class="fw-bold text-end">{{ row.get('noiDung')?.value }}</td>
+                <td>
+                  <input type="text"
+                         [value]="formatCurrency(tongThuNhap)"
+                         readonly
+                         class="form-control fw-bold" />
+                </td>
+                <td></td>
+              </ng-container>
 
-                <!-- Các hàng nhập liệu -->
-                <ng-template #normalRow>
-                  <td><input formControlName="noiDung" class="form-control" /></td>
-                  <td><input formControlName="donVi" class="form-control" /></td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('soLuong')?.value)"
-                           (input)="onInputChange($event, row, 'soLuong')"
-                           class="form-control" />
-                  </td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('donGia')?.value)"
-                           (input)="onInputChange($event, row, 'donGia')"
-                           class="form-control" />
-                  </td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('thanhTien')?.value)"
-                           readonly
-                           class="form-control" />
-                  </td>
-                </ng-template>
-              </tr>
-              </tbody>
-            </table>
-          </div>
+              <ng-template #normalRow>
+                <td><input formControlName="noiDung" class="form-control" /></td>
+                <td><input formControlName="donVi" class="form-control" /></td>
+                <td>
+                  <input type="text"
+                         [value]="formatCurrency(row.get('soLuong')?.value)"
+                         (input)="onInputChange($event, row, 'soLuong')"
+                         class="form-control" />
+                </td>
+                <td>
+                  <input type="text"
+                         [value]="formatCurrency(row.get('donGia')?.value)"
+                         (input)="onInputChange($event, row, 'donGia')"
+                         class="form-control" />
+                </td>
+                <td>
+                  <input type="text"
+                         [value]="formatCurrency(row.get('thanhTien')?.value)"
+                         readonly
+                         class="form-control" />
+                </td>
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="removeThuNhapRow(i)">Xóa</button>
+                </td>
+              </ng-template>
+            </tr>
+            </tbody>
+          </table>
+
+          <button class="btn btn-primary mt-2" (click)="addThuNhapRow()">+ Thêm hàng</button>
+
 
 
           <br>
