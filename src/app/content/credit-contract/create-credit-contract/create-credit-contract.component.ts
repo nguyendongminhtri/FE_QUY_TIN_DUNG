@@ -410,10 +410,20 @@ export class CreateCreditContractComponent implements OnInit {
     // set hasTable control
     this.formGroup.patchValue({hasTable: !!tableRequest.drawTable});
   }
-  private parseNumber(val: string | undefined): number {
-    if (!val) return 0;
-    return Number(val.replace(/\./g, '')) || 0;
+  private parseNumber(val: any): number {
+    if (val == null) return 0;
+
+    if (typeof val === 'number') {
+      return val;
+    }
+
+    if (typeof val === 'string') {
+      return Number(val.replace(/\./g, '')) || 0;
+    }
+
+    return 0;
   }
+
 
   loadChiPhiTable(
     tableData: { rows: string[][], merges?: MergeInfo[] } | undefined,
