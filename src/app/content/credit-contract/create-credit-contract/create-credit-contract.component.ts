@@ -173,7 +173,19 @@ export class CreateCreditContractComponent implements OnInit {
         checkTaiSanGanLienVoiDat: [false],
         dienTichTS: [{value: '', disabled: true}],
         ketCauXayDung: [{value: 'bê tông', disabled: true}],
-        loaiNha: [{value: 'kiên cố', disabled: true}]
+        loaiNha: [{value: 'kiên cố', disabled: true}],
+
+        // Người đứng tên bìa đỏ 1
+        checkCMNDDungTenBiaDo1: [false],
+        cmndDungTenBiaDo1: [{ value: 'CMND Số: 030083003225; Cấp ngày: 11/08/2021; Nơi cấp: Công an Hải Hưng', disabled: true }],
+        checkNgayCapCCCDTruocDayDungTenBiaDo1: [false],
+        ngayCapCCCDTruocDayDungTenBiaDo1: [{ value: '', disabled: true }],
+
+        // Người đứng tên bìa đỏ 2
+        checkCMNDDungTenBiaDo2: [false],
+        cmndDungTenBiaDo2: [{ value: 'CMND Số: 030083003225; Cấp ngày: 11/08/2021; Nơi cấp: Công an Hải Hưng', disabled: true }],
+        checkNgayCapCCCDTruocDayDungTenBiaDo2: [false],
+        ngayCapCCCDTruocDayDungTenBiaDo2: [{ value: '', disabled: true }],
       }),
       pavvRequest: this.fb.group({
         name: [''],
@@ -337,7 +349,15 @@ export class CreateCreditContractComponent implements OnInit {
         checkTaiSanGanLienVoiDat: contract.tsbdRequest?.checkTaiSanGanLienVoiDat ?? false,
         dienTichTS: contract.tsbdRequest?.dienTichTS ?? '',
         ketCauXayDung: contract.tsbdRequest?.ketCauXayDung ?? '',
-        loaiNha: contract.tsbdRequest?.loaiNha ?? ''
+        loaiNha: contract.tsbdRequest?.loaiNha ?? '',
+        checkCMNDDungTenBiaDo1: contract.tsbdRequest?.checkCMNDDungTenBiaDo1 ?? false,
+        cmndDungTenBiaDo1: contract.tsbdRequest?.cmndDungTenBiaDo1 ?? '',
+        checkNgayCapCCCDTruocDayDungTenBiaDo1: contract.tsbdRequest?.checkNgayCapCCCDTruocDayDungTenBiaDo1 ?? false,
+        ngayCapCCCDTruocDayDungTenBiaDo1: contract.tsbdRequest?.ngayCapCCCDTruocDayDungTenBiaDo1 ?? '',
+        checkCMNDDungTenBiaDo2: contract.tsbdRequest?.checkCMNDDungTenBiaDo2 ?? false,
+        cmndDungTenBiaDo2: contract.tsbdRequest?.cmndDungTenBiaDo2 ?? '',
+        checkNgayCapCCCDTruocDayDungTenBiaDo2: contract.tsbdRequest?.checkNgayCapCCCDTruocDayDungTenBiaDo2 ?? false,
+        ngayCapCCCDTruocDayDungTenBiaDo2: contract.tsbdRequest?.ngayCapCCCDTruocDayDungTenBiaDo2 ?? ''
       },
       pavvRequest: {
         checkAddress: contract.pavvRequest?.checkAddress ?? false,
@@ -702,6 +722,11 @@ export class CreateCreditContractComponent implements OnInit {
       console.log('value much dich vay -->', value);
       this.formGroup.get('pavvRequest.name')?.setValue(value, {emitEvent: false});
     });
+    this.formGroup.get('tsbdRequest.checkCMNDDungTenBiaDo1')?.valueChanges.subscribe(checked => {
+      const control = this.formGroup.get('tsbdRequest.cmndDungTenBiaDo1');
+      checked ? control?.enable() : control?.disable();
+    });
+
     this.formGroup.get('diaChiThuongTruKhachHang')?.valueChanges.subscribe(value => {
       console.log('value much dich vay -->', value);
       this.formGroup.get('pavvRequest.address')?.setValue(value, {emitEvent: false});

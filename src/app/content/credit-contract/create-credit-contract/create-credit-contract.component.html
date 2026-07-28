@@ -524,6 +524,26 @@
                               placeholder="TDP Lạc Sơn"></textarea>
                   </mat-form-field>
                 </div>
+                <div formGroupName="tsbdRequest">
+                  <mat-checkbox formControlName="checkCMNDDungTenBiaDo1">
+                    <span style="color: #24af05"> Có CMND người đứng tên bìa đỏ 1 </span>
+                  </mat-checkbox>
+
+                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkCMNDDungTenBiaDo1')?.value">
+                    <mat-label>CMND Người đứng tên bìa đỏ 1</mat-label>
+                    <input matInput formControlName="cmndDungTenBiaDo1">
+                  </mat-form-field>
+                  <mat-checkbox formControlName="checkNgayCapCCCDTruocDayDungTenBiaDo1">
+                    <span style="color: #24af05">Có ngày cấp CCCD trước đây</span>
+                  </mat-checkbox>
+
+                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkNgayCapCCCDTruocDayDungTenBiaDo1')?.value">
+                    <mat-label>Ngày cấp CCCD trước đây 1</mat-label>
+                    <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo1" placeholder="dd/MM/yyyy">
+                  </mat-form-field>
+                </div>
+
+
               </div>
             </div>
             <div class="section-col">
@@ -580,6 +600,25 @@
                     <mat-label>Địa Chỉ Thường Trú</mat-label>
                     <textarea matInput formControlName="diaChiThuongTruDungTenBiaDo2"
                               placeholder="TDP Lạc Sơn"></textarea>
+                  </mat-form-field>
+                </div>
+<!--                Thêm CMND người 2-->
+                <div formGroupName="tsbdRequest">
+                  <mat-checkbox formControlName="checkCMNDDungTenBiaDo2">
+                    <span style="color: #24af05"> Có CMND người đứng tên bìa đỏ 2 </span>
+                  </mat-checkbox>
+
+                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkCMNDDungTenBiaDo2')?.value">
+                    <mat-label>CMND Người đứng tên bìa đỏ 2</mat-label>
+                    <input matInput formControlName="cmndDungTenBiaDo2">
+                  </mat-form-field>
+                  <mat-checkbox formControlName="checkNgayCapCCCDTruocDayDungTenBiaDo2">
+                    <span style="color: #24af05">Có ngày cấp CCCD trước đây 2</span>
+                  </mat-checkbox>
+
+                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkNgayCapCCCDTruocDayDungTenBiaDo2')?.value">
+                    <mat-label>Ngày cấp CCCD trước đây 2</mat-label>
+                    <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo2" placeholder="dd/MM/yyyy">
                   </mat-form-field>
                 </div>
               </div>
