@@ -58,27 +58,32 @@ export class ConvertMoney {
 
     return docTien(number);
   }
-
-  numberToVietnamese(input: number | string): string {
+   numberToVietnamese(input: number | string): string {
     const ChuSo = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
     const DonVi = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ', 'triệu tỷ', 'tỷ tỷ'];
 
-    function docSo3ChuSo(b: number): string {
+    function docSo3ChuSo(b: number, batBuocDayDu = false): string {
       let tram = Math.floor(b / 100);
       let chuc = Math.floor((b % 100) / 10);
       let donvi = b % 10;
       let result = '';
 
+      // Hàng trăm
       if (tram > 0) {
         result += ChuSo[tram] + ' trăm';
-        if (chuc === 0 && donvi > 0) result += ' linh';
+      } else if (batBuocDayDu) {
+        result += 'không trăm';
       }
 
+      // Hàng chục
       if (chuc > 0) {
         if (chuc === 1) result += ' mười';
         else result += ' ' + ChuSo[chuc] + ' mươi';
+      } else if (donvi > 0 && (tram > 0 || batBuocDayDu)) {
+        result += ' linh';
       }
 
+      // Hàng đơn vị
       if (donvi > 0) {
         if (chuc > 1 && donvi === 1) result += ' mốt';
         else if (donvi === 5 && chuc > 0) result += ' lăm';
@@ -92,15 +97,23 @@ export class ConvertMoney {
       if (num === 0) return 'không';
       let result = '';
       let i = 0;
+      const parts: number[] = [];
+
+      // Tách thành các nhóm 3 chữ số
       while (num > 0) {
-        const phan = num % 1000;
-        if (phan > 0) {
-          const chu = docSo3ChuSo(phan);
-          result = chu + ' ' + DonVi[i] + ' ' + result;
-        }
+        parts.push(num % 1000);
         num = Math.floor(num / 1000);
-        i++;
       }
+
+      // Đọc từ nhóm cao nhất xuống
+      for (let j = parts.length - 1; j >= 0; j--) {
+        const phan = parts[j];
+        if (phan > 0) {
+          const chu = docSo3ChuSo(phan, j < parts.length - 1); // nhóm sau bắt buộc đủ
+          result += chu + ' ' + DonVi[j] + ' ';
+        }
+      }
+
       return result.trim();
     }
 
@@ -112,7 +125,6 @@ export class ConvertMoney {
     let decimalSeparator: '.' | ',' | null = null;
 
     if (hasDot && hasComma) {
-      // Chuẩn Việt Nam: dấu chấm là nghìn, dấu phẩy là thập phân
       s = s.replace(/\./g, '');
       decimalSeparator = ',';
     } else if (hasDot && !hasComma) {
@@ -131,9 +143,6 @@ export class ConvertMoney {
 
     const nguyen = parseInt(nguyenStr || '0', 10);
     let result = docPhanNguyen(isNaN(nguyen) ? 0 : nguyen);
-    console.log('s:', s);
-    console.log('nguyenStr:', nguyenStr);
-    console.log('thapPhanStr:', thapPhanStr);
 
     // ---- Đọc phần thập phân ----
     if (thapPhanStr && /^\d+$/.test(thapPhanStr)) {
@@ -146,8 +155,6 @@ export class ConvertMoney {
     // ---- Viết hoa chữ cái đầu ----
     return result ? result.charAt(0).toUpperCase() + result.slice(1) : '';
   }
-
-
 
 
 

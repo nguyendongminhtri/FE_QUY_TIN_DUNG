@@ -164,4 +164,13 @@ mat-form-field {
 .fw-bold {
   font-weight: bold;
 }
+.chi-phi-table th.col-stt,
+.chi-phi-table td.col-stt {
+  width: 6% !important;
+  text-align: center;
+}
 
+.chi-phi-table th.col-danhmuc,
+.chi-phi-table td.col-danhmuc {
+  width: 25% !important;
+}

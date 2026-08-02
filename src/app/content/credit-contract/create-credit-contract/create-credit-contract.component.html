@@ -346,7 +346,7 @@
                     Chi nhánh văn phòng đăng ký đất đai thành phố Chí Linh
                   </mat-option>
                   <mat-option class="option-purple" value="Chi nhánh văn phòng đăng ký đất đai Chí Linh">
-                    Chi nhánh văn phòng đăng ký thành phố Chí Linh
+                    Chi nhánh văn phòng đăng ký đất đai Chí Linh
                   </mat-option>
                   <mat-option class="option-brown" value="Văn phòng đăng ký đất đai tỉnh Hải Dương">
                     Văn phòng đăng ký đất đai tỉnh Hải Dương
@@ -366,8 +366,8 @@
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Số vào sổ CNQSDĐ</mat-label>
-                <input matInput formControlName="noiDungVaoSo"
-                       placeholder="1703 QSDĐ/TH-CL">
+                <textarea matInput formControlName="noiDungVaoSo"
+                          placeholder="Số vào sổ cấp Giấy chứng nhận: CN7078"></textarea>
               </mat-form-field>
             </div>
 
@@ -650,7 +650,7 @@
                 m²
               </button>
               <mat-form-field appearance="fill" class="example-full-width">
-                <mat-label>Thông tin các loại đất</mat-label>
+                <mat-label><span style="color:red;">** THÔNG TIN ĐỊNH GIÁ TÀI SẢN **</span></mat-label>
                 <textarea matInput #landItemsInput formControlName="landItems" rows="5"
                           placeholder="+ Đất ở: 120m²; được định giá là: 1.200.000.000 đồng
 + Đất LNK: 300m²; được định giá là: 2.500.000.000 đồng
@@ -680,12 +680,12 @@
           </div>
           <h2>Nhập thông tin: Biên Bản Xác Định Giá Trị Tài Sản Bảo Đảm</h2>
           <div class="form-row">
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Số biên bản định giá</mat-label>
-                <input formControlName="soBienBanDinhGia" matInput>
-              </mat-form-field>
-            </div>
+<!--            <div class="form-col">-->
+<!--              <mat-form-field appearance="fill">-->
+<!--                <mat-label>Số biên bản định giá</mat-label>-->
+<!--                <input formControlName="soBienBanDinhGia" matInput>-->
+<!--              </mat-form-field>-->
+<!--            </div>-->
             <div class="form-col">
               <mat-form-field appearance="fill" class="example-full-width">
                 <mat-label>Ngày lập BBXĐGT Tài Sản Bảo Đảm</mat-label>
@@ -716,26 +716,29 @@
               <table class="table table-bordered">
                 <tbody>
                 <tr *ngFor="let row of table1.controls; let i = index" [formGroupName]="i">
-                  <td><input matInput formControlName="col1" class="form-control"></td>
+                  <td><input matInput formControlName="col1" readonly class="form-control"></td>
                   <td>
                     <input matInput formControlName="col2"
+                           [value]="row.get('col2')?.value"
+                           (input)="onInputChange($event, row, 'col2')"
                            (blur)="formatOnBlur(row, 'col2')"
                            class="form-control">
                   </td>
 
 
-                  <td><input matInput formControlName="col3" class="form-control"></td>
-                  <td><input matInput formControlName="col4" class="form-control"></td>
+                  <td><input matInput formControlName="col3" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col4" readonly class="form-control"></td>
                   <!-- col2 -->
                   <td>
                     <input type="text"
                            [value]="row.get('col5')?.value"
                            (input)="onInputChange($event, row, 'col5')"
                            (blur)="formatOnBlur(row, 'col5')"
-                           class="form-control">
+                           readonly class="form-control">
                   </td>
                   <td><input matInput formControlName="col6" readonly class="form-control"></td>
                   <td><input matInput formControlName="col7" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col8" readonly class="form-control"></td>
                 </tr>
                 </tbody>
               </table>
@@ -745,19 +748,20 @@
               <table class="table table-bordered">
                 <tbody>
                 <tr *ngFor="let row of table2.controls; let i = index" [formGroupName]="i">
-                  <td><input matInput formControlName="col1" class="form-control"></td>
-                  <td><input matInput formControlName="col2" class="form-control"></td>
-                  <td><input matInput formControlName="col3" class="form-control"></td>
-                  <td><input matInput formControlName="col4" class="form-control"></td>
-                  <td><input matInput formControlName="col5" class="form-control"></td>
+                  <td><input matInput formControlName="col1" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col2" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col3" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col4" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col5" readonly class="form-control"></td>
                   <td><input matInput formControlName="col6" readonly class="form-control"></td>
                   <td>
                     <input type="text"
                              [value]="row.get('col7')?.value"
                              (input)="onInputChange($event, row, 'col7')"
                              (blur)="formatOnBlur(row, 'col7')"
-                             class="form-control">
+                             class="form-control" readonly>
                   </td>
+                  <td><input matInput formControlName="col8" readonly class="form-control"></td>
                 </tr>
                 </tbody>
               </table>
@@ -767,19 +771,20 @@
               <table class="table table-bordered">
                 <tbody>
                 <tr *ngFor="let row of table3.controls; let i = index" [formGroupName]="i">
-                  <td><input matInput formControlName="col1" class="form-control"></td>
-                  <td><input matInput formControlName="col2" class="form-control"></td>
-                  <td><input matInput formControlName="col3" class="form-control"></td>
-                  <td><input matInput formControlName="col4" class="form-control"></td>
-                  <td><input matInput formControlName="col5" class="form-control"></td>
-                  <td><input matInput formControlName="col6" class="form-control"></td>
+                  <td><input matInput formControlName="col1" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col2" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col3" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col4" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col5" readonly class="form-control"></td>
+                  <td><input matInput formControlName="col6" readonly class="form-control"></td>
                   <td>
                     <input type="text"
                            [value]="row.get('col7')?.value"
                            (input)="onInputChange($event, row, 'col7')"
                            (blur)="formatOnBlur(row, 'col7')"
-                           class="form-control">
+                           readonly class="form-control">
                   </td>
+                  <td><input matInput formControlName="col8" readonly class="form-control"></td>
                 </tr>
 
 
@@ -854,17 +859,13 @@
           </div>
 
           <div formArrayName="chiPhiTable">
-            <h3>Bảng chi phí</h3>
-            <button class="btn btn-primary mb-2" type="button" (click)="addChiPhiRow()">
-              + Thêm hàng
-            </button>
-
-            <table class="table table-bordered">
+            <b style="color: blue">Bảng chi phí</b>
+            <table class="table table-bordered chi-phi-table">
               <thead>
               <tr>
                 <th>Hàng</th>
-                <th>STT</th>
-                <th>Danh mục</th>
+                <th class="col-stt">STT</th>
+                <th class="col-danhmuc">Danh mục</th>
                 <th>Đơn vị</th>
                 <th>Số lượng</th>
                 <th>Đơn giá (đồng)</th>
@@ -877,7 +878,7 @@
 
               <tbody>
               <tr *ngFor="let row of chiPhiRows; let i = index" [formGroup]="row">
-                <!-- Hàng -->
+              <!-- Hàng -->
                 <td class="text-center fw-bold">{{ i + 1 }}</td>
 
                 <ng-container *ngIf="row.get('merge')?.value; else normalRow">
@@ -888,12 +889,11 @@
                   >
                     <input formControlName="mergedValue" class="form-control" />
                   </td>
-
-                  <!-- Các cột còn lại (chỉ hiển thị nếu không merge) -->
-                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('stt')">
+                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('stt')" class="col-stt">
                     <input formControlName="stt" class="form-control readonly-cell" readonly />
                   </td>
-                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('danhMuc')">
+
+                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('danhMuc')" class="col-danhmuc">
                     <input formControlName="danhMuc" class="form-control readonly-cell" readonly />
                   </td>
                   <td *ngIf="!row.get('mergeTargets')?.value?.includes('donVi')">
@@ -1009,8 +1009,13 @@
               </tr>
               </tbody>
             </table>
+            <button class="btn btn-primary mb-2" type="button" (click)="addChiPhiRow()">
+              + Thêm hàng
+            </button>
           </div>
-          <table class="table table-bordered">
+          <div>
+            <b style="color: blue">Bảng Thu Nhập Dự Kiến của Phương Án</b>
+            <table class="table table-bordered">
             <thead>
             <tr>
               <th>Nội dung</th>
@@ -1062,11 +1067,8 @@
             </tr>
             </tbody>
           </table>
-
-          <button class="btn btn-primary mt-2" (click)="addThuNhapRow()">+ Thêm hàng</button>
-
-
-
+            <button class="btn btn-primary mt-2" (click)="addThuNhapRow()">+ Thêm hàng</button>
+          </div>
           <br>
           <!--          <button mat-raised-button color="primary" type="submit">Tạo hợp đồng</button>-->
 <!--          <button mat-raised-button color="primary" type="submit">Xem trước File</button>-->
