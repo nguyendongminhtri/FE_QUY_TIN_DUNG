@@ -26,6 +26,7 @@
                 <input matInput formControlName="choVay" placeholder="Cho vay:">
               </mat-form-field>
             </div>
+
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Chọn loại:</mat-label>
@@ -35,6 +36,19 @@
                   <mat-option value="NGẮN HẠN (Thỏa thuận)">HẠN MỨC</mat-option>
                 </mat-select>
               </mat-form-field>
+            </div>
+            <div formGroupName="pavvRequest">
+              <mat-checkbox formControlName="vayLai">
+                <span style="color: red">Tích chọn nếu vay lại</span>
+              </mat-checkbox>
+
+              <!-- Chỉ hiển thị khi checkbox vayLai = true -->
+              <div *ngIf="formGroup.get('pavvRequest.vayLai')?.value">
+                <mat-form-field appearance="fill" class="example-full-width">
+                  <mat-label>Số hợp đồng vay lại</mat-label>
+                  <input matInput formControlName="reLoanSequence" placeholder="Số lần vay lại">
+                </mat-form-field>
+              </div>
             </div>
             <div class="form-col">
               <mat-form-field appearance="fill">
@@ -46,6 +60,7 @@
               </mat-form-field>
             </div>
           </div>
+
           <!--          <div class="form-col">-->
           <!--            <mat-form-field appearance="fill" class="example-full-width">-->
           <!--              <mat-hint style="color: red">TT Người đại diện: Nếu có ủy quyền, hãy nhập nội dung thay thế, không sẽ nhận-->
@@ -541,6 +556,14 @@
                     <mat-label>Ngày cấp CCCD trước đây 1</mat-label>
                     <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo1" placeholder="dd/MM/yyyy">
                   </mat-form-field>
+                  <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo1">
+                    <span style="color: #24af05">Có địa chỉ thường trú</span>
+                  </mat-checkbox>
+
+                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkDiaChiThuongTruDungTenBiaDo1')?.value">
+                    <mat-label>Địa chỉ thường trú 1</mat-label>
+                    <input matInput formControlName="diaChiThuongTruDungTenBiaDo1" placeholder="dd/MM/yyyy">
+                  </mat-form-field>
                 </div>
 
 
@@ -619,6 +642,14 @@
                   <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkNgayCapCCCDTruocDayDungTenBiaDo2')?.value">
                     <mat-label>Ngày cấp CCCD trước đây 2</mat-label>
                     <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo2" placeholder="dd/MM/yyyy">
+                  </mat-form-field>
+                  <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo2">
+                    <span style="color: #24af05">Có địa chỉ thường trú</span>
+                  </mat-checkbox>
+
+                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkDiaChiThuongTruDungTenBiaDo2')?.value">
+                    <mat-label>Địa chỉ thường trú 2</mat-label>
+                    <input matInput formControlName="diaChiThuongTruDungTenBiaDo2" placeholder="dd/MM/yyyy">
                   </mat-form-field>
                 </div>
               </div>

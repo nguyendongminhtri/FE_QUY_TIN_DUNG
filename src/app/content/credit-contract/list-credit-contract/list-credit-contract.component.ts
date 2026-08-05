@@ -15,7 +15,7 @@ import {MatDialog} from "@angular/material/dialog";
 })
 export class ListCreditContractComponent implements OnInit{
   listCreditContract: CreditContract[] = [];
-  displayedColumns: string[] = ['id', 'tenKhachHang', 'cccdKhachHang','namSinhKhachHang', 'phoneKhachHang', 'soTheThanhVienKhachHang','loaiVay','update', 'delete'];
+  displayedColumns: string[] = ['id', 'tenKhachHang', 'cccdKhachHang','namSinhKhachHang', 'phoneKhachHang', 'soTheThanhVienKhachHang','loaiVay','reLoanSequence','update', 'delete'];
   dataSource: any;
   @ViewChild(MatPaginator) paginator?: MatPaginator;
   constructor(private creditContractService: CreditContractService,

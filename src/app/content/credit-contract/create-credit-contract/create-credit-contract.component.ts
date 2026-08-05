@@ -122,6 +122,7 @@ export class CreateCreditContractComponent implements OnInit {
       ngayTheChap: [new Date()],
       ngayBaoDam: [new Date()],
       soHopDongTD: ['01/25/232'],
+      // vayLai: [false],
       nguoiDaiDien: ['PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'],
       tenKhachHang: [''],
       gtkh: [''],
@@ -188,12 +189,16 @@ export class CreateCreditContractComponent implements OnInit {
         cmndDungTenBiaDo1: [{ value: 'CMND Số: 030083003225; Cấp ngày: 11/08/2021; Nơi cấp: Công an Hải Hưng', disabled: true }],
         checkNgayCapCCCDTruocDayDungTenBiaDo1: [false],
         ngayCapCCCDTruocDayDungTenBiaDo1: [{ value: '11/08/2021', disabled: true }],
+        checkDiaChiThuongTruDungTenBiaDo1: [false],
+        diaChiThuongTruDungTenBiaDo1: [{value: 'Địa chỉ thường trú: xã An Lạc, Chí Linh, Hải Dương', disabled: true}],
 
         // Người đứng tên bìa đỏ 2
         checkCMNDDungTenBiaDo2: [false],
         cmndDungTenBiaDo2: [{ value: 'CMND Số: 030083003225; Cấp ngày: 11/08/2021; Nơi cấp: Công an Hải Hưng', disabled: true }],
         checkNgayCapCCCDTruocDayDungTenBiaDo2: [false],
         ngayCapCCCDTruocDayDungTenBiaDo2: [{ value: '11/08/2021', disabled: true }],
+        checkDiaChiThuongTruDungTenBiaDo2: [false],
+        diaChiThuongTruDungTenBiaDo2: [{value: 'Địa chỉ thường trú: xã An Lạc, Chí Linh, Hải Dương', disabled: true}],
       }),
       pavvRequest: this.fb.group({
         name: [''],
@@ -203,7 +208,9 @@ export class CreateCreditContractComponent implements OnInit {
         tongVon: [''],
         tongVonLuuDong: [''],
         vonTuCo: [''],
-        vonKhac: ['']
+        vonKhac: [''],
+        reLoanSequence: [{value: 0, disabled: false}],
+        vayLai: [false]
       }),
       loaiDat: [{value: '+ Đất ở tại đô thị: 50m²; + Đất trồng cây lâu năm 55,3m²', disabled: true}],
       nhaCoDinh: [{value: '- Nhà ở cố định:    m²;  loại nhà:      ; \nĐược định giá 0 đồng', disabled: true}],
@@ -381,7 +388,11 @@ export class CreateCreditContractComponent implements OnInit {
         checkCMNDDungTenBiaDo2: contract.tsbdRequest?.checkCMNDDungTenBiaDo2 ?? false,
         cmndDungTenBiaDo2: contract.tsbdRequest?.cmndDungTenBiaDo2 ?? '',
         checkNgayCapCCCDTruocDayDungTenBiaDo2: contract.tsbdRequest?.checkNgayCapCCCDTruocDayDungTenBiaDo2 ?? false,
-        ngayCapCCCDTruocDayDungTenBiaDo2: contract.tsbdRequest?.ngayCapCCCDTruocDayDungTenBiaDo2 ?? ''
+        ngayCapCCCDTruocDayDungTenBiaDo2: contract.tsbdRequest?.ngayCapCCCDTruocDayDungTenBiaDo2 ?? '',
+        checkDiaChiThuongTruDungTenBiaDo1: contract.tsbdRequest?.checkDiaChiThuongTruDungTenBiaDo1 ?? false,
+        diaChiThuongTruDungTenBiaDo1: contract.tsbdRequest?.diaChiThuongTruDungTenBiaDo1 ?? '',
+        checkDiaChiThuongTruDungTenBiaDo2: contract.tsbdRequest?.checkDiaChiThuongTruDungTenBiaDo2 ?? false,
+        diaChiThuongTruDungTenBiaDo2: contract.tsbdRequest?.diaChiThuongTruDungTenBiaDo2 ?? ''
       },
       pavvRequest: {
         checkAddress: contract.pavvRequest?.checkAddress ?? false,
@@ -391,7 +402,9 @@ export class CreateCreditContractComponent implements OnInit {
         tongVon: contract.pavvRequest?.tongVon ?? '',
         tongVonLuuDong: contract.pavvRequest?.tongVonLuuDong ?? '',
         vonTuCo: contract.pavvRequest?.vonTuCo ?? '',
-        vonKhac: contract.pavvRequest?.vonKhac ?? ''
+        vonKhac: contract.pavvRequest?.vonKhac ?? '',
+        vayLai: contract.pavvRequest?.vayLai ?? '',
+        reLoanSequence: contract.pavvRequest?.reLoanSequence ?? ''
       }
     });
   }
@@ -788,6 +801,14 @@ export class CreateCreditContractComponent implements OnInit {
     });
     this.formGroup.get('tsbdRequest.checkNgayCapCCCDTruocDayDungTenBiaDo2')?.valueChanges.subscribe(checked => {
       const control = this.formGroup.get('tsbdRequest.ngayCapCCCDTruocDayDungTenBiaDo2');
+      checked ? control?.enable() : control?.disable();
+    });
+    this.formGroup.get('tsbdRequest.checkDiaChiThuongTruDungTenBiaDo1')?.valueChanges.subscribe(checked => {
+      const control = this.formGroup.get('tsbdRequest.diaChiThuongTruDungTenBiaDo1');
+      checked ? control?.enable() : control?.disable();
+    });
+    this.formGroup.get('tsbdRequest.checkDiaChiThuongTruDungTenBiaDo2')?.valueChanges.subscribe(checked => {
+      const control = this.formGroup.get('tsbdRequest.diaChiThuongTruDungTenBiaDo2');
       checked ? control?.enable() : control?.disable();
     });
 
