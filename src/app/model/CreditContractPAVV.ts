@@ -5,5 +5,8 @@ export class CreditContractPAVV {
   checkAddress?:boolean;
   reason?:string;
   reLoanSequence?: number;
-  vayLai?: boolean; // 👉 thêm trường này
+  vayLai?: boolean;
+  heSoVonTuCo?: number;
+  nguoiChuyenKhoan?:string;
+  loaiPhuongAn?:string;
 }
