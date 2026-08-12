@@ -11,6 +11,7 @@ export class CreditContractTSBD {
   checkNgayCapCCCDTruocDayDungTenBiaDo1?: boolean;
   checkDiaChiThuongTruDungTenBiaDo1?: boolean;
   diaChiThuongTruDungTenBiaDo1?: string
+  checkChiMangTenNguoi1?: boolean;
 
   // Người đứng tên bìa đỏ 2
   cmndDungTenBiaDo2?: string;
@@ -19,4 +20,5 @@ export class CreditContractTSBD {
   checkNgayCapCCCDTruocDayDungTenBiaDo2?: boolean;
   checkDiaChiThuongTruDungTenBiaDo2?: boolean;
   diaChiThuongTruDungTenBiaDo2?: string
+  checkChiMangTenNguoi2?: boolean;
 }

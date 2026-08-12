@@ -9,4 +9,6 @@ export class CreditContractPAVV {
   heSoVonTuCo?: number;
   nguoiChuyenKhoan?:string;
   loaiPhuongAn?:string;
+  duNoTruoc?: number;
+  soTienVayLanNay?:number;
 }

@@ -48,6 +48,17 @@
                   <mat-label>Số hợp đồng vay lại</mat-label>
                   <input matInput formControlName="reLoanSequence" placeholder="Số lần vay lại">
                 </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>Dư nợ trước</mat-label>
+                  <input matInput formControlName="duNoTruoc"
+                         (input)="onTienSoInput($event, 'pavvRequest.duNoTruoc')">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Số tiền vay lần này</mat-label>
+                  <input matInput formControlName="soTienVayLanNay"
+                         (input)="onTienSoInput($event, 'pavvRequest.soTienVayLanNay')">
+                </mat-form-field>
               </div>
             </div>
             <div class="form-col">
@@ -159,9 +170,9 @@
                   <mat-form-field>
                     <mat-label>Giới tính</mat-label>
                     <mat-select formControlName="gtnt">
-                      <mat-option value="Và ông">Ông
+                      <mat-option value="Ông">Ông
                       </mat-option>
-                      <mat-option value="Và bà">Bà
+                      <mat-option value="Bà">Bà
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -217,12 +228,10 @@
           <div class="form-row">
             <!-- Nhập số tiền -->
             <div class="form-col">
+              <!-- Tiền số -->
               <mat-form-field appearance="fill">
-                <mat-label>Số tiền vay (VNĐ)</mat-label>
-                <input matInput
-                       [value]="formGroup.get('tienSo')?.value"
-                       (input)="onTienSoInput($event)"
-                       placeholder="1.400.000.000">
+                <mat-label>Số tiền vay</mat-label>
+                <input matInput formControlName="tienSo" (input)="onTienSoInput($event, 'tienSo')">
               </mat-form-field>
             </div>
 
@@ -570,6 +579,11 @@
                     <mat-label>Địa chỉ thường trú 1</mat-label>
                     <input matInput formControlName="diaChiThuongTruDungTenBiaDo1" placeholder="dd/MM/yyyy">
                   </mat-form-field>
+                  <div class="form-col-3">
+                    <mat-checkbox formControlName="checkChiMangTenNguoi1">
+                      <span style="color: red">Bìa Đỏ mang tên người 1</span>
+                    </mat-checkbox>
+                  </div>
                 </div>
 
 
@@ -589,9 +603,9 @@
                   <mat-form-field>
                     <mat-label>Giới tính</mat-label>
                     <mat-select formControlName="gioiTinhDungTenBiaDo2">
-                      <mat-option value="Và ông">Ông
+                      <mat-option value="Ông">Ông
                       </mat-option>
-                      <mat-option value="Và bà">Bà
+                      <mat-option value="Bà">Bà
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -657,6 +671,11 @@
                     <mat-label>Địa chỉ thường trú 2</mat-label>
                     <input matInput formControlName="diaChiThuongTruDungTenBiaDo2" placeholder="dd/MM/yyyy">
                   </mat-form-field>
+                  <div class="form-col-3">
+                    <mat-checkbox formControlName="checkChiMangTenNguoi2">
+                      <span style="color: red">Bìa Đỏ mang tên người 2</span>
+                    </mat-checkbox>
+                  </div>
                 </div>
               </div>
             </div>

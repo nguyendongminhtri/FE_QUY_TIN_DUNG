@@ -202,6 +202,8 @@ export class CreateCreditContractComponent implements OnInit {
         ngayCapCCCDTruocDayDungTenBiaDo2: [{ value: '11/08/2021', disabled: true }],
         checkDiaChiThuongTruDungTenBiaDo2: [false],
         diaChiThuongTruDungTenBiaDo2: [{value: 'Địa chỉ thường trú: xã An Lạc, Chí Linh, Hải Dương', disabled: true}],
+        checkChiMangTenNguoi1: [false],
+        checkChiMangTenNguoi2: [false]
       }),
       pavvRequest: this.fb.group({
         name: [''],
@@ -214,9 +216,11 @@ export class CreateCreditContractComponent implements OnInit {
         vonKhac: [''],
         reLoanSequence: [{value: 0, disabled: false}],
         vayLai: [false],
-        heSoVonTuCo: ['40%'],
-        nguoiChuyenKhoan: ['Chuyển khoản cho bà: Vũ Thị Minh Thu; CCCD Số: 022191009861; Cấp ngày: 10/0/2022; Số điện thoại: 092920119169; Số tài khoản: 0800120111991; Tại ngân hàng MB.'],
-        loaiPhuongAn: ['']
+        heSoVonTuCo: ['40'],
+        nguoiChuyenKhoan: ['Chuyển khoản cho bà: .......................; CCCD Số: ....................; Cấp ngày: .................; Số điện thoại: .................; Số tài khoản: ......................; Tại ngân hàng............'],
+        loaiPhuongAn: [''],
+        duNoTruoc: [''],
+        soTienVayLanNay: ['']
       }),
       loaiDat: [{value: '+ Đất ở tại đô thị: 50m²; + Đất trồng cây lâu năm 55,3m²', disabled: true}],
       nhaCoDinh: [{value: '- Nhà ở cố định:    m²;  loại nhà:      ; \nĐược định giá 0 đồng', disabled: true}],
@@ -399,7 +403,9 @@ export class CreateCreditContractComponent implements OnInit {
         checkDiaChiThuongTruDungTenBiaDo1: contract.tsbdRequest?.checkDiaChiThuongTruDungTenBiaDo1 ?? false,
         diaChiThuongTruDungTenBiaDo1: contract.tsbdRequest?.diaChiThuongTruDungTenBiaDo1 ?? '',
         checkDiaChiThuongTruDungTenBiaDo2: contract.tsbdRequest?.checkDiaChiThuongTruDungTenBiaDo2 ?? false,
-        diaChiThuongTruDungTenBiaDo2: contract.tsbdRequest?.diaChiThuongTruDungTenBiaDo2 ?? ''
+        diaChiThuongTruDungTenBiaDo2: contract.tsbdRequest?.diaChiThuongTruDungTenBiaDo2 ?? '',
+        checkChiMangTenNguoi1: contract.tsbdRequest?.checkChiMangTenNguoi1 ?? '',
+        checkChiMangTenNguoi2: contract.tsbdRequest?.checkChiMangTenNguoi2 ?? ''
       },
       pavvRequest: {
         checkAddress: contract.pavvRequest?.checkAddress ?? false,
@@ -415,6 +421,8 @@ export class CreateCreditContractComponent implements OnInit {
         heSoVonTuCo: contract.pavvRequest?.heSoVonTuCo ?? '',
         nguoiChuyenKhoan: contract.pavvRequest?.nguoiChuyenKhoan ?? '',
         loaiPhuongAn: contract.pavvRequest?.loaiPhuongAn ?? '',
+        duNoTruoc: contract.pavvRequest?.duNoTruoc ?? '',
+        soTienVayLanNay: contract.pavvRequest?.soTienVayLanNay ?? '',
       }
     });
   }
@@ -1761,7 +1769,7 @@ export class CreateCreditContractComponent implements OnInit {
     if (!value) return '0';
     return value.toLocaleString('vi-VN'); // 1000000 -> "1.000.000"
   }
-  onTienSoInput(event: any): void {
+  onTienSoInput(event: any, controlName: string): void {
     // Lấy giá trị thô từ input
     let rawValue = event.target.value.replace(/\D/g, ''); // bỏ ký tự không phải số
     let num = rawValue ? Number(rawValue) : 0;
@@ -1769,12 +1777,13 @@ export class CreateCreditContractComponent implements OnInit {
     // Format lại số theo locale VN
     const formatted = this.formatCurrency(num);
 
-    // Cập nhật vào formControl
-    this.formGroup.get('tienSo')?.setValue(formatted, { emitEvent: true });
+    // Cập nhật vào đúng FormControl
+    this.formGroup.get(controlName)?.setValue(formatted, { emitEvent: true });
 
-    // Tính ra số tiền bằng chữ
+    // Nếu cần thì tính ra số tiền bằng chữ
     this.convertToWords();
   }
+
   get thuNhapTable(): FormArray {
     return this.formGroup.get('thuNhapTable') as FormArray;
   }
@@ -1977,11 +1986,11 @@ export class CreateCreditContractComponent implements OnInit {
     this.calculateTongSoDuPhuLuc();
   }
 
-  onInputChangePhuLucHanMuc(event: any, row: FormGroup, field: string) {
-    let value = event.target.value.replace(/\D/g, '');
-    row.get(field)?.setValue(value);
-    this.calculateTongSoDuPhuLuc();
-  }
+  // onInputChangePhuLucHanMuc(event: any, row: FormGroup, field: string) {
+  //   let value = event.target.value.replace(/\D/g, '');
+  //   row.get(field)?.setValue(value);
+  //   this.calculateTongSoDuPhuLuc();
+  // }
 
   initPhuLucHanMucTable() {
     this.phuLucHanMucTable.clear();
