@@ -98,7 +98,7 @@ export class CreditContract {
   noiCapCCCDDungTenBiaDo2?: string;
   ngayTheChap?: string;
   noiDungNgoaiBia?:string;
-  ngayBaoDam?: string;
+  // ngayBaoDam?: string;
   soBBXetDuyetChoVay?: string;
   tsbdRequest?: CreditContractTSBD;
   pavvRequest?: CreditContractPAVV;
@@ -118,7 +118,7 @@ export class CreditContract {
               gtkh?: string, gtnt?: string, nguonGocSuDung?: string, ghiChu?: string, fileAvatarUrls?: FileMetadataEntity[],
               soHopDongTD?: string, checkGhiChu?: boolean, ngayKetThucKyHanVay?: string,
               checkNguoiDungTenBiaDo2?:boolean, dungTenBiaDo1?: string, dungTenBiaDo2?: string, landItems?:string,
-              checkNhaCoDinh?:boolean, nhaCoDinh?:string, tongTaiSanBD?:string,tongTaiSanBDChu?:string, thoiHanVay?:string, vayLai?:boolean
+              checkNhaCoDinh?:boolean, nhaCoDinh?:string, tongTaiSanBD?:string,tongTaiSanBDChu?:string, thoiHanVay?:string, vayLai?:boolean,noiCapCCCDNguoiThan?: string
             ) {
     this.contractDate = contractDate;
     this.nguoiDaiDien = nguoiDaiDien;
@@ -133,6 +133,7 @@ export class CreditContract {
     this.namSinhNguoiThan = namSinhNguoiThan;
     this.cccdNguoiThan = cccdNguoiThan;
     this.ngayCapCCCDNguoiThan = ngayCapCCCDNguoiThan;
+    this.noiCapCCCDNguoiThan = noiCapCCCDNguoiThan;
     this.diaChiThuongTruNguoiThan = diaChiThuongTruNguoiThan;
     this.quanHe = quanHe;
     this.tienSo = tienSo;

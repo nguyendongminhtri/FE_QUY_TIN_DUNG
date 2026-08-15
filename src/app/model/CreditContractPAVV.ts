@@ -6,7 +6,7 @@ export class CreditContractPAVV {
   reason?:string;
   reLoanSequence?: number;
   vayLai?: boolean;
-  heSoVonTuCo?: number;
+  heSoVonKhac?: number;
   nguoiChuyenKhoan?:string;
   loaiPhuongAn?:string;
   duNoTruoc?: number;

@@ -741,15 +741,15 @@
             <!--                <input formControlName="soBienBanDinhGia" matInput>-->
             <!--              </mat-form-field>-->
             <!--            </div>-->
-            <div class="form-col">
-              <mat-form-field appearance="fill" class="example-full-width">
-                <mat-label>Ngày lập BBXĐGT Tài Sản Bảo Đảm</mat-label>
-                <input matInput [matDatepicker]="ngayBD" formControlName="ngayBaoDam">
-                <mat-hint>MM/DD/YYYY</mat-hint>
-                <mat-datepicker-toggle matIconSuffix [for]="ngayBD"></mat-datepicker-toggle>
-                <mat-datepicker #ngayBD></mat-datepicker>
-              </mat-form-field>
-            </div>
+<!--            <div class="form-col">-->
+<!--              <mat-form-field appearance="fill" class="example-full-width">-->
+<!--                <mat-label>Ngày lập BBXĐGT Tài Sản Bảo Đảm</mat-label>-->
+<!--                <input matInput [matDatepicker]="ngayBD" formControlName="ngayBaoDam">-->
+<!--                <mat-hint>MM/DD/YYYY</mat-hint>-->
+<!--                <mat-datepicker-toggle matIconSuffix [for]="ngayBD"></mat-datepicker-toggle>-->
+<!--                <mat-datepicker #ngayBD></mat-datepicker>-->
+<!--              </mat-form-field>-->
+<!--            </div>-->
             <div formGroupName="tsbdRequest" class="form-col checkbox-input-col">
               <mat-checkbox formControlName="checkTaiSanGanLienVoiDat">Tài sản gắn liền với đất</mat-checkbox>
               <mat-form-field appearance="fill">
@@ -868,8 +868,8 @@
                 <input matInput formControlName="address" placeholder="">
               </mat-form-field>
               <mat-form-field appearance="fill">
-                <mat-label>Hệ số % vốn tự có:</mat-label>
-                <input matInput formControlName="heSoVonTuCo" placeholder="40%">
+                <mat-label>Hệ số % vốn khác:</mat-label>
+                <input matInput formControlName="heSoVonKhac" placeholder="0%">
               </mat-form-field>
               <mat-form-field appearance="fill">
                 <mat-label>Người chuyển khoản</mat-label>

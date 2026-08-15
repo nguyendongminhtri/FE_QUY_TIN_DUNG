@@ -44,7 +44,7 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('this mode --->', this.mode);
+    console.log('this mode --------------=======>', this.mode);
     // Lấy id từ route
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -91,9 +91,9 @@ export class CreateCreditContractComponent implements OnInit {
         if (contract.ngayTheChap) {
           this.formGroup.get('ngayTheChap')?.setValue(new Date(contract.ngayTheChap));
         }
-        if (contract.ngayBaoDam) {
-          this.formGroup.get('ngayBaoDam')?.setValue(new Date(contract.ngayBaoDam));
-        }
+        // if (contract.ngayBaoDam) {
+        //   this.formGroup.get('ngayBaoDam')?.setValue(new Date(contract.ngayBaoDam));
+        // }
         if (contract.tableRequest) {
           this.loadTableRequest(contract.tableRequest);
         }
@@ -123,7 +123,7 @@ export class CreateCreditContractComponent implements OnInit {
     this.formGroup = this.fb.group({
       contractDate: [new Date()],
       ngayTheChap: [new Date()],
-      ngayBaoDam: [new Date()],
+      // ngayBaoDam: [new Date()],
       soHopDongTD: ['01/25/232'],
       // vayLai: [false],
       nguoiDaiDien: ['PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành'],
@@ -163,7 +163,7 @@ export class CreateCreditContractComponent implements OnInit {
       thoiHanVay: [''],
       dienTichDatChu: [''],
       hinhThucSuDung: ['+ Sử dụng riêng: 690  m²; + Sử dụng chung: 0 m²'],
-      muchDichSuDung: [{value: '- Mục đích sử dụng: + Đất ở tại đô thị: 50m²; + Đất LNK: 55,3m²', disabled: true}],
+      muchDichSuDung: [{value: 'Mục đích sử dụng: + Đất ở tại đô thị: 50m²; + Đất LNK: 55,3m²', disabled: true}],
       thoiHanSuDung: ['Lâu dài'],
       soBienBanDinhGia: ['07/006/BBĐG'],
       noiDungThoaThuan: ['là một mảnh đất ở hợp pháp lâu dài với diện tích '],
@@ -216,7 +216,7 @@ export class CreateCreditContractComponent implements OnInit {
         vonKhac: [''],
         reLoanSequence: [{value: 0, disabled: false}],
         vayLai: [false],
-        heSoVonTuCo: ['40'],
+        heSoVonKhac: ['0'],
         nguoiChuyenKhoan: ['Chuyển khoản cho bà: .......................; CCCD Số: ....................; Cấp ngày: .................; Số điện thoại: .................; Số tài khoản: ......................; Tại ngân hàng............'],
         loaiPhuongAn: [''],
         duNoTruoc: [''],
@@ -344,7 +344,7 @@ export class CreateCreditContractComponent implements OnInit {
       cccdNguoiThan: contract.cccdNguoiThan,
       noiCapCCCDKhachHang: contract.noiCapCCCDKhachHang,
       ngayCapCCCDNguoiThan: contract.ngayCapCCCDNguoiThan,
-      noiCapCCCDNguoiThan: contract.noiCapCCCDKhachHang,
+      noiCapCCCDNguoiThan: contract.noiCapCCCDNguoiThan,
       soBBXetDuyetChoVay: contract.soBBXetDuyetChoVay,
       diaChiThuongTruNguoiThan: contract.diaChiThuongTruNguoiThan,
       dungTenBiaDo1: contract.dungTenBiaDo1,
@@ -423,6 +423,7 @@ export class CreateCreditContractComponent implements OnInit {
         loaiPhuongAn: contract.pavvRequest?.loaiPhuongAn ?? '',
         duNoTruoc: contract.pavvRequest?.duNoTruoc ?? '',
         soTienVayLanNay: contract.pavvRequest?.soTienVayLanNay ?? '',
+        heSoVonKhac: contract.pavvRequest?.heSoVonKhac ?? '',
       }
     });
   }
@@ -1076,12 +1077,12 @@ export class CreateCreditContractComponent implements OnInit {
         .split('T')[0]
       : null;
 
-    const bdDate: Date = this.formGroup.get('ngayBaoDam')?.value;
-    const formattedDateBD = bdDate
-      ? new Date(bdDate.getTime() - bdDate.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0]
-      : null;
+    // const bdDate: Date = this.formGroup.get('ngayBaoDam')?.value;
+    // const formattedDateBD = bdDate
+    //   ? new Date(bdDate.getTime() - bdDate.getTimezoneOffset() * 60000)
+    //     .toISOString()
+    //     .split('T')[0]
+    //   : null;
 
     console.log('formattedDate -->', formattedDate);
     console.log('formattedDateTC -->', formattedDateTC);
@@ -1100,7 +1101,7 @@ export class CreateCreditContractComponent implements OnInit {
       ...this.formGroup.value,
       contractDate: formattedDate,
       ngayTheChap: formattedDateTC,
-      ngayBaoDam: formattedDateBD,
+      // ngayBaoDam: formattedDateBD,
       tienChu: this.tienChu,
       fileAvatarUrls: this.fileAvatarUrls,
       tableRequest: tableRequest,
@@ -1130,21 +1131,21 @@ export class CreateCreditContractComponent implements OnInit {
       : null;
 
     const tcDateStr: string = this.formGroup.get('ngayTheChap')?.value;
-    const bdDateStr: string = this.formGroup.get('ngayBaoDam')?.value;
-    console.log('bdDateStr ---> ', bdDateStr);
+    // const bdDateStr: string = this.formGroup.get('ngayBaoDam')?.value;
+    // console.log('bdDateStr ---> ', bdDateStr);
     const tcDate = tcDateStr ? new Date(tcDateStr) : null;
-    const bdDate = bdDateStr ? new Date(bdDateStr) : null;
+    // const bdDate = bdDateStr ? new Date(bdDateStr) : null;
 
     const formattedDateTC = tcDate
       ? new Date(tcDate.getTime() - tcDate.getTimezoneOffset() * 60000)
         .toISOString()
         .split('T')[0]
       : null;
-    const formattedDateBD = bdDate
-      ? new Date(bdDate.getTime() - bdDate.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0]
-      : null;
+    // const formattedDateBD = bdDate
+    //   ? new Date(bdDate.getTime() - bdDate.getTimezoneOffset() * 60000)
+    //     .toISOString()
+    //     .split('T')[0]
+    //   : null;
 
 
     const headers: string[] = Array.isArray(this.tableHeaders.value) ? this.tableHeaders.value : [];
@@ -1164,7 +1165,7 @@ export class CreateCreditContractComponent implements OnInit {
       ...this.formGroup.value,
       contractDate: formattedDate,
       ngayTheChap: formattedDateTC,
-      ngayBaoDam: formattedDateBD,
+      // ngayBaoDam: formattedDateBD,
       tienChu: this.tienChu,
       fileAvatarUrls: this.fileAvatarUrls,
       tableRequest: tableRequest,
