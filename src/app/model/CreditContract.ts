@@ -103,10 +103,12 @@ export class CreditContract {
   tsbdRequest?: CreditContractTSBD;
   pavvRequest?: CreditContractPAVV;
   vayLai?: boolean;
+  taiSanArray?: CreditContractTSBD[];
   constructor(contractDate: string, nguoiDaiDien?: string, tenKhachHang?: string,
               namSinhKhachHang?: string, sdtKhachHang?: string, sttvKhachHang?: string,
               cccdKhachHang?: string, ngayCapCCCDKhachHang?: string,
               diaChiThuongChuKhachHang?: string, tenNguoiThan?: string,
+              taiSanArray?: CreditContractTSBD[],
               namSinhNguoiThan?: string, cccdNguoiThan?: string,
               ngayCapCCCDNguoiThan?: string, diaChiThuongTruNguoiThan?: string,
               quanHe?: string, tienSo?: string, tienChu?: string, hanMuc?: string,
@@ -177,5 +179,6 @@ export class CreditContract {
     this.tongTaiSanBDChu = tongTaiSanBDChu;
     this.thoiHanVay = thoiHanVay;
     this.vayLai = vayLai
+    this.taiSanArray = taiSanArray
   }
 }

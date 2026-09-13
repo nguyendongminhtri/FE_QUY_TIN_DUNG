@@ -1,9 +1,11 @@
 <div class="carousel-container" *ngIf="items.length">
+
   <mat-card class="carousel-card">
-    <img [src]="items[activeIndex].imageUrl"
-         alt="carousel image"
-         (click)="goToDetail(items[activeIndex])"
-         style="cursor: pointer;" />
+<!--    <img [src]="items[activeIndex].imageUrl"-->
+<!--         alt="carousel image"-->
+<!--         (click)="goToDetail(items[activeIndex])"-->
+<!--         style="cursor: pointer;" />-->
+
   </mat-card>
   <div class="carousel-controls">
     <button mat-icon-button (click)="prev()"><mat-icon>chevron_left</mat-icon></button>

@@ -31,9 +31,9 @@
               <mat-form-field appearance="fill">
                 <mat-label>Chọn loại:</mat-label>
                 <mat-select formControlName="loaiVay">
-                  <mat-option value="NGẮN HẠN">NGẮN HẠN</mat-option>
-                  <mat-option value="TRUNG HẠN">TRUNG HẠN</mat-option>
-                  <mat-option value="NGẮN HẠN (Thỏa thuận)">HẠN MỨC</mat-option>
+                  <mat-option value="ngan_han">NGẮN HẠN</mat-option>
+                  <mat-option value="trung_han">TRUNG HẠN</mat-option>
+                  <mat-option value="han_muc">HẠN MỨC</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -41,47 +41,76 @@
               <mat-checkbox formControlName="vayLai">
                 <span style="color: red">Tích chọn nếu vay lại</span>
               </mat-checkbox>
-
               <!-- Chỉ hiển thị khi checkbox vayLai = true -->
               <div *ngIf="formGroup.get('pavvRequest.vayLai')?.value">
                 <mat-form-field appearance="fill" class="example-full-width">
                   <mat-label>Số hợp đồng vay lại</mat-label>
                   <input matInput formControlName="reLoanSequence" placeholder="Số lần vay lại">
                 </mat-form-field>
-                <mat-form-field appearance="fill">
-                  <mat-label>Dư nợ trước</mat-label>
-                  <input matInput formControlName="duNoTruoc"
-                         (input)="onTienSoInput($event, 'pavvRequest.duNoTruoc')">
-                </mat-form-field>
+                <div *ngIf="formGroup.get('loaiVay')?.value === 'han_muc'">
+                  <div class="form-col">
+                    <mat-form-field appearance="fill" class="example-full-width">
+                      <mat-label>Ngày Thu Lãi Hạn Mức</mat-label>
+                      <input matInput formControlName="ngayHDTDCu" placeholder="Ngày thu lãi HM">
+                    </mat-form-field>
+                    <mat-form-field appearance="fill" class="example-full-width">
+                      <mat-label>Số HĐTD Cũ</mat-label>
+                      <input matInput formControlName="soHDTDCu" placeholder="Số HĐTD Cũ">
+                    </mat-form-field>
+                    <mat-form-field appearance="fill" class="example-full-width">
+                      <mat-label>Ngày Thu Lãi Hạn Mức</mat-label>
+                      <input matInput formControlName="ngayThuLaiHM" placeholder="Ngày thu lãi HM">
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="formGroup.get('loaiVay')?.value === 'han_muc'">
+              <div formGroupName="pavvRequest">
+                <mat-checkbox formControlName="giaiNganHM">
+                  <span style="color: red">Tích chọn nếu giải ngân</span>
+                </mat-checkbox>
+                <!-- Chỉ hiển thị khi checkbox vayLai = true -->
+                <div *ngIf="formGroup.get('pavvRequest.giaiNganHM')?.value">
+                  <div class="form-col">
+                    <mat-form-field appearance="fill" class="example-full-width">
+                      <mat-label>Ngày giải ngân</mat-label>
+                      <input matInput [matDatepicker]="picker" formControlName="ngayGiaiNgan">
+                      <mat-hint>MM/DD/YYYY</mat-hint>
+                      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Số HĐ giải ngân</mat-label>
+                    <input matInput formControlName="soGiaiNgan" placeholder="Số HĐ giải ngân">
+                  </mat-form-field>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Dư nợ trước</mat-label>
+                    <input matInput formControlName="duNoTruoc"
+                           (input)="onTienSoInput($event, 'pavvRequest.duNoTruoc')">
+                  </mat-form-field>
 
-                <mat-form-field appearance="fill">
-                  <mat-label>Số tiền vay lần này</mat-label>
-                  <input matInput formControlName="soTienVayLanNay"
-                         (input)="onTienSoInput($event, 'pavvRequest.soTienVayLanNay')">
-                </mat-form-field>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Số tiền vay lần này</mat-label>
+                    <input matInput formControlName="soTienVayLanNay"
+                           (input)="onTienSoInput($event, 'pavvRequest.soTienVayLanNay')">
+                  </mat-form-field>
+                </div>
               </div>
             </div>
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Chọn Người đại diện:</mat-label>
-                <mat-select formControlName="nguoiDaiDien">
+                <mat-select formControlName="nguoiDaiDien"
+                            (selectionChange)="onNguoiDaiDienChange($event.value)">
                   <mat-option value="gd">PHÙNG THỊ LOAN</mat-option>
                   <mat-option value="pgd">DƯƠNG QUANG TUẤN</mat-option>
                 </mat-select>
               </mat-form-field>
+
             </div>
           </div>
-
-          <!--          <div class="form-col">-->
-          <!--            <mat-form-field appearance="fill" class="example-full-width">-->
-          <!--              <mat-hint style="color: red">TT Người đại diện: Nếu có ủy quyền, hãy nhập nội dung thay thế, không sẽ nhận-->
-          <!--                dữ liệu mặc định-->
-          <!--              </mat-hint>-->
-          <!--              <mat-label>Thông tin người đại diện: PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành</mat-label>-->
-          <!--              <textarea matInput formControlName="nguoiDaiDien" rows="3"-->
-          <!--                        placeholder="PHÙNG THỊ LOAN - Chức vụ: Giám đốc điều hành"></textarea>-->
-          <!--            </mat-form-field>-->
-          <!--          </div>-->
           <br>
           <br>
           <div class="section-row">
@@ -242,6 +271,12 @@
                 <input matInput [value]="tienChu" readonly>
               </mat-form-field>
             </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label>Thời hạn vay tính theo năm</mat-label>
+                <input matInput formControlName="thoiHanVay" placeholder="3">
+              </mat-form-field>
+            </div>
 
             <div class="form-col">
               <mat-form-field appearance="fill">
@@ -262,21 +297,21 @@
                 <input matInput formControlName="laiSuat" placeholder="7,5%/năm">
               </mat-form-field>
             </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill" class="example-full-width">
-                <mat-label>Ngày ký hợp đồng thế chấp</mat-label>
-                <input matInput [matDatepicker]="ngayTC" formControlName="ngayTheChap">
-                <mat-hint>MM/DD/YYYY</mat-hint>
-                <mat-datepicker-toggle matIconSuffix [for]="ngayTC"></mat-datepicker-toggle>
-                <mat-datepicker #ngayTC></mat-datepicker>
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Số hợp đồng TC</mat-label>
-                <input matInput formControlName="soHopDongTheChapQSDD" placeholder="07/26/006/HĐTC">
-              </mat-form-field>
-            </div>
+            <!--            <div class="form-col">-->
+            <!--              <mat-form-field appearance="fill" class="example-full-width">-->
+            <!--                <mat-label>Ngày ký hợp đồng thế chấp</mat-label>-->
+            <!--                <input matInput [matDatepicker]="ngayTC" formControlName="ngayTheChap">-->
+            <!--                <mat-hint>MM/DD/YYYY</mat-hint>-->
+            <!--                <mat-datepicker-toggle matIconSuffix [for]="ngayTC"></mat-datepicker-toggle>-->
+            <!--                <mat-datepicker #ngayTC></mat-datepicker>-->
+            <!--              </mat-form-field>-->
+            <!--            </div>-->
+            <!--            <div class="form-col">-->
+            <!--              <mat-form-field appearance="fill">-->
+            <!--                <mat-label>Số hợp đồng TC</mat-label>-->
+            <!--                <input matInput formControlName="soHopDongTheChapQSDD" placeholder="07/26/006/HĐTC">-->
+            <!--              </mat-form-field>-->
+            <!--            </div>-->
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Số BB Xét Duyệt Cho Vay</mat-label>
@@ -296,7 +331,6 @@
             <h3>Tiêu đề bảng</h3>
             <div class="table-row-headers" formArrayName="tableHeaders">
               <mat-form-field *ngFor="let headerCtrl of tableHeaders.controls; let i = index">
-                <mat-label>Cột {{ i + 1 }}</mat-label>
                 <input matInput [formControlName]="i">
               </mat-form-field>
             </div>
@@ -314,15 +348,19 @@
             </div>
 
             <!-- Preview table -->
-            <table *ngIf="tableData" class="table table-bordered">
+            <table *ngIf="tableHeaders.controls.length" class="table table-bordered">
               <thead>
               <tr>
-                <th *ngFor="let header of tableData?.headers">{{ header }}</th>
+                <th *ngFor="let headerCtrl of tableHeaders.controls">
+                  <strong>{{ headerCtrl.value }}</strong>
+                </th>
               </tr>
               </thead>
               <tbody>
-              <tr *ngFor="let row of tableData.rows">
-                <td *ngFor="let cell of row">{{ cell }}</td>
+              <tr *ngFor="let row of tableRows.controls">
+                <td>{{ row.value.col1 }}</td>
+                <td>{{ row.value.col2 }}</td>
+                <td>{{ row.value.col3 }}</td>
               </tr>
               </tbody>
             </table>
@@ -332,521 +370,526 @@
               Thêm dòng Cho Bảng
             </button>
           </div>
-          <h2>Nhập thông tin tài sản TSTC</h2>
-          <div class="form-row-3">
-            <div class="form-col">
-              <mat-form-field>
-                <mat-label>Chọn Nội Dung Ngoài Bìa:</mat-label>
-                <mat-select formControlName="noiDungNgoaiBia">
-                  <mat-option class="option-blue"
-                              value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu nhà ở và tài sản khác gắn liền với đất">
-                    GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT QUYỀN SỞ HỮU NHÀ Ở VÀ TÀI SẢN KHÁC GẮN LIỀN VỚI ĐẤT
-                  </mat-option>
-                  <mat-option class="option-red" value="Giấy chứng nhận quyền sử dụng đất">
-                    GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT
-                  </mat-option>
-                  <mat-option class="option-green"
-                              value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu tài sản gắn liền với đất">
-                    GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT QUYỂN SỞ HỮU TÀI SẢN GẮN LIỀN VỚI ĐẤT
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <!-- Nhập số tiền -->
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Số Seri Bìa Đỏ</mat-label>
-                <input matInput formControlName="serial" placeholder="I 900059">
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field>
-                <mat-label>Chọn Nơi Cấp</mat-label>
-                <mat-select formControlName="noiCapSo">
-                  <mat-option class="option-red" value="UBND huyện Chí Linh, tỉnh Hải Dương">
-                    UBND huyện Chí Linh, tỉnh Hải Dương
-                  </mat-option>
-                  <mat-option class="option-blue" value="UBND thị xã Chí Linh, tỉnh Hải Dương">
-                    UBND thị xã Chí Linh, tỉnh Hải Dương
-                  </mat-option>
-                  <mat-option class="option-green" value="UBND thành phố Chí Linh, tỉnh Hải Dương">
-                    UBND thành phố Chí Linh, tỉnh Hải Dương
-                  </mat-option>
-                  <mat-option class="option-orange" value="Chi nhánh văn phòng đăng ký đất đai thành phố Chí Linh">
-                    Chi nhánh văn phòng đăng ký đất đai thành phố Chí Linh
-                  </mat-option>
-                  <mat-option class="option-purple" value="Chi nhánh văn phòng đăng ký đất đai Chí Linh">
-                    Chi nhánh văn phòng đăng ký đất đai Chí Linh
-                  </mat-option>
-                  <mat-option class="option-brown" value="Văn phòng đăng ký đất đai tỉnh Hải Dương">
-                    Văn phòng đăng ký đất đai tỉnh Hải Dương
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
 
-            <!-- Hiển thị số tiền bằng chữ -->
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Ngày Cấp</mat-label>
-                <input matInput formControlName="ngayCapSo" placeholder="14/7/1999">
-              </mat-form-field>
-            </div>
-
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Số vào sổ CNQSDĐ</mat-label>
-                <textarea matInput formControlName="noiDungVaoSo"
-                          placeholder="Số vào sổ cấp Giấy chứng nhận: CN7078"></textarea>
-              </mat-form-field>
-            </div>
-
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Thửa đất số</mat-label>
-                <input matInput formControlName="soThuaDat" placeholder="134">
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Tờ bản đồ</mat-label>
-                <input matInput formControlName="soBanDo" placeholder="10">
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Địa chỉ Thửa Đất</mat-label>
-                <textarea matInput formControlName="diaChiThuaDat" placeholder="...,huyện Chí Linh, tỉnh Hải Dương
-                                                                                    Nay là Phường Chu Văn An, thành phố Hải Phòng"></textarea>
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Diện tích</mat-label>
-                <input formControlName="dienTichDatSo" matInput placeholder="690">
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Diện tích Bằng Chữ</mat-label>
-                <input formControlName="dienTichDatChu" matInput>
-              </mat-form-field>
-            </div>
-            <div class="form-col checkbox-input-col">
-              <mat-checkbox formControlName="checkMucDich"></mat-checkbox>
-              <mat-form-field appearance="fill">
-                <mat-label>Mục đích sử dụng</mat-label>
-                <textarea formControlName="muchDichSuDung" matInput
-                          placeholder="+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2"></textarea>
-              </mat-form-field>
-            </div>
-            <div class="form-col checkbox-input-col">
-              <mat-checkbox formControlName="checkLoaiDat"></mat-checkbox>
-              <mat-form-field appearance="fill">
-                <mat-label>Loại đất</mat-label>
-                <textarea formControlName="loaiDat" matInput
-                          placeholder="+ Đất ở: 200 m2; + Đất thừa hợp pháp: 490 m2"></textarea>
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Thời hạn sử dụng</mat-label>
-                <textarea formControlName="thoiHanSuDung" matInput></textarea>
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Nội dung thỏa thuận</mat-label>
-                <input formControlName="noiDungThoaThuan" matInput>
-              </mat-form-field>
-            </div>
-            <!-- Nguồn gốc sử dụng -->
-            <div class="form-col checkbox-input-col">
-              <mat-checkbox formControlName="checkNguonGocSuDung">
-                <!-- Có thể bỏ label trong checkbox nếu muốn -->
-              </mat-checkbox>
-              <mat-form-field appearance="fill" class="example-full-width">
-                <mat-label>Nguồn gốc sử dụng</mat-label>
-                <textarea matInput formControlName="nguonGocSuDung"
-                          placeholder="Ví dụ: Đất thừa kế, mua bán..."></textarea>
-              </mat-form-field>
-            </div>
-
-            <!-- Ghi chú -->
-            <div class="form-col checkbox-input-col">
-              <mat-checkbox formControlName="checkGhiChu"></mat-checkbox>
-              <mat-form-field appearance="fill" class="example-full-width">
-                <mat-label>Ghi chú</mat-label>
-                <textarea matInput formControlName="ghiChu"
-                          placeholder="Nhập ghi chú nếu cần"></textarea>
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Hình thức sử dụng</mat-label>
-                <textarea formControlName="hinhThucSuDung" matInput
-                          placeholder="+ Sử dụng riêng: 690  m2; + Sử dụng chung: 0 m2"></textarea>
-              </mat-form-field>
-            </div>
-          </div>
-          <h2>Nhập thêm thông tin GIẤY ĐỀ NGHỊ VAY VỐN</h2>
-          <mat-checkbox formControlName="checkHopDongBaoLanh"><span style="color: red">Tích chọn nếu là hợp đồng bảo lãnh</span>
-          </mat-checkbox>
-          <div class="section-row">
-            <div class="section-col">
-              <h2>{{ titleNguoiBaoLanh1 }}</h2>
+          <h2>Danh sách Tài sản Thế chấp</h2>
+          <div formArrayName="taiSanArray">
+            <div *ngFor="let ts of taiSanArray.controls; let i = index" [formGroupName]="i">
               <div class="form-row-3">
+                <h3 class="pill-title">Tài sản {{ i + 1 }}</h3>
+                <button mat-raised-button color="warn" type="button" (click)="xoaTaiSan(i)">
+                  Xóa tài sản {{ i + 1 }}
+                </button>
+                <!-- Số hợp đồng TC -->
                 <div class="form-col">
                   <mat-form-field appearance="fill">
-                    <mat-label>Người đứng bảo lãnh 1</mat-label>
-                    <input matInput formControlName="dungTenBiaDo1" placeholder="Người đứng tên bìa đỏ 1">
+                    <mat-label>Số hợp đồng TC</mat-label>
+                    <input matInput formControlName="soHopDongTheChapQSDD" placeholder="07/26/006/HĐTC">
+                  </mat-form-field>
+                </div>
+                <div class="form-col">
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Ngày ký hợp đồng thế chấp</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="ngayTheChap">
+                    <mat-hint>MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
                   </mat-form-field>
                 </div>
                 <div class="form-col">
                   <mat-form-field>
-                    <mat-label>Giới tính</mat-label>
-                    <mat-select formControlName="gioiTinhDungTenBiaDo1">
-                      <mat-option value="Ông">Ông
+                    <mat-label>Chọn Nội Dung Ngoài Bìa:</mat-label>
+                    <mat-select formControlName="noiDungNgoaiBia">
+                      <mat-option class="option-blue"
+                                  value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu nhà ở và tài sản khác gắn liền với đất">
+                        GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT QUYỀN SỞ HỮU NHÀ Ở VÀ TÀI SẢN KHÁC GẮN LIỀN VỚI ĐẤT
                       </mat-option>
-                      <mat-option value="Bà">Bà
+                      <mat-option class="option-red" value="Giấy chứng nhận quyền sử dụng đất">
+                        GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT
+                      </mat-option>
+                      <mat-option class="option-green"
+                                  value="Giấy chứng nhận quyền sử dụng đất quyền sở hữu tài sản gắn liền với đất">
+                        GIẤY CHỨNG NHẬN QUYỀN SỬ DỤNG ĐẤT QUYỂN SỞ HỮU TÀI SẢN GẮN LIỀN VỚI ĐẤT
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Ngày Sinh</mat-label>
-                    <input matInput formControlName="namSinhDungTenBiaDo1" placeholder="01/08/1984">
-                  </mat-form-field>
-                </div>
-                <!--                <div class="form-col-3">-->
-                <!--                  <mat-form-field appearance="fill">-->
-                <!--                    <mat-label>Số điện thoại</mat-label>-->
-                <!--                    <input matInput formControlName="phoneDungTenBiaDo1" placeholder="0343304666">-->
-                <!--                  </mat-form-field>-->
-                <!--                </div>-->
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Số CCCD</mat-label>
-                    <input matInput formControlName="cccdDungTenBiaDo1" placeholder="030084015981">
-                  </mat-form-field>
-                </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Ngày cấp CCCD</mat-label>
-                    <input matInput formControlName="ngayCapCCCDDungTenBiaDo1" placeholder="11/08/2021">
-                  </mat-form-field>
-                </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Nơi cấp cccd bảo lãnh 1:</mat-label>
-                    <mat-select formControlName="noiCapCCCDDungTenBiaDo1">
-                      <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
-                      <mat-option value="Bộ công an">Bộ công an</mat-option>
-                      <mat-option value="Cục cảnh sát">Cục cảnh sát</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Địa Chỉ Thường Trú</mat-label>
-                    <textarea matInput formControlName="diaChiThuongTruDungTenBiaDo1"
-                              placeholder="TDP Lạc Sơn"></textarea>
-                  </mat-form-field>
-                </div>
-                <div formGroupName="tsbdRequest">
-                  <mat-checkbox formControlName="checkCMNDDungTenBiaDo1">
-                    <span style="color: #24af05"> Có CMND người đứng tên bìa đỏ 1 </span>
-                  </mat-checkbox>
 
-                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkCMNDDungTenBiaDo1')?.value">
-                    <mat-label>CMND Người đứng tên bìa đỏ 1</mat-label>
-                    <input matInput formControlName="cmndDungTenBiaDo1">
+                <!-- Số Seri Bìa Đỏ -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Số Seri Bìa Đỏ</mat-label>
+                    <input matInput formControlName="serial" placeholder="I 900059">
                   </mat-form-field>
-                  <mat-checkbox formControlName="checkNgayCapCCCDTruocDayDungTenBiaDo1">
-                    <span style="color: #24af05">Có ngày cấp CCCD trước đây</span>
-                  </mat-checkbox>
-
-                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkNgayCapCCCDTruocDayDungTenBiaDo1')?.value">
-                    <mat-label>Ngày cấp CCCD trước đây 1</mat-label>
-                    <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo1" placeholder="dd/MM/yyyy">
-                  </mat-form-field>
-                  <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo1">
-                    <span style="color: #24af05">Có địa chỉ thường trú</span>
-                  </mat-checkbox>
-
-                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkDiaChiThuongTruDungTenBiaDo1')?.value">
-                    <mat-label>Địa chỉ thường trú 1</mat-label>
-                    <input matInput formControlName="diaChiThuongTruDungTenBiaDo1" placeholder="dd/MM/yyyy">
-                  </mat-form-field>
-                  <div class="form-col-3">
-                    <mat-checkbox formControlName="checkChiMangTenNguoi1">
-                      <span style="color: red">Bìa Đỏ mang tên người 1</span>
-                    </mat-checkbox>
-                  </div>
                 </div>
 
-
-              </div>
-            </div>
-            <div class="section-col">
-              <h2>{{ titleNguoiBaoLanh2 }}</h2>
-              <div class="form-row-3">
-                <div class="form-col checkbox-input-col">
-                  <mat-checkbox formControlName="checkNguoiDungTenBiaDo2"></mat-checkbox>
-                  <mat-form-field appearance="fill">
-                    <mat-label>Người bảo lãnh 2</mat-label>
-                    <input matInput formControlName="dungTenBiaDo2" placeholder="Người đứng tên bìa đỏ 2">
-                  </mat-form-field>
-                </div>
+                <!-- Nơi cấp -->
                 <div class="form-col">
                   <mat-form-field>
-                    <mat-label>Giới tính</mat-label>
-                    <mat-select formControlName="gioiTinhDungTenBiaDo2">
-                      <mat-option value="Ông">Ông
+                    <mat-label>Chọn Nơi Cấp</mat-label>
+                    <mat-select formControlName="noiCapSo">
+                      <mat-option value="UBND huyện Chí Linh, tỉnh Hải Dương">UBND
+                        huyện Chí Linh
                       </mat-option>
-                      <mat-option value="Bà">Bà
+                      <mat-option value="UBND thị xã Chí Linh, tỉnh Hải Dương">
+                        UBND thị xã Chí Linh
+                      </mat-option>
+                      <mat-option value="UBND thành phố Chí Linh, tỉnh Hải Dương">
+                        UBND thành phố Chí Linh
+                      </mat-option>
+                      <mat-option
+                        value="Văn phòng đăng ký đất đai tỉnh Hải Dương">VP đăng
+                        ký đất đai tỉnh Hải Dương
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Ngày Sinh</mat-label>
-                    <input matInput formControlName="namSinhDungTenBiaDo2" placeholder="01/08/1984">
-                  </mat-form-field>
-                </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Số CCCD</mat-label>
-                    <input matInput formControlName="cccdDungTenBiaDo2" placeholder="030084015981">
-                  </mat-form-field>
-                </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Ngày cấp CCCD</mat-label>
-                    <input matInput formControlName="ngayCapCCCDDungTenBiaDo2" placeholder="11/08/2021">
-                  </mat-form-field>
-                </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Nơi cấp cccd bảo lãnh 2:</mat-label>
-                    <mat-select formControlName="noiCapCCCDDungTenBiaDo2">
-                      <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
-                      <mat-option value="Bộ công an">Bộ công an</mat-option>
-                      <mat-option value="Cục cảnh sát">Cục cảnh sát</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-                <div class="form-col-3">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Địa Chỉ Thường Trú</mat-label>
-                    <textarea matInput formControlName="diaChiThuongTruDungTenBiaDo2"
-                              placeholder="TDP Lạc Sơn"></textarea>
-                  </mat-form-field>
-                </div>
-                <!--                Thêm CMND người 2-->
-                <div formGroupName="tsbdRequest">
-                  <mat-checkbox formControlName="checkCMNDDungTenBiaDo2">
-                    <span style="color: #24af05"> Có CMND người đứng tên bìa đỏ 2 </span>
-                  </mat-checkbox>
 
-                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkCMNDDungTenBiaDo2')?.value">
-                    <mat-label>CMND Người đứng tên bìa đỏ 2</mat-label>
-                    <input matInput formControlName="cmndDungTenBiaDo2">
+                <!-- Ngày cấp -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Ngày Cấp</mat-label>
+                    <input matInput formControlName="ngayCapSo" placeholder="14/7/1999">
                   </mat-form-field>
-                  <mat-checkbox formControlName="checkNgayCapCCCDTruocDayDungTenBiaDo2">
-                    <span style="color: #24af05">Có ngày cấp CCCD trước đây 2</span>
-                  </mat-checkbox>
+                </div>
 
-                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkNgayCapCCCDTruocDayDungTenBiaDo2')?.value">
-                    <mat-label>Ngày cấp CCCD trước đây 2</mat-label>
-                    <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo2" placeholder="dd/MM/yyyy">
+                <!-- Số vào sổ CNQSDĐ -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Số vào sổ CNQSDĐ</mat-label>
+                    <textarea matInput formControlName="noiDungVaoSo"></textarea>
                   </mat-form-field>
-                  <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo2">
-                    <span style="color: #24af05">Có địa chỉ thường trú</span>
-                  </mat-checkbox>
+                </div>
 
-                  <mat-form-field *ngIf="formGroup.get('tsbdRequest.checkDiaChiThuongTruDungTenBiaDo2')?.value">
-                    <mat-label>Địa chỉ thường trú 2</mat-label>
-                    <input matInput formControlName="diaChiThuongTruDungTenBiaDo2" placeholder="dd/MM/yyyy">
+                <!-- Thửa đất số -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Thửa đất số</mat-label>
+                    <input matInput formControlName="soThuaDat">
                   </mat-form-field>
-                  <div class="form-col-3">
-                    <mat-checkbox formControlName="checkChiMangTenNguoi2">
-                      <span style="color: red">Bìa Đỏ mang tên người 2</span>
-                    </mat-checkbox>
+                </div>
+
+                <!-- Tờ bản đồ -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Tờ bản đồ</mat-label>
+                    <input matInput formControlName="soBanDo">
+                  </mat-form-field>
+                </div>
+
+                <!-- Địa chỉ thửa đất -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Địa chỉ Thửa Đất</mat-label>
+                    <textarea matInput formControlName="diaChiThuaDat"></textarea>
+                  </mat-form-field>
+                </div>
+
+                <!-- Diện tích -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Diện tích</mat-label>
+                    <input matInput formControlName="dienTichDatSo">
+                  </mat-form-field>
+                </div>
+
+                <!-- Diện tích bằng chữ -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Diện tích Bằng Chữ</mat-label>
+                    <input matInput formControlName="dienTichDatChu">
+                  </mat-form-field>
+                </div>
+                <!-- Thời hạn sử dụng -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Thời hạn sử dụng</mat-label>
+                    <input matInput formControlName="thoiHanSuDung" placeholder="Lâu dài">
+                  </mat-form-field>
+                </div>
+                <!-- Checkbox Loại đất -->
+                <div class="form-col checkbox-input-col">
+                  <mat-checkbox formControlName="checkLoaiDat"></mat-checkbox>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Loại đất</mat-label>
+                    <textarea matInput formControlName="loaiDat"></textarea>
+                  </mat-form-field>
+                </div>
+
+                <!-- Checkbox Nguồn gốc sử dụng -->
+                <div class="form-col checkbox-input-col">
+                  <mat-checkbox formControlName="checkNguonGocSuDung"></mat-checkbox>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Nguồn gốc sử dụng</mat-label>
+                    <textarea matInput formControlName="nguonGocSuDung"></textarea>
+                  </mat-form-field>
+                </div>
+
+                <!-- Checkbox Ghi chú -->
+                <div class="form-col checkbox-input-col">
+                  <mat-checkbox formControlName="checkGhiChu"></mat-checkbox>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Ghi chú</mat-label>
+                    <textarea matInput formControlName="ghiChu"></textarea>
+                  </mat-form-field>
+                </div>
+                <!-- Checkbox Mục đích sử dụng -->
+                <div class="form-col checkbox-input-col">
+                  <mat-checkbox formControlName="checkMucDich"></mat-checkbox>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Mục đích sử dụng</mat-label>
+                    <textarea matInput formControlName="muchDichSuDung"></textarea>
+                  </mat-form-field>
+                </div>
+                <!-- Hình thức sử dụng -->
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Hình thức sử dụng</mat-label>
+                    <textarea matInput formControlName="hinhThucSuDung"></textarea>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="checkbox-row">
+                <mat-checkbox formControlName="checkHopDongBaoLanh">
+                  <span style="color: red">Tích chọn nếu là hợp đồng bảo lãnh</span>
+                </mat-checkbox>
+              </div>
+              <div class="section-row">
+                <div class="section-col">
+                  <h2>{{ ts.get('titleNguoiBaoLanh1')?.value }}</h2>
+                  <div class="form-row-3">
+                    <div class="form-col">
+                      <mat-form-field appearance="fill">
+                        <mat-label>{{ ts.get('titleNguoiBaoLanh1')?.value }}</mat-label>
+                        <input matInput formControlName="dungTenBiaDo1" placeholder="Người đứng tên bìa đỏ 1">
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col">
+                      <mat-form-field>
+                        <mat-label>Giới tính</mat-label>
+                        <mat-select formControlName="gioiTinhDungTenBiaDo1">
+                          <mat-option value="Ông">Ông
+                          </mat-option>
+                          <mat-option value="Bà">Bà
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Ngày Sinh</mat-label>
+                        <input matInput formControlName="namSinhDungTenBiaDo1" placeholder="01/08/1984">
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Số điện thoại:</mat-label>
+                        <input matInput formControlName="phoneDungTenBiaDo1" placeholder="0343304666">
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Số CCCD</mat-label>
+                        <input matInput formControlName="cccdDungTenBiaDo1" placeholder="030084015981">
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Ngày cấp CCCD</mat-label>
+                        <input matInput formControlName="ngayCapCCCDDungTenBiaDo1" placeholder="11/08/2021">
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Nơi cấp cccd bảo lãnh 1:</mat-label>
+                        <mat-select formControlName="noiCapCCCDDungTenBiaDo1">
+                          <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
+                          <mat-option value="Bộ công an">Bộ công an</mat-option>
+                          <mat-option value="Cục cảnh sát">Cục cảnh sát</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Địa Chỉ Thường Trú</mat-label>
+                        <textarea matInput formControlName="diaChiThuongTruDungTenBiaDo1"
+                                  placeholder="TDP Lạc Sơn"></textarea>
+                      </mat-form-field>
+                    </div>
+
+                    <!-- ✅ Đã bỏ formGroupName="tsbdRequest" -->
+                    <div>
+                      <mat-checkbox formControlName="checkCMNDDungTenBiaDo1">
+                        <span style="color: #24af05"> Có CMND người đứng tên bìa đỏ 1 </span>
+                      </mat-checkbox>
+
+                      <mat-form-field *ngIf="ts.get('checkCMNDDungTenBiaDo1')?.value">
+                        <mat-label>CMND Người đứng tên bìa đỏ 1</mat-label>
+                        <input matInput formControlName="cmndDungTenBiaDo1">
+                      </mat-form-field>
+                      <mat-checkbox formControlName="checkNgayCapCCCDTruocDayDungTenBiaDo1">
+                        <span style="color: #24af05">Có ngày cấp CCCD trước đây</span>
+                      </mat-checkbox>
+
+                      <mat-form-field *ngIf="ts.get('checkNgayCapCCCDTruocDayDungTenBiaDo1')?.value">
+                        <mat-label>Ngày cấp CCCD trước đây 1</mat-label>
+                        <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo1" placeholder="dd/MM/yyyy">
+                      </mat-form-field>
+<!--                      <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo1">-->
+<!--                        <span style="color: #24af05">Có địa chỉ thường trú</span>-->
+<!--                      </mat-checkbox>-->
+
+<!--                      <mat-form-field *ngIf="ts.get('checkDiaChiThuongTruDungTenBiaDo1')?.value">-->
+<!--                        <mat-label>Địa chỉ thường trú 1</mat-label>-->
+<!--                        <input matInput formControlName="diaChiThuongTruDungTenBiaDo1" placeholder="dd/MM/yyyy">-->
+<!--                      </mat-form-field>-->
+<!--                      <div class="form-col-3">-->
+                        <mat-checkbox formControlName="checkChiMangTenNguoi1">
+                          <span style="color: red">Bìa Đỏ mang tên người 1</span>
+                        </mat-checkbox>
+<!--                      </div>-->
+                    </div>
+                  </div>
+                </div>
+                <div class="section-col">
+                  <h2>{{ ts.get('titleNguoiBaoLanh2')?.value }}</h2>
+                  <div class="form-row-3">
+                    <div class="form-col checkbox-input-col">
+                      <!--                      <mat-checkbox formControlName="checkNguoiDungTenBiaDo2"></mat-checkbox>-->
+                      <mat-form-field appearance="fill">
+                        <mat-label>{{ ts.get('titleNguoiBaoLanh2')?.value }}</mat-label>
+                        <input matInput formControlName="dungTenBiaDo2" placeholder="Người đứng tên bìa đỏ 2">
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col">
+                      <mat-form-field>
+                        <mat-label>Giới tính</mat-label>
+                        <mat-select formControlName="gioiTinhDungTenBiaDo2">
+                          <mat-option value="Ông">Ông
+                          </mat-option>
+                          <mat-option value="Bà">Bà
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Ngày Sinh</mat-label>
+                        <input matInput formControlName="namSinhDungTenBiaDo2" placeholder="01/08/1984">
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Số CCCD</mat-label>
+                        <input matInput formControlName="cccdDungTenBiaDo2" placeholder="030084015981">
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Ngày cấp CCCD</mat-label>
+                        <input matInput formControlName="ngayCapCCCDDungTenBiaDo2" placeholder="11/08/2021">
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Nơi cấp cccd bảo lãnh 2:</mat-label>
+                        <mat-select formControlName="noiCapCCCDDungTenBiaDo2">
+                          <mat-option value="Cục cảnh sát QLHC về TTXH">CCSQLHCVTTXH</mat-option>
+                          <mat-option value="Bộ công an">Bộ công an</mat-option>
+                          <mat-option value="Cục cảnh sát">Cục cảnh sát</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="form-col-3">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Địa Chỉ Thường Trú</mat-label>
+                        <textarea matInput formControlName="diaChiThuongTruDungTenBiaDo2"
+                                  placeholder="TDP Lạc Sơn"></textarea>
+                      </mat-form-field>
+                    </div>
+                    <!--                Thêm CMND người 2-->
+                    <!-- ✅ Đã bỏ formGroupName="tsbdRequest" -->
+                    <div>
+                      <mat-checkbox formControlName="checkCMNDDungTenBiaDo2">
+                        <span style="color: #24af05"> Có CMND người đứng tên bìa đỏ 2 </span>
+                      </mat-checkbox>
+
+                      <mat-form-field *ngIf="ts.get('checkCMNDDungTenBiaDo2')?.value">
+                        <mat-label>CMND Người đứng tên bìa đỏ 2</mat-label>
+                        <input matInput formControlName="cmndDungTenBiaDo2">
+                      </mat-form-field>
+                      <mat-checkbox formControlName="checkNgayCapCCCDTruocDayDungTenBiaDo2">
+                        <span style="color: #24af05">Có ngày cấp CCCD trước đây 2</span>
+                      </mat-checkbox>
+
+                      <mat-form-field *ngIf="ts.get('checkNgayCapCCCDTruocDayDungTenBiaDo2')?.value">
+                        <mat-label>Ngày cấp CCCD trước đây 2</mat-label>
+                        <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo2" placeholder="dd/MM/yyyy">
+                      </mat-form-field>
+<!--                      <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo2">-->
+<!--                        <span style="color: #24af05">Có địa chỉ thường trú</span>-->
+<!--                      </mat-checkbox>-->
+
+<!--                      <mat-form-field *ngIf="ts.get('checkDiaChiThuongTruDungTenBiaDo2')?.value">-->
+<!--                        <mat-label>Địa chỉ thường trú 2</mat-label>-->
+<!--                        <input matInput formControlName="diaChiThuongTruDungTenBiaDo2" placeholder="dd/MM/yyyy">-->
+<!--                      </mat-form-field>-->
+<!--                      <div class="form-col-3">-->
+                        <mat-checkbox formControlName="checkChiMangTenNguoi2">
+                          <span style="color: red">Bìa Đỏ mang tên người 2</span>
+                        </mat-checkbox>
+<!--                      </div>-->
+<!--                      <div class="form-col-3">-->
+                        <mat-checkbox formControlName="checkDongSoHuu">
+                          <span style="color: red">Bìa Đỏ đồng sở hữu của người 2</span>
+                        </mat-checkbox>
+<!--                      </div>-->
+                    </div>
+                  </div>
+                </div>
+                <div class="section-col">
+                  <h2>Trường hợp bìa đỏ sang tên nếu có: </h2>
+                  <div class="form-row-3">
+                    <div class="form-col checkbox-input-col">
+                      <mat-checkbox formControlName="checkNguoiMangTenBiaDo"></mat-checkbox>
+                      <mat-form-field appearance="fill">
+                        <mat-label>Nội dung sang tên</mat-label>
+                        <textarea matInput formControlName="nguoiMangTen"
+                                  placeholder="mang tên bà Đặng Thị Hà. Ngày 18/11/2025, Chi nhánh Văn phòng đăng ký đất đai Chí Linh xác nhận chuyển nhượng cho ông Nguyễn Đình Nam CC số 030084018290 và bà Nguyễn Thị Thu Huế  CCCD số 031189020545 theo hồ sơ số 002575.CN.007"></textarea>
+                      </mat-form-field>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="section-col">
-              <h2>Trường hợp bìa đỏ sang tên nếu có: </h2>
               <div class="form-row-3">
-                <div class="form-col checkbox-input-col">
-                  <mat-checkbox formControlName="checkNguoiMangTenBiaDo"></mat-checkbox>
-                  <mat-form-field appearance="fill">
-                    <mat-label>Nội dung sang tên</mat-label>
-                    <textarea matInput formControlName="nguoiMangTen"
-                              placeholder="mang tên bà Đặng Thị Hà. Ngày 18/11/2025, Chi nhánh Văn phòng đăng ký đất đai Chí Linh xác nhận chuyển nhượng cho ông Nguyễn Đình Nam CC số 030084018290 và bà Nguyễn Thị Thu Huế  CCCD số 031189020545 theo hồ sơ số 002575.CN.007"></textarea>
-                  </mat-form-field>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row-3">
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Thời hạn vay tính theo năm</mat-label>
-                <input matInput formControlName="thoiHanVay" placeholder="3">
-              </mat-form-field>
-            </div>
-            <div class="form-col">
-              <button mat-raised-button color="primary" (click)="insertM2(landItemsInput)">
-                m²
-              </button>
-              <mat-form-field appearance="fill" class="example-full-width">
-                <mat-label><span style="color:red;">** THÔNG TIN ĐỊNH GIÁ TÀI SẢN **</span></mat-label>
-                <textarea matInput #landItemsInput formControlName="landItems" rows="5"
-                          placeholder="+ Đất ở: 120m²; được định giá là: 1.200.000.000 đồng
+                <div class="form-col">
+                  <button mat-raised-button color="primary" (click)="insertM2(landItemsInput)">
+                    m²
+                  </button>
+                  <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label><span style="color:red;">** THÔNG TIN ĐỊNH GIÁ TÀI SẢN **</span></mat-label>
+                    <textarea matInput #landItemsInput formControlName="landItems" rows="5"
+                              placeholder="+ Đất ở: 120m²; được định giá là: 1.200.000.000 đồng
 + Đất LNK: 300m²; được định giá là: 2.500.000.000 đồng
 + Đất ao: 300m²; được định giá là: 2.500.000.000 đồng"></textarea>
-              </mat-form-field>
+                  </mat-form-field>
+                </div>
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Tổng giá trị tài sản bìa đỏ (VNĐ)</mat-label>
+                    <input formControlName="tongTaiSanBD" matInput readonly>
+                  </mat-form-field>
+                </div>
 
+                <div class="form-col">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Tổng giá trị tài sản bìa đỏ (Bằng chữ)</mat-label>
+                    <input formControlName="tongTaiSanBDChu" matInput readonly>
+                  </mat-form-field>
+                </div>
+              </div>
+              <h2>Nhập thông tin: Biên Bản Xác Định Giá Trị Tài Sản Bảo Đảm</h2>
+              <div class="form-row">
+                <!-- ✅ Đã bỏ formGroupName="tsbdRequest" -->
+                <div class="form-col checkbox-input-col">
+                  <mat-checkbox formControlName="checkTaiSanGanLienVoiDat">Tài sản gắn liền với đất</mat-checkbox>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Diện tích Tài Sản</mat-label>
+                    <input matInput formControlName="dienTichTS" placeholder="">
+                  </mat-form-field>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Loại Nhà</mat-label>
+                    <input matInput formControlName="loaiNha" placeholder="">
+                  </mat-form-field>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Kết cấu xây dựng</mat-label>
+                    <input matInput formControlName="ketCauXayDung" placeholder="">
+                  </mat-form-field>
+                </div>
 
-            </div>
-            <!--            <div class="form-col checkbox-input-col">-->
-            <!--              <mat-checkbox formControlName="checkNhaCoDinh"></mat-checkbox>-->
-            <!--              <mat-form-field appearance="fill">-->
-            <!--                <mat-label>Nhà cố định</mat-label>-->
-            <!--                <textarea matInput formControlName="nhaCoDinh" placeholder=""></textarea>-->
-            <!--              </mat-form-field>-->
-            <!--            </div>-->
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Tổng giá trị tài sản bìa đỏ (VNĐ)</mat-label>
-                <input formControlName="tongTaiSanBD" matInput [value]="tongTaiSanBD" readonly></mat-form-field>
-            </div> <!-- Hiển thị tổng tài sản bằng chữ -->
-            <div class="form-col">
-              <mat-form-field appearance="fill">
-                <mat-label>Tổng giá trị tài sản bìa đỏ (Bằng chữ)</mat-label>
-                <input formControlName="tongTaiSanBDChu" matInput [value]="tongTaiSanBDChu" readonly></mat-form-field>
-            </div>
-          </div>
-          <h2>Nhập thông tin: Biên Bản Xác Định Giá Trị Tài Sản Bảo Đảm</h2>
-          <div class="form-row">
-            <!--            <div class="form-col">-->
-            <!--              <mat-form-field appearance="fill">-->
-            <!--                <mat-label>Số biên bản định giá</mat-label>-->
-            <!--                <input formControlName="soBienBanDinhGia" matInput>-->
-            <!--              </mat-form-field>-->
-            <!--            </div>-->
-<!--            <div class="form-col">-->
-<!--              <mat-form-field appearance="fill" class="example-full-width">-->
-<!--                <mat-label>Ngày lập BBXĐGT Tài Sản Bảo Đảm</mat-label>-->
-<!--                <input matInput [matDatepicker]="ngayBD" formControlName="ngayBaoDam">-->
-<!--                <mat-hint>MM/DD/YYYY</mat-hint>-->
-<!--                <mat-datepicker-toggle matIconSuffix [for]="ngayBD"></mat-datepicker-toggle>-->
-<!--                <mat-datepicker #ngayBD></mat-datepicker>-->
-<!--              </mat-form-field>-->
-<!--            </div>-->
-            <div formGroupName="tsbdRequest" class="form-col checkbox-input-col">
-              <mat-checkbox formControlName="checkTaiSanGanLienVoiDat">Tài sản gắn liền với đất</mat-checkbox>
-              <mat-form-field appearance="fill">
-                <mat-label>Diện tích Tài Sản</mat-label>
-                <input matInput formControlName="dienTichTS" placeholder="">
-              </mat-form-field>
-              <mat-form-field appearance="fill">
-                <mat-label>Loại Nhà</mat-label>
-                <input matInput formControlName="loaiNha" placeholder="">
-              </mat-form-field>
-              <mat-form-field appearance="fill">
-                <mat-label>Kết cấu xây dựng</mat-label>
-                <input matInput formControlName="ketCauXayDung" placeholder="">
-              </mat-form-field>
-            </div>
+                <div formArrayName="table1">
+                  <b>Giá đất theo giá UBND thành phố Hải Phòng quy định: </b>
+                  <table class="table table-bordered">
+                    <tbody>
+                    <tr *ngFor="let row of table1(ts); let i = index" [formGroupName]="i">
+                      <td><input matInput formControlName="col1" readonly class="form-control"></td>
+                      <td>
+                        <input matInput formControlName="col2"
+                               (input)="onInputChange($event, row, 'col2')"
+                               (blur)="formatOnBlur(row, 'col2')"
+                               class="form-control">
+                      </td>
 
-            <div formArrayName="table1">
-              <b>Giá đất theo giá UBND thành phố Hải Phòng quy định: </b>
-              <table class="table table-bordered">
-                <tbody>
-                <tr *ngFor="let row of table1.controls; let i = index" [formGroupName]="i">
-                  <td><input matInput formControlName="col1" readonly class="form-control"></td>
-                  <td>
-                    <input matInput formControlName="col2"
-                           [value]="row.get('col2')?.value"
-                           (input)="onInputChange($event, row, 'col2')"
-                           (blur)="formatOnBlur(row, 'col2')"
-                           class="form-control">
-                  </td>
-
-
-                  <td><input matInput formControlName="col3" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col4" readonly class="form-control"></td>
-                  <!-- col2 -->
-                  <td>
-                    <input type="text"
-                           [value]="row.get('col5')?.value"
-                           (input)="onInputChange($event, row, 'col5')"
-                           (blur)="formatOnBlur(row, 'col5')"
-                           readonly class="form-control">
-                  </td>
-                  <td><input matInput formControlName="col6" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col7" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col8" readonly class="form-control"></td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-            <div formArrayName="table2">
-              <b>Căn cứ giá đất trên thị trường {{ phuong }} tại thời điểm xác định giá tài sản: </b>
-              <table class="table table-bordered">
-                <tbody>
-                <tr *ngFor="let row of table2.controls; let i = index" [formGroupName]="i">
-                  <td><input matInput formControlName="col1" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col2" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col3" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col4" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col5" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col6" readonly class="form-control"></td>
-                  <td>
-                    <input type="text"
-                           [value]="row.get('col7')?.value"
-                           (input)="onInputChange($event, row, 'col7')"
-                           (blur)="formatOnBlur(row, 'col7')"
-                           class="form-control" readonly>
-                  </td>
-                  <td><input matInput formControlName="col8" readonly class="form-control"></td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-            <div formArrayName="table3">
-              <b>Giá do hai bên cùng thỏa thuận thống nhất xác định: </b>
-              <table class="table table-bordered">
-                <tbody>
-                <tr *ngFor="let row of table3.controls; let i = index" [formGroupName]="i">
-                  <td><input matInput formControlName="col1" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col2" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col3" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col4" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col5" readonly class="form-control"></td>
-                  <td><input matInput formControlName="col6" readonly class="form-control"></td>
-                  <td>
-                    <input type="text"
-                           [value]="row.get('col7')?.value"
-                           (input)="onInputChange($event, row, 'col7')"
-                           (blur)="formatOnBlur(row, 'col7')"
-                           readonly class="form-control">
-                  </td>
-                  <td><input matInput formControlName="col8" readonly class="form-control"></td>
-                </tr>
-
-
-                </tbody>
-              </table>
+                      <td><input matInput formControlName="col3" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col4" readonly class="form-control"></td>
+                      <!-- col2 -->
+                      <td>
+                        <input matInput formControlName="col5"
+                               (input)="onInputChange($event, row, 'col5')"
+                               (blur)="formatOnBlur(row, 'col5')"
+                               readonly class="form-control">
+                      </td>
+                      <td><input matInput formControlName="col6" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col7" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col8" readonly class="form-control"></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div formArrayName="table2">
+                  <b>Căn cứ giá đất trên thị trường {{ phuong }} tại thời điểm xác định giá tài sản: </b>
+                  <table class="table table-bordered">
+                    <tbody>
+                    <tr *ngFor="let row of table2(ts); let i = index" [formGroupName]="i">
+                      <td><input matInput formControlName="col1" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col2" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col3" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col4" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col5" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col6" readonly class="form-control"></td>
+                      <td>
+                        <input matInput formControlName="col7"
+                               (input)="onInputChange($event, row, 'col7')"
+                               (blur)="formatOnBlur(row, 'col7')"
+                               class="form-control" readonly>
+                      </td>
+                      <td><input matInput formControlName="col8" readonly class="form-control"></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div formArrayName="table3">
+                  <b>Giá do hai bên cùng thỏa thuận thống nhất xác định: </b>
+                  <table class="table table-bordered">
+                    <tbody>
+                    <tr *ngFor="let row of table3(ts); let i = index" [formGroupName]="i">
+                      <td><input matInput formControlName="col1" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col2" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col3" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col4" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col5" readonly class="form-control"></td>
+                      <td><input matInput formControlName="col6" readonly class="form-control"></td>
+                      <td>
+                        <!-- table3 -->
+                        <input matInput formControlName="col7"
+                               (input)="onInputChange($event, row, 'col7')"
+                               (blur)="formatOnBlur(row, 'col7')"
+                               class="form-control" readonly>
+                      </td>
+                      <td><input matInput formControlName="col8" readonly class="form-control"></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
+
+          <!-- Button thêm tài sản -->
+          <button mat-raised-button color="accent" type="button" (click)="themTaiSan()" class="btn-them-tai-san">
+            <mat-icon>add_circle</mat-icon>
+            <span>Thêm tài sản</span>
+            <mat-icon>home_work</mat-icon>
+          </button>
           <h2>Nhập thông tin: PHƯƠNG ÁN VAY VỐN</h2>
           <div class="form-row">
             <div formGroupName="pavvRequest" class="form-col checkbox-input-col">
@@ -895,7 +938,7 @@
             </div>
           </div>
           <!--          CHỈ HIỆN THỊ VỚI HỢP ĐỒNG HẠN MỨC-->
-          <div *ngIf="formGroup.get('loaiVay')?.value === 'NGẮN HẠN (Thỏa thuận)'" formArrayName="hanMucTable">
+          <div *ngIf="formGroup.get('loaiVay')?.value === 'han_muc'" formArrayName="hanMucTable">
             <h3>Bảng hạn mức</h3>
             <table class="table table-bordered">
               <thead>
@@ -936,7 +979,7 @@
 
           <!-- Bảng phụ lục hạn mức -->
           <div *ngIf="formGroup.get('pavvRequest.vayLai')?.value
-  && formGroup.get('loaiVay')?.value === 'NGẮN HẠN (Thỏa thuận)'">
+  && formGroup.get('loaiVay')?.value === 'han_muc'">
             <b style="color: blue">Bảng Phụ Lục Hạn Mức</b>
             <table class="table table-bordered">
               <thead>

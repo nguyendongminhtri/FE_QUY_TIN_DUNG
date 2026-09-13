@@ -174,3 +174,21 @@ mat-form-field {
 .chi-phi-table td.col-danhmuc {
   width: 25% !important;
 }
+.pill-title {
+  background-color: rgba(15, 228, 232, 0.89); /* màu nền */
+  color: #9c07b3;                             /* màu chữ */
+  padding: 8px 20px;                          /* khoảng cách trong */
+  border-radius: 50px;                        /* bo tròn để thành hình con nhộng */
+  display: inline-block;                      /* để nội dung vừa khít */
+  font-weight: bold;                          /* chữ đậm hơn */
+}
+.table-row-headers th {
+  font-weight: bold;
+}
+.checkbox-row {
+  display: flex;
+  justify-content: center;  /* căn giữa ngang */
+  margin: 20px 0;           /* tạo khoảng cách trên dưới */
+}
+
+
