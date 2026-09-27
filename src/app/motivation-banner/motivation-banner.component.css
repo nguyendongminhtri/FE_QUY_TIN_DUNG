@@ -1,0 +1,175 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Áp dụng Background trực tiếp cho .mb-stage để đảm bảo không bị mất nền */
+.mb-stage {
+  --mb-bg1: #0f2027;
+  --mb-bg2: #203a43;
+  --mb-bg3: #2c5364;
+  --mb-gold1: #fceabb;
+  --mb-gold2: #f8b500;
+
+  min-height: 460px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: radial-gradient(circle at 50% 30%, var(--mb-bg3), var(--mb-bg2) 55%, var(--mb-bg1) 100%) !important;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.mb-stage *,
+.mb-stage *::before,
+.mb-stage *::after {
+  box-sizing: border-box;
+}
+
+/* Hạt lấp lánh tròn */
+.mb-sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(248, 181, 0, 0.8);
+  box-shadow: 0 0 8px #f8b500;
+  animation: mb-float linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes mb-float {
+  0%   { transform: translateY(0) scale(1); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(var(--mb-travel, -600px)) scale(1.3); opacity: 0; }
+}
+
+/* Ngôi sao 4 cánh lấp lánh */
+.mb-star {
+  position: absolute;
+  background: #ffffff;
+  clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%);
+  filter: drop-shadow(0 0 6px #f8b500) drop-shadow(0 0 10px #ffffff);
+  pointer-events: none;
+  z-index: 0;
+  animation: mb-twinkleStar linear infinite;
+}
+
+@keyframes mb-twinkleStar {
+  0% { transform: translateY(0) scale(0.2) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translateY(calc(var(--mb-travel, -600px) * 0.5)) scale(1.3) rotate(180deg); opacity: 0.9; }
+  80% { opacity: 1; }
+  100% { transform: translateY(var(--mb-travel, -600px)) scale(0.2) rotate(360deg); opacity: 0; }
+}
+
+/* Căn giữa chuẩn */
+.mb-content {
+  max-width: 800px;
+  width: 100%;
+  padding: 0 20px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: mb-floatCard 5s ease-in-out infinite;
+}
+
+@keyframes mb-floatCard {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.mb-badge {
+  display: inline-block;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: #f8b500;
+  border: 1px solid rgba(248, 181, 0, 0.5);
+  border-radius: 30px;
+  padding: 6px 20px;
+  margin: 0 auto 20px auto;
+  text-transform: uppercase;
+  background: rgba(248, 181, 0, 0.08);
+  box-shadow: 0 0 18px rgba(248, 181, 0, 0.25);
+}
+
+.mb-main-text {
+  width: 100%;
+  font-size: clamp(20px, 3.5vw, 38px);
+  font-weight: 800;
+  line-height: 1.5;
+  margin: 0 auto 20px auto;
+  text-align: center;
+  color: #fceabb;
+  background: linear-gradient(180deg, #fffbe6 0%, #ffe8a3 35%, #f8b500 60%, #a86a00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 1px 0 #a86a00,
+    0 2px 0 #96600a,
+    0 3px 0 #855609,
+    0 4px 0 #744c08,
+    0 5px 6px rgba(0,0,0,0.45),
+    0 10px 22px rgba(248, 181, 0, 0.25);
+  animation: mb-pulseGlow 3.2s ease-in-out infinite;
+  letter-spacing: 0.5px;
+}
+
+@keyframes mb-pulseGlow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(248,181,0,0.35)); }
+  50% { filter: drop-shadow(0 0 20px rgba(248,181,0,0.85)); }
+}
+
+.mb-org {
+  display: block;
+  margin-top: 8px;
+  color: #ffe8a3;
+  text-align: center;
+}
+
+.mb-signature {
+  font-size: clamp(15px, 1.8vw, 19px);
+  font-style: italic;
+  color: #cfe8ff;
+  opacity: 0.9;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.mb-signature b {
+  color: #f8b500;
+  font-style: normal;
+}
+
+.mb-line {
+  width: 140px;
+  height: 3px;
+  margin: 18px auto;
+  background: linear-gradient(90deg, transparent, #f8b500, transparent);
+  border-radius: 3px;
+}
+
+.mb-cup {
+  font-size: 38px;
+  margin: 0 auto 12px auto;
+  display: inline-block;
+  animation: mb-sway 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.4));
+}
+
+@keyframes mb-sway {
+  0%, 100% { transform: rotate(-6deg); }
+  50%      { transform: rotate(6deg); }
+}

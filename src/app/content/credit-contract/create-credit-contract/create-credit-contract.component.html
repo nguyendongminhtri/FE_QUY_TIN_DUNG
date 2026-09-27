@@ -2,6 +2,7 @@
   <div class="row">
     <div class="col-12" style="max-width: 1200px; margin: auto;  text-align: center">
       <mat-card>
+        <app-motivation-banner></app-motivation-banner>
         <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
           <div class="form-row">
             <div class="form-col">
@@ -50,8 +51,8 @@
                 <div *ngIf="formGroup.get('loaiVay')?.value === 'han_muc'">
                   <div class="form-col">
                     <mat-form-field appearance="fill" class="example-full-width">
-                      <mat-label>Ngày Thu Lãi Hạn Mức</mat-label>
-                      <input matInput formControlName="ngayHDTDCu" placeholder="Ngày thu lãi HM">
+                      <mat-label>Ngày Ký HĐTD Cũ</mat-label>
+                      <input matInput formControlName="ngayHDTDCu" placeholder="Ngày HĐTD Cũ">
                     </mat-form-field>
                     <mat-form-field appearance="fill" class="example-full-width">
                       <mat-label>Số HĐTD Cũ</mat-label>
@@ -427,18 +428,25 @@
                   <mat-form-field>
                     <mat-label>Chọn Nơi Cấp</mat-label>
                     <mat-select formControlName="noiCapSo">
-                      <mat-option value="UBND huyện Chí Linh, tỉnh Hải Dương">UBND
+                      <mat-option value="UBND huyện Chí Linh">UBND
                         huyện Chí Linh
                       </mat-option>
-                      <mat-option value="UBND thị xã Chí Linh, tỉnh Hải Dương">
+                      <mat-option value="UBND thị xã Chí Linh">
                         UBND thị xã Chí Linh
                       </mat-option>
-                      <mat-option value="UBND thành phố Chí Linh, tỉnh Hải Dương">
+                      <mat-option value="UBND thành phố Chí Linh">
                         UBND thành phố Chí Linh
                       </mat-option>
                       <mat-option
                         value="Văn phòng đăng ký đất đai tỉnh Hải Dương">VP đăng
                         ký đất đai tỉnh Hải Dương
+                      </mat-option>
+                      <mat-option
+                        value="Chi nhánh văn phòng đăng ký đất đai Chí Linh">Chi nhánh văn phòng đăng ký đất đai Chí
+                        Linh
+                      </mat-option>
+                      <mat-option
+                        value="Sở tài nguyên và môi trường tỉnh Hải Dương">Sở tài nguyên và môi trường tỉnh Hải Dương
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -503,7 +511,7 @@
                 <div class="form-col">
                   <mat-form-field appearance="fill">
                     <mat-label>Thời hạn sử dụng</mat-label>
-                    <input matInput formControlName="thoiHanSuDung" placeholder="Lâu dài">
+                    <textarea matInput formControlName="thoiHanSuDung" placeholder="Lâu dài"></textarea>
                   </mat-form-field>
                 </div>
                 <!-- Checkbox Loại đất -->
@@ -540,6 +548,14 @@
                     <textarea matInput formControlName="muchDichSuDung"></textarea>
                   </mat-form-field>
                 </div>
+                <!--                &lt;!&ndash; Checkbox Trong đó sử dụng &ndash;&gt;-->
+                <!--                <div class="form-col checkbox-input-col">-->
+                <!--                  <mat-checkbox formControlName="checkTrongDo"></mat-checkbox>-->
+                <!--                  <mat-form-field appearance="fill">-->
+                <!--                    <mat-label>Trong đó</mat-label>-->
+                <!--                    <textarea matInput formControlName="trongDo"></textarea>-->
+                <!--                  </mat-form-field>-->
+                <!--                </div>-->
                 <!-- Hình thức sử dụng -->
                 <div class="form-col">
                   <mat-form-field appearance="fill">
@@ -634,19 +650,9 @@
                         <mat-label>Ngày cấp CCCD trước đây 1</mat-label>
                         <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo1" placeholder="dd/MM/yyyy">
                       </mat-form-field>
-<!--                      <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo1">-->
-<!--                        <span style="color: #24af05">Có địa chỉ thường trú</span>-->
-<!--                      </mat-checkbox>-->
-
-<!--                      <mat-form-field *ngIf="ts.get('checkDiaChiThuongTruDungTenBiaDo1')?.value">-->
-<!--                        <mat-label>Địa chỉ thường trú 1</mat-label>-->
-<!--                        <input matInput formControlName="diaChiThuongTruDungTenBiaDo1" placeholder="dd/MM/yyyy">-->
-<!--                      </mat-form-field>-->
-<!--                      <div class="form-col-3">-->
-                        <mat-checkbox formControlName="checkChiMangTenNguoi1">
-                          <span style="color: red">Bìa Đỏ mang tên người 1</span>
-                        </mat-checkbox>
-<!--                      </div>-->
+                      <mat-checkbox formControlName="checkChiMangTenNguoi1">
+                        <span style="color: red">Bìa Đỏ mang tên người 1</span>
+                      </mat-checkbox>
                     </div>
                   </div>
                 </div>
@@ -706,7 +712,6 @@
                                   placeholder="TDP Lạc Sơn"></textarea>
                       </mat-form-field>
                     </div>
-                    <!--                Thêm CMND người 2-->
                     <!-- ✅ Đã bỏ formGroupName="tsbdRequest" -->
                     <div>
                       <mat-checkbox formControlName="checkCMNDDungTenBiaDo2">
@@ -725,24 +730,12 @@
                         <mat-label>Ngày cấp CCCD trước đây 2</mat-label>
                         <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo2" placeholder="dd/MM/yyyy">
                       </mat-form-field>
-<!--                      <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo2">-->
-<!--                        <span style="color: #24af05">Có địa chỉ thường trú</span>-->
-<!--                      </mat-checkbox>-->
-
-<!--                      <mat-form-field *ngIf="ts.get('checkDiaChiThuongTruDungTenBiaDo2')?.value">-->
-<!--                        <mat-label>Địa chỉ thường trú 2</mat-label>-->
-<!--                        <input matInput formControlName="diaChiThuongTruDungTenBiaDo2" placeholder="dd/MM/yyyy">-->
-<!--                      </mat-form-field>-->
-<!--                      <div class="form-col-3">-->
-                        <mat-checkbox formControlName="checkChiMangTenNguoi2">
-                          <span style="color: red">Bìa Đỏ mang tên người 2</span>
-                        </mat-checkbox>
-<!--                      </div>-->
-<!--                      <div class="form-col-3">-->
-                        <mat-checkbox formControlName="checkDongSoHuu">
-                          <span style="color: red">Bìa Đỏ đồng sở hữu của người 2</span>
-                        </mat-checkbox>
-<!--                      </div>-->
+                      <mat-checkbox formControlName="checkChiMangTenNguoi2">
+                        <span style="color: red">Bìa Đỏ mang tên người 2</span>
+                      </mat-checkbox>
+                      <mat-checkbox formControlName="checkDongSoHuu">
+                        <span style="color: red">Bìa Đỏ đồng sở hữu của cả 2</span>
+                      </mat-checkbox>
                     </div>
                   </div>
                 </div>
@@ -891,33 +884,45 @@
             <mat-icon>home_work</mat-icon>
           </button>
           <h2>Nhập thông tin: PHƯƠNG ÁN VAY VỐN</h2>
-          <div class="form-row">
-            <div formGroupName="pavvRequest" class="form-col checkbox-input-col">
-              <!-- Thêm select Loại phương án -->
+          <!--          <div class="form-row-3 pavv-grid">-->
+          <div formGroupName="pavvRequest" class="form-col checkbox-input-col pavv-form-grid">
+            <!-- Thêm select Loại phương án -->
+            <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Loại phương án</mat-label>
                 <mat-select formControlName="loaiPhuongAn">
-                  <mat-option value="chanNuoi">Chăn Nuôi</mat-option>
-                  <mat-option value="khac">Phương án khác</mat-option>
+                  <mat-option *ngFor="let option of phuongAnOptions" [value]="option.value">
+                    {{ option.label }}
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
+            </div>
+            <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Tên phương án</mat-label>
                 <input matInput formControlName="name" placeholder="">
               </mat-form-field>
-              <mat-checkbox formControlName="checkAddress">Địa điểm</mat-checkbox>
+            </div>
+            <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Địa điểm thực hiện phương án</mat-label>
                 <input matInput formControlName="address" placeholder="">
               </mat-form-field>
+            </div>
+            <!--              <mat-checkbox formControlName="checkAddress">Địa điểm</mat-checkbox>-->
+            <div *ngIf="!showTHTDInput" class="form-col">
               <mat-form-field appearance="fill">
-                <mat-label>Hệ số % vốn khác:</mat-label>
+                <mat-label style="color: red">HS % vốn tự có (chỉ nhập số):</mat-label>
                 <input matInput formControlName="heSoVonKhac" placeholder="0%">
               </mat-form-field>
+            </div>
+            <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Người chuyển khoản</mat-label>
                 <textarea matInput formControlName="nguoiChuyenKhoan" placeholder=""></textarea>
               </mat-form-field>
+            </div>
+            <div class="form-col">
               <mat-form-field appearance="fill"
                               *ngIf="formGroup.get('pavvRequest.loaiPhuongAn')?.value">
                 <mat-label>
@@ -933,10 +938,57 @@
                           : 'Nhập lý do cho phương án khác'">
                 </textarea>
               </mat-form-field>
-
-
+            </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label style="color: red">Tiền còn nợ tại QTDND Thái Học</mat-label>
+                <!--                 <input matInput formControlName="tienNoQTDNDTH" placeholder="100.000.000.000">-->
+                <input matInput formControlName="tienNoQTDNDTH"
+                       (input)="onTienSoInput($event, 'pavvRequest.tienNoQTDNDTH')" placeholder="100.000.000.000">
+              </mat-form-field>
+            </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label style="color: red">Tiền vay TCTD Khác</mat-label>
+                <!--                <input matInput formControlName="tienVayTCTDK" placeholder="200.000.000.000">-->
+                <input matInput formControlName="tienVayTCTDK"
+                       (input)="onTienSoInput($event, 'pavvRequest.tienVayTCTDK')" placeholder="200.000.000.000">
+              </mat-form-field>
+            </div>
+            <div class="form-col">
+              <mat-checkbox formControlName="khongLienQuan">
+                <span style="color: red">Tích chọn nếu số tiền vay TCTD Khác không liên quan tới phương án</span>
+              </mat-checkbox>
+            </div>
+            <div class="form-col">
+              <mat-checkbox formControlName="tienMat">
+                <span style="color: blue">Tích chọn nếu chỉ giải ngân bằng TIỀN MẶT</span>
+              </mat-checkbox>
+            </div>
+            <div class="form-col">
+              <mat-checkbox formControlName="chuyenKhoan">
+                <span style="color: blue">Tích chọn nếu chỉ giải ngân bằng CHUYỂN KHOẢN</span>
+              </mat-checkbox>
+            </div>
+            <!-- ✅ Đặt ngay đây, cùng hàng, dùng *ngIf trực tiếp -->
+            <div class="form-col" *ngIf="showTHTDInput">
+              <mat-form-field appearance="fill">
+                <mat-label style="color: red">Tổng Chi Phí Phương Án Trung Hạn TIÊU DÙNG</mat-label>
+                <input matInput formControlName="tongChiPhiTHTD"
+                       (input)="onTienSoInput($event, 'pavvRequest.tongChiPhiTHTD')"
+                       placeholder="200.000.000.000">
+              </mat-form-field>
+            </div>
+            <div class="form-col" *ngIf="showTHTDInput">
+              <mat-form-field appearance="fill">
+                <mat-label style="color: red">Tiền lương của khách hàng</mat-label>
+                <input matInput formControlName="tienLuongKH"
+                       (input)="onTienSoInput($event, 'pavvRequest.tienLuongKH')"
+                       placeholder="200.000.000.000">
+              </mat-form-field>
             </div>
           </div>
+          <!--          </div>-->
           <!--          CHỈ HIỆN THỊ VỚI HỢP ĐỒNG HẠN MỨC-->
           <div *ngIf="formGroup.get('loaiVay')?.value === 'han_muc'" formArrayName="hanMucTable">
             <h3>Bảng hạn mức</h3>
@@ -1019,225 +1071,259 @@
                 </td>
                 <td></td>
               </tr>
-
-
               </tbody>
             </table>
             <button class="btn btn-primary mt-2" (click)="addPhuLucHanMucRow()">+ Thêm hàng</button>
           </div>
           <br>
+          <ng-container *ngIf="!showTHTDInput;">
+            <div formArrayName="chiPhiTable">
+              <b style="color: blue">Bảng chi phí</b>
+              <table class="table table-bordered chi-phi-table">
+                <thead>
+                <tr>
+                  <th>Hàng</th>
+                  <th class="col-stt">STT</th>
+                  <th class="col-danhmuc">Danh mục</th>
+                  <th>Đơn vị</th>
+                  <th>Số lượng</th>
+                  <th>Đơn giá (đồng)</th>
+                  <th>Thành tiền (đồng)</th>
+                  <th>Merge</th>
+                  <th>Tính tổng</th>
+                  <th>Hành động</th>
+                </tr>
+                </thead>
 
-          <div formArrayName="chiPhiTable">
-            <b style="color: blue">Bảng chi phí</b>
-            <table class="table table-bordered chi-phi-table">
-              <thead>
-              <tr>
-                <th>Hàng</th>
-                <th class="col-stt">STT</th>
-                <th class="col-danhmuc">Danh mục</th>
-                <th>Đơn vị</th>
-                <th>Số lượng</th>
-                <th>Đơn giá (đồng)</th>
-                <th>Thành tiền (đồng)</th>
-                <th>Merge</th>
-                <th>Tính tổng</th>
-                <th>Hành động</th>
-              </tr>
-              </thead>
+                <tbody>
+                <tr *ngFor="let row of chiPhiRows; let i = index" [formGroup]="row">
+                  <!-- Hàng -->
+                  <td class="text-center fw-bold">{{ i + 1 }}</td>
 
-              <tbody>
-              <tr *ngFor="let row of chiPhiRows; let i = index" [formGroup]="row">
-                <!-- Hàng -->
-                <td class="text-center fw-bold">{{ i + 1 }}</td>
+                  <ng-container *ngIf="row.get('merge')?.value; else normalRow">
+                    <!-- Ô gộp -->
+                    <td
+                      [attr.colspan]="(row.get('mergeTargets')?.value?.length || 1)"
+                      class="fw-bold"
+                    >
+                      <input formControlName="mergedValue" class="form-control"/>
+                    </td>
+                    <td *ngIf="!row.get('mergeTargets')?.value?.includes('stt')" class="col-stt">
+                      <input formControlName="stt" class="form-control readonly-cell" readonly/>
+                    </td>
 
-                <ng-container *ngIf="row.get('merge')?.value; else normalRow">
-                  <!-- Ô gộp -->
-                  <td
-                    [attr.colspan]="(row.get('mergeTargets')?.value?.length || 1)"
-                    class="fw-bold"
-                  >
-                    <input formControlName="mergedValue" class="form-control"/>
-                  </td>
-                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('stt')" class="col-stt">
-                    <input formControlName="stt" class="form-control readonly-cell" readonly/>
-                  </td>
+                    <td *ngIf="!row.get('mergeTargets')?.value?.includes('danhMuc')" class="col-danhmuc">
+                      <input formControlName="danhMuc" class="form-control readonly-cell" readonly/>
+                    </td>
+                    <td *ngIf="!row.get('mergeTargets')?.value?.includes('donVi')">
+                      <input formControlName="donVi" class="form-control readonly-cell" readonly/>
+                    </td>
+                    <td *ngIf="!row.get('mergeTargets')?.value?.includes('soLuong')">
+                      <input type="text"
+                             [value]="formatCurrency(row.get('soLuong')?.value)"
+                             (input)="onInputChange($event, row, 'soLuong')"
+                             class="form-control readonly-cell" readonly/>
+                    </td>
+                    <td *ngIf="!row.get('mergeTargets')?.value?.includes('donGia')">
+                      <input type="text"
+                             [value]="formatCurrency(row.get('donGia')?.value)"
+                             (input)="onInputChange($event, row, 'donGia')"
+                             class="form-control readonly-cell" readonly/>
+                    </td>
 
-                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('danhMuc')" class="col-danhmuc">
-                    <input formControlName="danhMuc" class="form-control readonly-cell" readonly/>
-                  </td>
-                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('donVi')">
-                    <input formControlName="donVi" class="form-control readonly-cell" readonly/>
-                  </td>
-                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('soLuong')">
-                    <input type="text"
-                           [value]="formatCurrency(row.get('soLuong')?.value)"
-                           (input)="onInputChange($event, row, 'soLuong')"
-                           class="form-control readonly-cell" readonly/>
-                  </td>
-                  <td *ngIf="!row.get('mergeTargets')?.value?.includes('donGia')">
-                    <input type="text"
-                           [value]="formatCurrency(row.get('donGia')?.value)"
-                           (input)="onInputChange($event, row, 'donGia')"
-                           class="form-control readonly-cell" readonly/>
-                  </td>
+                    <!-- Thành tiền -->
+                    <td>
+                      <input type="text"
+                             [value]="formatCurrency(row.get('thanhTien')?.value)"
+                             readonly
+                             class="form-control"/>
+                    </td>
 
-                  <!-- Thành tiền -->
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('thanhTien')?.value)"
-                           readonly
-                           class="form-control"/>
-                  </td>
+                    <!-- Merge control -->
+                    <td>
+                      <div class="d-flex align-items-center gap-1">
+                        <label class="mb-0">Merge</label>
+                        <input type="checkbox"
+                               [checked]="row.get('merge')?.value"
+                               (change)="toggleMerge(i, $event)"/>
+                      </div>
+                      <div class="form-check"
+                           *ngFor="let option of ['stt','danhMuc','donVi','soLuong','donGia']">
+                        <input type="checkbox"
+                               class="form-check-input"
+                               [checked]="row.get('mergeTargets')?.value?.includes(option)"
+                               (change)="onMergeTargetChange(row, option, $event)"/>
+                        <label class="form-check-label" style="font-size: 12px;">{{ option }}</label>
+                      </div>
+                    </td>
 
-                  <!-- Merge control -->
-                  <td>
-                    <div class="d-flex align-items-center gap-1">
-                      <label class="mb-0">Merge</label>
+                    <!-- Sum control -->
+                    <td>
+                      <div class="d-flex align-items-center gap-1">
+                        <label class="mb-0">Tính tổng</label>
+                        <input type="checkbox"
+                               [checked]="row.get('sum')?.value"
+                               (change)="toggleSum(i, $event)"/>
+                      </div>
+                      <div *ngIf="row.get('sum')?.value">
+                        <ng-container *ngFor="let otherRow of chiPhiRows; let j = index">
+                          <div class="form-check" *ngIf="isRowAvailableForSum(i, j)">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   [checked]="row.get('sumTargets')?.value?.includes(j)"
+                                   (change)="onSumRowChange(row, j, $event)"/>
+                            <label class="form-check-label" style="font-size: 12px;">
+                              Hàng {{ j + 1 }}
+                            </label>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </td>
+
+                    <!-- Hành động -->
+                    <td>
+                      <button class="btn btn-danger btn-sm" (click)="removeChiPhiRow(i)">Xóa</button>
+                    </td>
+                  </ng-container>
+
+                  <!-- Nếu không merge -->
+                  <ng-template #normalRow>
+                    <td><input formControlName="stt" class="form-control"/></td>
+                    <td><input formControlName="danhMuc" class="form-control"/></td>
+                    <td><input formControlName="donVi" class="form-control"/></td>
+
+                    <!-- Số lượng -->
+                    <td>
+                      <input type="text"
+                             [value]="formatCurrency(row.get('soLuong')?.value)"
+                             (input)="onInputChange($event, row, 'soLuong')"
+                             class="form-control"/>
+                    </td>
+
+                    <!-- Đơn giá -->
+                    <td>
+                      <ng-container *ngIf="row.get('tinhToanKieu')?.value === 'laiVay'; else donGiaThuong">
+                        <!-- Hàng lãi vay: Đơn giá luôn được TÍNH NGƯỢC từ Thành tiền, không cho sửa tay -->
+                        <input type="text"
+                               [value]="formatCurrency(row.get('donGia')?.value)"
+                               readonly
+                               class="form-control readonly-cell"/>
+                      </ng-container>
+                      <ng-template #donGiaThuong>
+                        <input type="text"
+                               [value]="formatCurrency(row.get('donGia')?.value)"
+                               (input)="onInputChange($event, row, 'donGia')"
+                               class="form-control"/>
+                      </ng-template>
+                    </td>
+
+                    <!-- Thành tiền -->
+                    <td>
+                      <ng-container *ngIf="row.get('tinhToanKieu')?.value === 'laiVay'; else thanhTienThuong">
+                        <!-- Hàng lãi vay: mặc định = tienSo * laiSuat / 100, nhưng cho phép sửa tay -->
+                        <input type="text"
+                               [value]="formatCurrency(row.get('thanhTien')?.value)"
+                               (input)="onInputChange($event, row, 'thanhTien')"
+                               class="form-control"/>
+                        <button *ngIf="row.get('thanhTienManual')?.value"
+                                type="button"
+                                class="btn btn-link btn-sm p-0 mt-1"
+                                (click)="resetLaiVayFormula(row)">
+                          ↺ Khôi phục theo công thức
+                        </button>
+                      </ng-container>
+                      <ng-template #thanhTienThuong>
+                        <input type="text"
+                               [value]="formatCurrency(row.get('thanhTien')?.value)"
+                               readonly
+                               class="form-control"/>
+                      </ng-template>
+                    </td>
+
+                    <td>
+                      <label>Merge</label>
                       <input type="checkbox"
                              [checked]="row.get('merge')?.value"
                              (change)="toggleMerge(i, $event)"/>
-                    </div>
-                    <div class="form-check"
-                         *ngFor="let option of ['stt','danhMuc','donVi','soLuong','donGia']">
-                      <input type="checkbox"
-                             class="form-check-input"
-                             [checked]="row.get('mergeTargets')?.value?.includes(option)"
-                             (change)="onMergeTargetChange(row, option, $event)"/>
-                      <label class="form-check-label" style="font-size: 12px;">{{ option }}</label>
-                    </div>
-                  </td>
-
-                  <!-- Sum control -->
-                  <td>
-                    <div class="d-flex align-items-center gap-1">
-                      <label class="mb-0">Tính tổng</label>
+                    </td>
+                    <td>
+                      <label>Tính tổng</label>
                       <input type="checkbox"
                              [checked]="row.get('sum')?.value"
                              (change)="toggleSum(i, $event)"/>
-                    </div>
-                    <div *ngIf="row.get('sum')?.value">
-                      <ng-container *ngFor="let otherRow of chiPhiRows; let j = index">
-                        <div class="form-check" *ngIf="isRowAvailableForSum(i, j)">
-                          <input type="checkbox"
-                                 class="form-check-input"
-                                 [checked]="row.get('sumTargets')?.value?.includes(j)"
-                                 (change)="onSumRowChange(row, j, $event)"/>
-                          <label class="form-check-label" style="font-size: 12px;">
-                            Hàng {{ j + 1 }}
-                          </label>
-                        </div>
-                      </ng-container>
-                    </div>
-                  </td>
+                    </td>
+                    <td>
+                      <button class="btn btn-danger btn-sm" (click)="removeChiPhiRow(i)">Xóa</button>
+                    </td>
+                  </ng-template>
+                </tr>
+                </tbody>
+              </table>
 
-                  <!-- Hành động -->
-                  <td>
-                    <button class="btn btn-danger btn-sm" (click)="removeChiPhiRow(i)">Xóa</button>
-                  </td>
-                </ng-container>
+              <button class="btn btn-primary mb-2" type="button" (click)="addChiPhiRow()">
+                + Thêm hàng
+              </button>
+              <button class="btn btn-success mb-2" type="button" (click)="addChiPhiRowLaiVay()">
+                + Thêm hàng lãi vay
+              </button>
+            </div>
+            <div>
+              <b style="color: blue">Bảng Thu Nhập Dự Kiến của Phương Án</b>
+              <table class="table table-bordered">
+                <thead>
+                <tr>
+                  <th>Nội dung</th>
+                  <th>Đơn vị</th>
+                  <th>Số lượng</th>
+                  <th>Đơn giá (đồng)</th>
+                  <th>Thành tiền (đồng)</th>
+                  <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let row of thuNhapRows; let i = index" [formGroup]="row">
+                  <ng-container *ngIf="i === thuNhapRows.length - 1; else normalRow">
+                    <td colspan="4" class="fw-bold text-end">{{ row.get('noiDung')?.value }}</td>
+                    <td>
+                      <input type="text"
+                             [value]="formatCurrency(tongThuNhap)"
+                             readonly
+                             class="form-control fw-bold"/>
+                    </td>
+                    <td></td>
+                  </ng-container>
 
-                <!-- Nếu không merge -->
-                <ng-template #normalRow>
-                  <td><input formControlName="stt" class="form-control"/></td>
-                  <td><input formControlName="danhMuc" class="form-control"/></td>
-                  <td><input formControlName="donVi" class="form-control"/></td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('soLuong')?.value)"
-                           (input)="onInputChange($event, row, 'soLuong')"
-                           class="form-control"/>
-                  </td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('donGia')?.value)"
-                           (input)="onInputChange($event, row, 'donGia')"
-                           class="form-control"/>
-                  </td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('thanhTien')?.value)"
-                           readonly
-                           class="form-control"/>
-                  </td>
-                  <td>
-                    <label>Merge</label>
-                    <input type="checkbox"
-                           [checked]="row.get('merge')?.value"
-                           (change)="toggleMerge(i, $event)"/>
-                  </td>
-                  <td>
-                    <label>Tính tổng</label>
-                    <input type="checkbox"
-                           [checked]="row.get('sum')?.value"
-                           (change)="toggleSum(i, $event)"/>
-                  </td>
-                  <td>
-                    <button class="btn btn-danger btn-sm" (click)="removeChiPhiRow(i)">Xóa</button>
-                  </td>
-                </ng-template>
-              </tr>
-              </tbody>
-            </table>
-            <button class="btn btn-primary mb-2" type="button" (click)="addChiPhiRow()">
-              + Thêm hàng
-            </button>
-          </div>
-          <div>
-            <b style="color: blue">Bảng Thu Nhập Dự Kiến của Phương Án</b>
-            <table class="table table-bordered">
-              <thead>
-              <tr>
-                <th>Nội dung</th>
-                <th>Đơn vị</th>
-                <th>Số lượng</th>
-                <th>Đơn giá (đồng)</th>
-                <th>Thành tiền (đồng)</th>
-                <th>Hành động</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let row of thuNhapRows; let i = index" [formGroup]="row">
-                <ng-container *ngIf="i === thuNhapRows.length - 1; else normalRow">
-                  <td colspan="4" class="fw-bold text-end">{{ row.get('noiDung')?.value }}</td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(tongThuNhap)"
-                           readonly
-                           class="form-control fw-bold"/>
-                  </td>
-                  <td></td>
-                </ng-container>
-
-                <ng-template #normalRow>
-                  <td><input formControlName="noiDung" class="form-control"/></td>
-                  <td><input formControlName="donVi" class="form-control"/></td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('soLuong')?.value)"
-                           (input)="onInputChange($event, row, 'soLuong')"
-                           class="form-control"/>
-                  </td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('donGia')?.value)"
-                           (input)="onInputChange($event, row, 'donGia')"
-                           class="form-control"/>
-                  </td>
-                  <td>
-                    <input type="text"
-                           [value]="formatCurrency(row.get('thanhTien')?.value)"
-                           readonly
-                           class="form-control"/>
-                  </td>
-                  <td>
-                    <button class="btn btn-danger btn-sm" (click)="removeThuNhapRow(i)">Xóa</button>
-                  </td>
-                </ng-template>
-              </tr>
-              </tbody>
-            </table>
-            <button class="btn btn-primary mt-2" (click)="addThuNhapRow()">+ Thêm hàng</button>
-          </div>
+                  <ng-template #normalRow>
+                    <td><input formControlName="noiDung" class="form-control"/></td>
+                    <td><input formControlName="donVi" class="form-control"/></td>
+                    <td>
+                      <input type="text"
+                             [value]="formatCurrency(row.get('soLuong')?.value)"
+                             (input)="onInputChange($event, row, 'soLuong')"
+                             class="form-control"/>
+                    </td>
+                    <td>
+                      <input type="text"
+                             [value]="formatCurrency(row.get('donGia')?.value)"
+                             (input)="onInputChange($event, row, 'donGia')"
+                             class="form-control"/>
+                    </td>
+                    <td>
+                      <input type="text"
+                             [value]="formatCurrency(row.get('thanhTien')?.value)"
+                             readonly
+                             class="form-control"/>
+                    </td>
+                    <td>
+                      <button class="btn btn-danger btn-sm" (click)="removeThuNhapRow(i)">Xóa</button>
+                    </td>
+                  </ng-template>
+                </tr>
+                </tbody>
+              </table>
+              <button class="btn btn-primary mt-2" (click)="addThuNhapRow()">+ Thêm hàng</button>
+            </div>
+          </ng-container>
           <br>
           <!--          <button mat-raised-button color="primary" type="submit">Tạo hợp đồng</button>-->
           <!--          <button mat-raised-button color="primary" type="submit">Xem trước File</button>-->

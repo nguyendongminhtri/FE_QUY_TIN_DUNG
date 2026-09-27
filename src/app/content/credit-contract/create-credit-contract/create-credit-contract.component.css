@@ -190,5 +190,36 @@ mat-form-field {
   justify-content: center;  /* căn giữa ngang */
   margin: 20px 0;           /* tạo khoảng cách trên dưới */
 }
+/* Chỉ áp dụng cho khu vực phương án */
+.pavv-form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100% !important;
+}
+
+/* override form-col bên trong */
+.pavv-form-grid .form-col {
+  min-width: 0 !important;
+  width: auto !important;
+}
+
+/* Angular Material full width */
+.pavv-form-grid mat-form-field {
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .pavv-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .pavv-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 

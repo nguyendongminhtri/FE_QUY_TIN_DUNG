@@ -78,6 +78,9 @@ export class CreditContractTSBD {
   tongTaiSanBD?: string;
   tongTaiSanBDChu?: string;
 
+  checkTrongDo?: boolean;
+  trongDo?: string;
+
   // ✅ Bổ sung các bảng riêng cho từng tài sản
   table1?: TableRequest;
   table2?: TableRequest;

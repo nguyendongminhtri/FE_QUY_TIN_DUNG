@@ -10,8 +10,10 @@ import {ActivatedRoute} from "@angular/router";
 import {MergeInfo, TableRequest} from "../../../model/TableRequest";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
-import {Subscription} from "rxjs";
+import {combineLatest, startWith, Subject, Subscription, takeUntil} from "rxjs";
+
 const COLUMN_ORDER = ['stt', 'danhMuc', 'donVi', 'soLuong', 'donGia'];
+
 @Component({
   selector: 'app-create-credit-contract',
   templateUrl: './create-credit-contract.component.html',
@@ -32,6 +34,8 @@ export class CreateCreditContractComponent implements OnInit {
   titleNguoiBaoLanh2 = '';
   contractUpdate: any;
   phuong = ''
+  showTHTDInput: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -42,6 +46,20 @@ export class CreateCreditContractComponent implements OnInit {
     private dialog: MatDialog,
   ) {
   }
+
+  private destroy$ = new Subject<void>();
+  phuongAnOptionsNganHan = [
+    {value: 'chanNuoi', label: 'Chăn Nuôi'},
+    {value: 'kinhDoanh', label: 'Kinh Doanh'}
+  ];
+  phuongAnOptionsHanMuc = [
+    {value: 'khac', label: 'Hạn Mức'}
+  ];
+  phuongAnOptionsTrungHan = [
+    {value: 'sanXuat', label: 'Sản Xuất'},
+    {value: 'tieuDung', label: 'Tiêu dùng'}
+  ];
+  phuongAnOptions = this.phuongAnOptionsNganHan; // mặc định ban đầu
 
   ngOnInit(): void {
     console.log('this mode --------------=======>', this.mode);
@@ -54,7 +72,6 @@ export class CreateCreditContractComponent implements OnInit {
 
     // Khởi tạo form
     this.initForm();
-
     // Đồng bộ các field tự động
     this.setupSyncFields();
 
@@ -72,7 +89,7 @@ export class CreateCreditContractComponent implements OnInit {
           const parts = soHopDongValue.split('/');
           const lastPart = parts[parts.length - 1];
           const currentYear = new Date().getFullYear();
-          this.formGroup.get('soBBXetDuyetChoVay')?.setValue(`${lastPart}/${currentYear}`, { emitEvent: false });
+          this.formGroup.get('soBBXetDuyetChoVay')?.setValue(`${lastPart}/${currentYear}`, {emitEvent: false});
         }
 // Lặp qua từng tài sản để load table1, table2, table3
         const taiSanArray = contract.taiSanArray;
@@ -85,7 +102,8 @@ export class CreateCreditContractComponent implements OnInit {
             this.loadTableArrayForAsset(asset.table3, tsGroup, 8, 'table3');
           });
         }
-        this.loadTableArray(contract.hanMucTable, this.hanMucTable, 7, 'table1');
+        // this.loadTableArray(contract.hanMucTable, this.hanMucTable, 7, 'table1');
+        this.loadHanMucTable(contract.hanMucTable, this.hanMucTable);
         this.loadChiPhiTable(contract.chiPhiTable, this.chiPhiTable);
         this.loadThuNhapTable(contract.thuNhapDuKienTable, this.thuNhapTable);
         this.loadPhuLucHanMucTableArray(contract.phuLucHanMucTable, this.phuLucHanMucTable)
@@ -113,6 +131,7 @@ export class CreateCreditContractComponent implements OnInit {
       this.addChiPhiRow();
       this.addPhuLucHanMucRow();
       this.initPhuLucHanMucTable();
+      this.initHanMucTable(this.hanMucTable);
     }
 
     // Các listener khác
@@ -131,19 +150,30 @@ export class CreateCreditContractComponent implements OnInit {
     // Lắng nghe thay đổi của loaiVay
     this.formGroup.get('loaiVay')?.valueChanges.subscribe(value => {
       const headers = this.formGroup.get('tableHeaders') as FormArray;
-      headers.clear(); // xoá các header cũ
+      headers.clear();
 
       if (value === 'ngan_han') {
         headers.push(this.fb.control('Kế hoạch trả nợ'));
         headers.push(this.fb.control('Ngày, tháng, năm trả nợ'));
         headers.push(this.fb.control('Số tiền phải trả'));
+        this.phuongAnOptions = this.phuongAnOptionsNganHan;
+
       } else if (value === 'trung_han') {
         headers.push(this.fb.control('Kỳ trả nợ'));
         headers.push(this.fb.control('Đến ngày, tháng, năm'));
         headers.push(this.fb.control('Số tiền phải trả'));
-      }
-    });
+        this.phuongAnOptions = this.phuongAnOptionsTrungHan;
 
+      } else if (value === 'han_muc') {
+        this.phuongAnOptions = this.phuongAnOptionsHanMuc;
+
+      } else {
+        // chưa chọn loại vay
+        this.phuongAnOptions = this.phuongAnOptionsNganHan;
+      }
+
+      this.formGroup.get('pavvRequest.loaiPhuongAn')?.setValue('');
+    });
     // Gọi ngay để set header mặc định theo giá trị ban đầu
     this.formGroup.get('loaiVay')?.updateValueAndValidity();
     this.updateDiaChiThuaDat(this.formGroup.get('nguoiDaiDien')?.value);
@@ -178,7 +208,7 @@ export class CreateCreditContractComponent implements OnInit {
       muchDichVay: [''],
       soBBXetDuyetChoVay: [''],
       hanMuc: ['12'],
-      laiSuat: ['9,5%/năm'],
+      laiSuat: ['10,0%/năm'],
       ngayKetThucKyHanVay: [''],
       thoiHanVay: ['01'],
       soBienBanDinhGia: ['07/006/BBĐG'],
@@ -195,7 +225,7 @@ export class CreateCreditContractComponent implements OnInit {
       pavvRequest: this.fb.group({
         name: [''],
         address: [''],
-        checkAddress: [false],
+        // checkAddress: [false],
         reason: [''],
         tongVon: [''],
         tongVonLuuDong: [''],
@@ -205,7 +235,7 @@ export class CreateCreditContractComponent implements OnInit {
         vayLai: [false],
         giaiNganHM: [false],
         heSoVonKhac: [0],
-        nguoiChuyenKhoan: ['Chuyển khoản cho bà: ....................; CCCD Số: .....................; Cấp ngày: ..............; Nơi cấp: Cục Cảnh Sát QLHC về TTXH; Số tài khoản: ...................................; Tại ngân hàng: ................... chi nhánh .................'],
+        nguoiChuyenKhoan: ['Chuyển khoản cho bà: ....................;Số điện thoại: ...................; CCCD Số: .....................; Cấp ngày: ..............; Nơi cấp: Cục Cảnh Sát QLHC về TTXH; Số tài khoản: ...................................; Tại ngân hàng: ................... chi nhánh .................'],
         loaiPhuongAn: [''],
         duNoTruoc: [0],
         soTienVayLanNay: [0],
@@ -213,7 +243,14 @@ export class CreateCreditContractComponent implements OnInit {
         ngayGiaiNgan: [new Date()],
         ngayHDTDCu: [''],
         soHDTDCu: [''],
-        ngayThuLaiHM: ['']
+        ngayThuLaiHM: [''],
+        tienVayTCTDK: ['0'],
+        tienNoQTDNDTH: ['0'],
+        khongLienQuan: [false],
+        tienMat: [false],
+        chuyenKhoan: [false],
+        tongChiPhiTHTD: [''],
+        tienLuongKH: ['']
       }),
 
       // // Các bảng phụ
@@ -245,17 +282,17 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
 
-
   // Toggle merge
   toggleMerge(index: number, event: any) {
     const checked = event.target.checked;
     const row = this.chiPhiRows[index];
-    row.patchValue({ merge: checked });
+    row.patchValue({merge: checked});
 
     if (!checked) {
-      row.patchValue({ mergeTargets: [], mergedValue: '' });
+      row.patchValue({mergeTargets: [], mergedValue: ''});
     }
   }
+
   private setupSyncFields(): void {
     // Đồng bộ Khách hàng -> Người đứng tên bìa đỏ 1
     this.syncField('tenKhachHang', 'dungTenBiaDo1');
@@ -287,9 +324,9 @@ export class CreateCreditContractComponent implements OnInit {
           const lastPart = parts[parts.length - 1];
           const currentYear = new Date().getFullYear();
           const newValue = `${lastPart}/${currentYear}`;
-          soBBXetDuyetCtrl.setValue(newValue, { emitEvent: false });
+          soBBXetDuyetCtrl.setValue(newValue, {emitEvent: false});
         } else {
-          soBBXetDuyetCtrl.setValue('', { emitEvent: false });
+          soBBXetDuyetCtrl.setValue('', {emitEvent: false});
         }
       });
     }
@@ -329,60 +366,18 @@ export class CreateCreditContractComponent implements OnInit {
       diaChiThuongTruDungTenBiaDo1: contract.diaChiThuongTruDungTenBiaDo1,
       quanHe: contract.quanHe,
       tienSo: contract.tienSo,
-      // tienChu: contract.tienChu,
       muchDichVay: contract.muchDichVay,
       hanMuc: contract.hanMuc,
       laiSuat: contract.laiSuat,
       soHopDongTheChapQSDD: contract.soHopDongTheChapQSDD,
-      // serial: contract.serial,
-      // noiCapSo: contract.noiCapSo,
-      // ngayCapSo: contract.ngayCapSo,
-      // noiDungVaoSo: contract.noiDungVaoSo,
-      // soThuaDat: contract.soThuaDat,
-      // soBanDo: contract.soBanDo,
-      // diaChiThuaDat: contract.diaChiThuaDat,
-      // dienTichDatSo: contract.dienTichDatSo,
-      // dienTichDatChu: contract.dienTichDatChu,
-      // hinhThucSuDung: contract.hinhThucSuDung,
-      // thoiHanSuDung: contract.thoiHanSuDung,
       soBienBanDinhGia: contract.soBienBanDinhGia,
       noiDungThoaThuan: contract.noiDungThoaThuan,
-      // nguonGocSuDung: contract.nguonGocSuDung,
-      // ghiChu: contract.ghiChu,
       choVay: contract.choVay,
       loaiVay: contract.loaiVay,
       checkOption: contract.checkOption,
-      // checkGhiChu: contract.checkGhiChu,
-      // checkNguonGocSuDung: contract.checkNguonGocSuDung,
-      // checkNhaCoDinh: contract.checkNhaCoDinh,
-      // checkLoaiDat: contract.checkLoaiDat,
-      // checkMucDich: contract.checkMucDich,
-      // checkNguoiDungTenBiaDo2: contract.checkNguoiDungTenBiaDo2,
-      // checkHopDongBaoLanh: contract.checkHopDongBaoLanh,
-      // landItems: contract.landItems,
       hasTable: contract.tableRequest?.drawTable ?? false,
-      // tsbdRequest: {
-      //   checkTaiSanGanLienVoiDat: contract.tsbdRequest?.checkTaiSanGanLienVoiDat ?? false,
-      //   dienTichTS: contract.tsbdRequest?.dienTichTS ?? '',
-      //   ketCauXayDung: contract.tsbdRequest?.ketCauXayDung ?? '',
-      //   loaiNha: contract.tsbdRequest?.loaiNha ?? '',
-      //   checkCMNDDungTenBiaDo1: contract.tsbdRequest?.checkCMNDDungTenBiaDo1 ?? false,
-      //   cmndDungTenBiaDo1: contract.tsbdRequest?.cmndDungTenBiaDo1 ?? '',
-      //   checkNgayCapCCCDTruocDayDungTenBiaDo1: contract.tsbdRequest?.checkNgayCapCCCDTruocDayDungTenBiaDo1 ?? false,
-      //   ngayCapCCCDTruocDayDungTenBiaDo1: contract.tsbdRequest?.ngayCapCCCDTruocDayDungTenBiaDo1 ?? '',
-      //   checkCMNDDungTenBiaDo2: contract.tsbdRequest?.checkCMNDDungTenBiaDo2 ?? false,
-      //   cmndDungTenBiaDo2: contract.tsbdRequest?.cmndDungTenBiaDo2 ?? '',
-      //   checkNgayCapCCCDTruocDayDungTenBiaDo2: contract.tsbdRequest?.checkNgayCapCCCDTruocDayDungTenBiaDo2 ?? false,
-      //   ngayCapCCCDTruocDayDungTenBiaDo2: contract.tsbdRequest?.ngayCapCCCDTruocDayDungTenBiaDo2 ?? '',
-      //   checkDiaChiThuongTruDungTenBiaDo1: contract.tsbdRequest?.checkDiaChiThuongTruDungTenBiaDo1 ?? false,
-      //   diaChiThuongTruDungTenBiaDo1: contract.tsbdRequest?.diaChiThuongTruDungTenBiaDo1 ?? '',
-      //   checkDiaChiThuongTruDungTenBiaDo2: contract.tsbdRequest?.checkDiaChiThuongTruDungTenBiaDo2 ?? false,
-      //   diaChiThuongTruDungTenBiaDo2: contract.tsbdRequest?.diaChiThuongTruDungTenBiaDo2 ?? '',
-      //   checkChiMangTenNguoi1: contract.tsbdRequest?.checkChiMangTenNguoi1 ?? false,
-      //   checkChiMangTenNguoi2: contract.tsbdRequest?.checkChiMangTenNguoi2 ?? false
-      // },
       pavvRequest: {
-        checkAddress: contract.pavvRequest?.checkAddress ?? false,
+        // checkAddress: contract.pavvRequest?.checkAddress ?? false,
         name: contract.pavvRequest?.name ?? '',
         address: contract.pavvRequest?.address ?? '',
         reason: contract.pavvRequest?.reason ?? '',
@@ -403,6 +398,13 @@ export class CreateCreditContractComponent implements OnInit {
         ngayHDTDCu: contract.pavvRequest?.ngayHDTDCu ?? '',
         soHDTDCu: contract.pavvRequest?.soHDTDCu ?? '',
         ngayThuLaiHM: contract.pavvRequest?.ngayThuLaiHM ?? '',
+        tienVayTCTDK: contract.pavvRequest.tienVayTCTDK ?? '',
+        tienNoQTDNDTH: contract.pavvRequest.tienNoQTDNDTH ?? '',
+        khongLienQuan: contract.pavvRequest.khongLienQuan ?? false,
+        tienMat: contract.pavvRequest.tienMat ?? false,
+        chuyenKhoan: contract.pavvRequest.chuyenKhoan ?? false,
+        tongChiPhiTHTD: contract.pavvRequest.tongChiPhiTHTD ?? '',
+        tienLuongKH: contract.pavvRequest.tienLuongKH ?? '',
       }
     });
     this.tienChu = contract.tienChu || '';
@@ -436,18 +438,64 @@ export class CreateCreditContractComponent implements OnInit {
         tongTaiSanBD: asset.tongTaiSanBD,
         tongTaiSanBDChu: asset.tongTaiSanBDChu,
         ghiChu: asset.ghiChu,
+
         checkMucDich: asset.checkMucDich,
         checkLoaiDat: asset.checkLoaiDat,
         checkNguonGocSuDung: asset.checkNguonGocSuDung,
         checkGhiChu: asset.checkGhiChu,
-        checkTaiSanGanLienVoiDat: asset.checkTaiSanGanLienVoiDat,
-        dienTichTS: asset.dienTichTS,
-        checkDongSoHuu: asset.checkDongSoHuu,
+        checkHopDongBaoLanh: asset.checkHopDongBaoLanh ?? false,
+        // checkTrongDo: asset.checkTrongDo,
+        // trongDo: asset.trongDo,
+        dienTichTS: asset.dienTichTS ?? '',
         loaiNha: asset.loaiNha,
         ketCauXayDung: asset.ketCauXayDung,
-        ngayTheChap: asset.ngayTheChap ? new Date(asset.ngayTheChap) : null
-      }, { emitEvent: false });
+        ngayTheChap: asset.ngayTheChap ? new Date(asset.ngayTheChap) : null,
+        checkDongSoHuu: asset.checkDongSoHuu,
+
+        // Người đứng tên bìa đỏ 1
+        dungTenBiaDo1: asset.dungTenBiaDo1 ?? '',
+        gioiTinhDungTenBiaDo1: asset.gioiTinhDungTenBiaDo1 ?? '',
+        namSinhDungTenBiaDo1: asset.namSinhDungTenBiaDo1 ?? '',
+        cccdDungTenBiaDo1: asset.cccdDungTenBiaDo1 ?? '',
+        ngayCapCCCDDungTenBiaDo1: asset.ngayCapCCCDDungTenBiaDo1 ?? '',
+        noiCapCCCDDungTenBiaDo1: asset.noiCapCCCDDungTenBiaDo1 ?? '',
+        phoneDungTenBiaDo1: asset.phoneDungTenBiaDo1 ?? '',
+        checkCMNDDungTenBiaDo1: asset.checkCMNDDungTenBiaDo1 ?? false,
+        cmndDungTenBiaDo1: asset.cmndDungTenBiaDo1 ?? '',
+        checkNgayCapCCCDTruocDayDungTenBiaDo1: asset.checkNgayCapCCCDTruocDayDungTenBiaDo1 ?? false,
+        ngayCapCCCDTruocDayDungTenBiaDo1: asset.ngayCapCCCDTruocDayDungTenBiaDo1 ?? '',
+        checkDiaChiThuongTruDungTenBiaDo1: asset.checkDiaChiThuongTruDungTenBiaDo1 ?? false,
+        diaChiThuongTruDungTenBiaDo1: asset.diaChiThuongTruDungTenBiaDo1 ?? '',
+        checkChiMangTenNguoi1: asset.checkChiMangTenNguoi1 ?? false,
+
+        // Người đứng tên bìa đỏ 2
+        dungTenBiaDo2: asset.dungTenBiaDo2 ?? '',
+        gioiTinhDungTenBiaDo2: asset.gioiTinhDungTenBiaDo2 ?? '',
+        namSinhDungTenBiaDo2: asset.namSinhDungTenBiaDo2 ?? '',
+        cccdDungTenBiaDo2: asset.cccdDungTenBiaDo2 ?? '',
+        ngayCapCCCDDungTenBiaDo2: asset.ngayCapCCCDDungTenBiaDo2 ?? '',
+        noiCapCCCDDungTenBiaDo2: asset.noiCapCCCDDungTenBiaDo2 ?? '',
+        checkCMNDDungTenBiaDo2: asset.checkCMNDDungTenBiaDo2 ?? false,
+        cmndDungTenBiaDo2: asset.cmndDungTenBiaDo2 ?? '',
+        checkNgayCapCCCDTruocDayDungTenBiaDo2: asset.checkNgayCapCCCDTruocDayDungTenBiaDo2 ?? false,
+        ngayCapCCCDTruocDayDungTenBiaDo2: asset.ngayCapCCCDTruocDayDungTenBiaDo2 ?? '',
+        checkDiaChiThuongTruDungTenBiaDo2: asset.checkDiaChiThuongTruDungTenBiaDo2 ?? false,
+        diaChiThuongTruDungTenBiaDo2: asset.diaChiThuongTruDungTenBiaDo2 ?? '',
+        checkChiMangTenNguoi2: asset.checkChiMangTenNguoi2 ?? false,
+
+        // Thông tin khác
+        checkNguoiMangTenBiaDo: asset.checkNguoiMangTenBiaDo ?? false,
+        nguoiMangTen: asset.nguoiMangTen ?? '',
+      }, {emitEvent: false});
     });
+    const rawValue = contract.tienSo;
+    if (rawValue) {
+      const num = Number(String(rawValue).replace(/\./g, ''));
+      this.tienChu = !isNaN(num) ? this.convertMoney.numberToVietnameseWordsMoney(num) : '';
+    } else {
+      this.tienChu = '';
+    }
+    this.updateReason();
   }
 
   private syncTongVonToPavvRequest(): void {
@@ -508,6 +556,20 @@ export class CreateCreditContractComponent implements OnInit {
     // set hasTable control
     this.formGroup.patchValue({hasTable: !!tableRequest.drawTable});
   }
+
+  private setupDongSoHuuLogic(tsGroup: FormGroup): void {
+    combineLatest([
+      tsGroup.get('checkChiMangTenNguoi1')!.valueChanges.pipe(startWith(tsGroup.get('checkChiMangTenNguoi1')!.value)),
+      tsGroup.get('checkChiMangTenNguoi2')!.valueChanges.pipe(startWith(tsGroup.get('checkChiMangTenNguoi2')!.value)),
+    ])
+      .pipe(takeUntil(this.destroy$)) // nếu bạn có destroy$ để unsubscribe
+      .subscribe(([nguoi1, nguoi2]) => {
+        if (nguoi1 && nguoi2) {
+          tsGroup.get('checkDongSoHuu')!.setValue(true, {emitEvent: false});
+        }
+      });
+  }
+
   private parseNumber(val: any): number {
     if (val == null) return 0;
 
@@ -558,6 +620,34 @@ export class CreateCreditContractComponent implements OnInit {
     });
   }
 
+  loadHanMucTable(tableData: { rows: string[][] } | undefined, table: FormArray) {
+    table.clear();
+
+    // Nếu không có dữ liệu hợp lệ (hợp đồng cũ bị lỗi) -> tự sinh lại mặc định
+    if (!tableData || !tableData.rows || tableData.rows.length === 0) {
+      this.initHanMucTable(table);
+      return;
+    }
+
+    tableData.rows.forEach((rowData, index) => {
+      if (index < 3) {
+        table.push(this.fb.group({
+          col1: [rowData[0] || ''],
+          col2: [rowData[1] || ''],
+          col3: [rowData[2] || ''],
+          col4: [rowData[3] || ''],
+          col5: [rowData[4] || ''],
+        }));
+      } else {
+        // 2 hàng cuối chỉ có col1, col4, col5
+        table.push(this.fb.group({
+          col1: [rowData[0] || ''],
+          col4: [rowData[3] || ''],
+          col5: [rowData[4] || ''],
+        }));
+      }
+    });
+  }
 
   //
   loadTableArray(
@@ -573,7 +663,7 @@ export class CreateCreditContractComponent implements OnInit {
 
     tableData.rows.forEach((rowData, rowIndex) => {
       // Nếu là table1 và row thứ 2 thì khởi tạo với mặc định col2 = '85.000'
-      const defaultValues: any = { col4: 'x', col6: 'm²' };
+      const defaultValues: any = {col4: 'x', col6: 'm²'};
       if (tableType === 'table1' && rowIndex === 1) {
         defaultValues.col2 = '140.000';
       }
@@ -623,7 +713,7 @@ export class CreateCreditContractComponent implements OnInit {
     if (tableType === 'table1' && table.length > 1) {
       const row2 = table.at(1) as FormGroup;
       if (!row2.get('col2')?.value || row2.get('col2')?.value === '0') {
-        row2.get('col2')?.setValue('140.000', { emitEvent: false });
+        row2.get('col2')?.setValue('140.000', {emitEvent: false});
       }
       console.log('== After loadTableArray ==');
       console.log('Row2 col2 final value:', row2.get('col2')?.value);
@@ -646,7 +736,7 @@ export class CreateCreditContractComponent implements OnInit {
     }
 
     tableData.rows.forEach((rowData, rowIndex) => {
-      const defaultValues: any = { col4: 'x', col6: 'm²' };
+      const defaultValues: any = {col4: 'x', col6: 'm²'};
       if (tableType === 'table1' && rowIndex === 0) {
         defaultValues.col1 = 'Giá đất ở của nhà nước quy định';
         defaultValues.col2 = '6.000.000';
@@ -705,11 +795,10 @@ export class CreateCreditContractComponent implements OnInit {
     if (tableType === 'table1' && table.length > 1) {
       const row2 = table.at(1) as FormGroup;
       if (!row2.get('col2')?.value || row2.get('col2')?.value === '0' || row2.get('col2')?.value === '') {
-        row2.get('col2')?.setValue('140.000', { emitEvent: false });
+        row2.get('col2')?.setValue('140.000', {emitEvent: false});
       }
     }
   }
-
 
 
 //CẬP NHẬT THÔNG TIN TABLE1  XÁC ĐỊNH GIÁ TRỊ TSBĐ
@@ -719,9 +808,8 @@ export class CreateCreditContractComponent implements OnInit {
 
     if (!col2 || !col5) return;   // 👈 cùng pattern — bỏ qua khi thiếu dữ liệu, không reset col7
     const result = col2 * col5;
-    row.get('col7')?.setValue(result.toLocaleString('vi-VN'), { emitEvent: false });
+    row.get('col7')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
   }
-
 
 
   private parseArea(val: any): number {
@@ -785,7 +873,7 @@ export class CreateCreditContractComponent implements OnInit {
   //     updateRowFn(secondRow);
   //   }
   // }
-  private updateTableFromLandItems(table: FormArray, updateRowFn: (row: FormGroup) => void){
+  private updateTableFromLandItems(table: FormArray, updateRowFn: (row: FormGroup) => void) {
     const taiSanArray = this.formGroup.get('taiSanArray') as FormArray;
     taiSanArray.controls.forEach((tsGroup: AbstractControl) => {
       const landItems = (tsGroup as FormGroup).get('landItems')?.value;
@@ -816,14 +904,14 @@ export class CreateCreditContractComponent implements OnInit {
       const table1 = (tsGroup as FormGroup).get('table1') as FormArray;
       if (table1?.length > 0) {
         const row1 = table1.at(0) as FormGroup;
-        row1.get('col5')?.setValue(firstArea || 0, { emitEvent: false });
-        row1.get('col7')?.setValue(this.formatCurrency(firstValue || 0), { emitEvent: false });
+        row1.get('col5')?.setValue(firstArea || 0, {emitEvent: false});
+        row1.get('col7')?.setValue(this.formatCurrency(firstValue || 0), {emitEvent: false});
         this.updateTable1Row(row1);
       }
       if (table1?.length > 1) {
         const row2 = table1.at(1) as FormGroup;
-        row2.get('col5')?.setValue(totalOtherArea || 0, { emitEvent: false });
-        row2.get('col7')?.setValue(this.formatCurrency(totalOtherValue || 0), { emitEvent: false });
+        row2.get('col5')?.setValue(totalOtherArea || 0, {emitEvent: false});
+        row2.get('col7')?.setValue(this.formatCurrency(totalOtherValue || 0), {emitEvent: false});
         this.updateTable1Row(row2);
       }
 
@@ -831,14 +919,14 @@ export class CreateCreditContractComponent implements OnInit {
       const table2 = (tsGroup as FormGroup).get('table2') as FormArray;
       if (table2?.length > 0) {
         const row1 = table2.at(0) as FormGroup;
-        row1.get('col5')?.setValue(firstArea || 0, { emitEvent: false });
-        row1.get('col7')?.setValue(this.formatCurrency(firstValue || 0), { emitEvent: false });
+        row1.get('col5')?.setValue(firstArea || 0, {emitEvent: false});
+        row1.get('col7')?.setValue(this.formatCurrency(firstValue || 0), {emitEvent: false});
         this.updateTable2Row(row1);
       }
       if (table2?.length > 1) {
         const row2 = table2.at(1) as FormGroup;
-        row2.get('col5')?.setValue(totalOtherArea || 0, { emitEvent: false });
-        row2.get('col7')?.setValue(this.formatCurrency(totalOtherValue || 0), { emitEvent: false });
+        row2.get('col5')?.setValue(totalOtherArea || 0, {emitEvent: false});
+        row2.get('col7')?.setValue(this.formatCurrency(totalOtherValue || 0), {emitEvent: false});
         this.updateTable2Row(row2);
       }
 
@@ -846,14 +934,14 @@ export class CreateCreditContractComponent implements OnInit {
       const table3 = (tsGroup as FormGroup).get('table3') as FormArray;
       if (table3?.length > 0) {
         const row1 = table3.at(0) as FormGroup;
-        row1.get('col5')?.setValue(firstArea || 0, { emitEvent: false });
-        row1.get('col7')?.setValue(this.formatCurrency(firstValue || 0), { emitEvent: false });
+        row1.get('col5')?.setValue(firstArea || 0, {emitEvent: false});
+        row1.get('col7')?.setValue(this.formatCurrency(firstValue || 0), {emitEvent: false});
         this.updateTable3Row(row1);
       }
       if (table3?.length > 1) {
         const row2 = table3.at(1) as FormGroup;
-        row2.get('col5')?.setValue(totalOtherArea || 0, { emitEvent: false });
-        row2.get('col7')?.setValue(this.formatCurrency(totalOtherValue || 0), { emitEvent: false });
+        row2.get('col5')?.setValue(totalOtherArea || 0, {emitEvent: false});
+        row2.get('col7')?.setValue(this.formatCurrency(totalOtherValue || 0), {emitEvent: false});
         this.updateTable3Row(row2);
       }
     });
@@ -864,7 +952,7 @@ export class CreateCreditContractComponent implements OnInit {
     const col5 = this.parseNumber(row.get('col5')?.value);
 
     const result = col5 > 0 ? Math.round(col7 / col5) : 0;   // 👈 luôn có nhánh else
-    row.get('col2')?.setValue(result.toLocaleString('vi-VN'), { emitEvent: false });
+    row.get('col2')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
   }
 
   updateTable3Row(row: FormGroup) {
@@ -872,19 +960,19 @@ export class CreateCreditContractComponent implements OnInit {
     const col5 = this.parseNumber(row.get('col5')?.value);
 
     const result = col5 > 0 ? Math.round(col7 / col5) : 0;   // 👈 luôn có nhánh else
-    row.get('col2')?.setValue(result.toLocaleString('vi-VN'), { emitEvent: false });
+    row.get('col2')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
   }
 
 
   private applyConditionalControls(contract: any): void {
     if (contract.checkOption) {
-      this.formGroup.get('loaiVay')?.enable({ emitEvent: false });
-      this.formGroup.get('choVay')?.enable({ emitEvent: false });
-      this.formGroup.get('loaiVay')?.setValue(contract.loaiVay,{ emitEvent: false });
-      this.formGroup.get('choVay')?.setValue(contract.choVay, { emitEvent: false });
+      this.formGroup.get('loaiVay')?.enable({emitEvent: false});
+      this.formGroup.get('choVay')?.enable({emitEvent: false});
+      this.formGroup.get('loaiVay')?.setValue(contract.loaiVay, {emitEvent: false});
+      this.formGroup.get('choVay')?.setValue(contract.choVay, {emitEvent: false});
     } else {
-      this.formGroup.get('loaiVay')?.disable({ emitEvent: false });
-      this.formGroup.get('choVay')?.disable({ emitEvent: false });
+      this.formGroup.get('loaiVay')?.disable({emitEvent: false});
+      this.formGroup.get('choVay')?.disable({emitEvent: false});
     }
     // if (contract.tsbdRequest?.checkTaiSanGanLienVoiDat) {
     //   this.formGroup.get('tsbdRequest.dienTichTS')?.enable();
@@ -899,10 +987,10 @@ export class CreateCreditContractComponent implements OnInit {
     //   this.formGroup.get('tsbdRequest.ketCauXayDung')?.disable();
     //   this.formGroup.get('tsbdRequest.loaiNha')?.disable();
     // }
-    if (contract.pavvRequest?.checkAddress) {
-      this.formGroup.get('pavvRequest.address')?.enable({ emitEvent: false });
-      this.formGroup.get('pavvRequest.address')?.setValue(contract.pavvRequest.address,{ emitEvent: false });
-    }
+    // if (contract.pavvRequest?.checkAddress) {
+    //   this.formGroup.get('pavvRequest.address')?.enable({ emitEvent: false });
+    //   this.formGroup.get('pavvRequest.address')?.setValue(contract.pavvRequest.address,{ emitEvent: false });
+    // }
     // CHECK TS
     (contract.taiSanArray || []).forEach((asset: any, index: number) => {
       // Nếu chưa có FormGroup tương ứng thì thêm mới
@@ -914,34 +1002,34 @@ export class CreateCreditContractComponent implements OnInit {
 
       // Check Loại đất
       if (asset.checkLoaiDat) {
-        tsGroup.get('loaiDat')?.enable({ emitEvent: false });
-        tsGroup.get('loaiDat')?.setValue(asset.loaiDat, { emitEvent: false });
+        tsGroup.get('loaiDat')?.enable({emitEvent: false});
+        tsGroup.get('loaiDat')?.setValue(asset.loaiDat, {emitEvent: false});
       } else {
-        tsGroup.get('loaiDat')?.disable({ emitEvent: false });
+        tsGroup.get('loaiDat')?.disable({emitEvent: false});
       }
 
       // Check Mục đích sử dụng
       if (asset.checkMucDich) {
-        tsGroup.get('muchDichSuDung')?.enable({ emitEvent: false });
-        tsGroup.get('muchDichSuDung')?.setValue(asset.muchDichSuDung ,{ emitEvent: false });
+        tsGroup.get('muchDichSuDung')?.enable({emitEvent: false});
+        tsGroup.get('muchDichSuDung')?.setValue(asset.muchDichSuDung, {emitEvent: false});
       } else {
-        tsGroup.get('muchDichSuDung')?.disable({ emitEvent: false });
+        tsGroup.get('muchDichSuDung')?.disable({emitEvent: false});
       }
 
       // Check Nguồn gốc sử dụng
       if (asset.checkNguonGocSuDung) {
-        tsGroup.get('nguonGocSuDung')?.enable({ emitEvent: false });
-        tsGroup.get('nguonGocSuDung')?.setValue(asset.nguonGocSuDung, { emitEvent: false });
+        tsGroup.get('nguonGocSuDung')?.enable({emitEvent: false});
+        tsGroup.get('nguonGocSuDung')?.setValue(asset.nguonGocSuDung, {emitEvent: false});
       } else {
-        tsGroup.get('nguonGocSuDung')?.disable({ emitEvent: false });
+        tsGroup.get('nguonGocSuDung')?.disable({emitEvent: false});
       }
 
       // Check Ghi chú
       if (asset.checkGhiChu) {
-        tsGroup.get('ghiChu')?.enable({ emitEvent: false });
-        tsGroup.get('ghiChu')?.setValue(asset.ghiChu, { emitEvent: false });
+        tsGroup.get('ghiChu')?.enable({emitEvent: false});
+        tsGroup.get('ghiChu')?.setValue(asset.ghiChu, {emitEvent: false});
       } else {
-        tsGroup.get('ghiChu')?.disable({ emitEvent: false });
+        tsGroup.get('ghiChu')?.disable({emitEvent: false});
       }
     });
 
@@ -950,37 +1038,38 @@ export class CreateCreditContractComponent implements OnInit {
       const tsGroup = (this.formGroup.get('taiSanArray') as FormArray).at(index) as FormGroup;
 
       if (taiSan.checkNguoiDungTenBiaDo2) {
-        tsGroup.get('dungTenBiaDo2')?.enable({ emitEvent: false });
-        tsGroup.get('gioiTinhDungTenBiaDo2')?.enable({ emitEvent: false });
-        tsGroup.get('namSinhDungTenBiaDo2')?.enable({ emitEvent: false });
-        tsGroup.get('cccdDungTenBiaDo2')?.enable({ emitEvent: false });
-        tsGroup.get('ngayCapCCCDDungTenBiaDo2')?.enable({ emitEvent: false });
-        tsGroup.get('diaChiThuongTruDungTenBiaDo2')?.enable({ emitEvent: false });
-        tsGroup.get('noiCapCCCDDungTenBiaDo2')?.enable({ emitEvent: false });
+        tsGroup.get('dungTenBiaDo2')?.enable({emitEvent: false});
+        tsGroup.get('gioiTinhDungTenBiaDo2')?.enable({emitEvent: false});
+        tsGroup.get('namSinhDungTenBiaDo2')?.enable({emitEvent: false});
+        tsGroup.get('cccdDungTenBiaDo2')?.enable({emitEvent: false});
+        tsGroup.get('ngayCapCCCDDungTenBiaDo2')?.enable({emitEvent: false});
+        tsGroup.get('diaChiThuongTruDungTenBiaDo2')?.enable({emitEvent: false});
+        tsGroup.get('noiCapCCCDDungTenBiaDo2')?.enable({emitEvent: false});
 
-        tsGroup.get('dungTenBiaDo2')?.setValue(taiSan.dungTenBiaDo2, { emitEvent: false });
-        tsGroup.get('gioiTinhDungTenBiaDo2')?.setValue(taiSan.gioiTinhDungTenBiaDo2, { emitEvent: false });
-        tsGroup.get('namSinhDungTenBiaDo2')?.setValue(taiSan.namSinhDungTenBiaDo2, { emitEvent: false });
-        tsGroup.get('cccdDungTenBiaDo2')?.setValue(taiSan.cccdDungTenBiaDo2, { emitEvent: false });
-        tsGroup.get('ngayCapCCCDDungTenBiaDo2')?.setValue(taiSan.ngayCapCCCDDungTenBiaDo2, { emitEvent: false });
-        tsGroup.get('noiCapCCCDDungTenBiaDo2')?.setValue(taiSan.noiCapCCCDDungTenBiaDo2, { emitEvent: false });
-        tsGroup.get('diaChiThuongTruDungTenBiaDo2')?.setValue(taiSan.diaChiThuongTruDungTenBiaDo2, { emitEvent: false });
+        tsGroup.get('dungTenBiaDo2')?.setValue(taiSan.dungTenBiaDo2, {emitEvent: false});
+        tsGroup.get('gioiTinhDungTenBiaDo2')?.setValue(taiSan.gioiTinhDungTenBiaDo2, {emitEvent: false});
+        tsGroup.get('namSinhDungTenBiaDo2')?.setValue(taiSan.namSinhDungTenBiaDo2, {emitEvent: false});
+        tsGroup.get('cccdDungTenBiaDo2')?.setValue(taiSan.cccdDungTenBiaDo2, {emitEvent: false});
+        tsGroup.get('ngayCapCCCDDungTenBiaDo2')?.setValue(taiSan.ngayCapCCCDDungTenBiaDo2, {emitEvent: false});
+        tsGroup.get('noiCapCCCDDungTenBiaDo2')?.setValue(taiSan.noiCapCCCDDungTenBiaDo2, {emitEvent: false});
+        tsGroup.get('diaChiThuongTruDungTenBiaDo2')?.setValue(taiSan.diaChiThuongTruDungTenBiaDo2, {emitEvent: false});
       }
     });
 
     if (contract.checkNguoiMangTenBiaDo) {
-      this.formGroup.get('nguoiMangTen')?.enable({ emitEvent: false });
-      this.formGroup.get('nguoiMangTen')?.setValue(contract.nguoiMangTen, { emitEvent: false });
+      this.formGroup.get('nguoiMangTen')?.enable({emitEvent: false});
+      this.formGroup.get('nguoiMangTen')?.setValue(contract.nguoiMangTen, {emitEvent: false});
     }
 
     if (contract.checkNhaCoDinh) {
-      this.formGroup.get('nhaCoDinh')?.enable({ emitEvent: false });
-      this.formGroup.get('nhaCoDinh')?.setValue(contract.nhaCoDinh, { emitEvent: false });
+      this.formGroup.get('nhaCoDinh')?.enable({emitEvent: false});
+      this.formGroup.get('nhaCoDinh')?.setValue(contract.nhaCoDinh, {emitEvent: false});
     }
   }
 
   private setupValueChangeListeners(): void {
     const taiSanArray = this.formGroup.get('taiSanArray') as FormArray;
+    const pavvGroup = this.formGroup.get('pavvRequest') as FormGroup;
     this.formGroup.get('checkOption')?.valueChanges.subscribe(checked => {
       if (checked) {
         this.formGroup.get('loaiVay')?.enable();
@@ -990,19 +1079,25 @@ export class CreateCreditContractComponent implements OnInit {
         this.formGroup.get('choVay')?.disable();
       }
     });
+    // Cập nhật reason khi đổi loại phương án hoặc số tiền vay
+    pavvGroup.get('loaiPhuongAn')?.valueChanges.subscribe(() => {
+      this.updateReason();
+    });
+
+    this.formGroup.get('tienSo')?.valueChanges.subscribe(() => {
+      this.updateReason();
+    });
+    // muchDichVay -> pavvRequest.name
+    this.formGroup.get('muchDichVay')?.valueChanges.subscribe(value => {
+      this.formGroup.get('pavvRequest.name')?.setValue(value, {emitEvent: false});
+    });
 
     taiSanArray.controls.forEach((ctrl: AbstractControl, index: number) => {
       const tsGroup = ctrl as FormGroup;
-
-      // muchDichVay -> pavvRequest.name
-      tsGroup.get('muchDichVay')?.valueChanges.subscribe(value => {
-        tsGroup.get('pavvRequest.name')?.setValue(value, { emitEvent: false });
-      });
-
       // ✅ Mục đích sử dụng -> sinh LandItems
       tsGroup.get('muchDichSuDung')?.valueChanges.subscribe(value => {
         if (!value) {
-          tsGroup.get('landItems')?.setValue('', { emitEvent: false });
+          tsGroup.get('landItems')?.setValue('', {emitEvent: false});
           return;
         }
 
@@ -1020,7 +1115,7 @@ export class CreateCreditContractComponent implements OnInit {
           result += `+ ${loaiDat.replace('tại đô thị', '').trim()}: ${dienTich} m²; được định giá là: ${giaTriStr} đồng\n`;
         }
 
-        tsGroup.get('landItems')?.setValue(result.trim(), { emitEvent: true });
+        tsGroup.get('landItems')?.setValue(result.trim(), {emitEvent: true});
       });
 // Các checkbox khác (CMND, CCCD, địa chỉ…)
       tsGroup.get('checkCMNDDungTenBiaDo1')?.valueChanges.subscribe(checked => {
@@ -1088,34 +1183,44 @@ export class CreateCreditContractComponent implements OnInit {
       //   });
       // });
     });
+    this.formGroup.get('tienSo')?.valueChanges.subscribe(() => this.recalcAllLaiVayRows());
+    this.formGroup.get('laiSuat')?.valueChanges.subscribe(() => this.recalcAllLaiVayRows());
+    combineLatest([
+      this.formGroup.get('loaiVay')!.valueChanges.pipe(
+        startWith(this.formGroup.get('loaiVay')!.value)
+      ),
+      pavvGroup.get('loaiPhuongAn')!.valueChanges.pipe(
+        startWith(pavvGroup.get('loaiPhuongAn')!.value)
+      )
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([loaiVay, loaiPhuongAn]) => {
+        this.showTHTDInput = loaiVay === 'trung_han' && loaiPhuongAn === 'tieuDung';
+      });
   }
 
 
-
-
   private updateReason(): void {
-    const loai = this.formGroup.get('pavvRequest.loaiPhuongAn')?.value;
+    const loai = this.formGroup.get('pavvRequest')?.get('loaiPhuongAn')?.value;
+    const mucDichVV = this.formGroup.get('pavvRequest')?.get('name')?.value;
     const rawValue = this.formGroup.get('tienSo')?.value;
-    const tienChu = this.tienChu;
-    // const mucDich = this.formGroup.get('muchDichVay')?.value;
 
     let prefix = '';
-    if (loai === 'chanNuoi') {
-      prefix = '- Lý do thực hiện phương án: Gia đình tôi có nhu cầu đầu tư mở rộng quy mô chăn nuôi nên cần một lượng vốn, vốn tự có của gia đình chưa đủ đáp ứng vốn chăn nuôi';
-    } else if (loai === 'khac') {
-      prefix = '- Lý do thực hiện phương án: Gia đình tôi có nhu cầu mở rộng sản xuất kinh doanh nên cần một lượng vốn lưu động, vốn tự có của gia đình chưa đáp ứng đủ vốn kinh doanh';
+    if (loai === 'khac') {
+      prefix = '- Lý do thực hiện phương án: Gia đình tôi có nhu cầu mở rộng sản xuất kinh doanh: (' + mucDichVV + ') nên cần một lượng vốn lưu động, vốn tự có của gia đình chưa đáp ứng đủ vốn kinh doanh';
+    } else if (loai === 'sanXuat' || loai === 'tieuDung') {
+      prefix = '- Lý do thực hiện phương án: Gia đình tôi dự kiến: ' + mucDichVV + ' với số tiền là:  ' + rawValue + ' đồng. Do nhu cầu thực vốn thực tế của gia đình hiện nay chưa đủ đáp ứng';
+    } else {
+      prefix = '- Lý do thực hiện phương án: Gia đình tôi có nhu cầu đầu tư mở rộng quy mô chăn nuôi: (' + mucDichVV + ') nên cần một lượng vốn, vốn tự có của gia đình chưa đủ đáp ứng vốn: ' + mucDichVV;
     }
 
-    // if (mucDich) {
-    //   prefix += `, với mục đích vay: ${mucDich}`;
-    // }
-
     const suffix = rawValue
-      ? `. Vì vậy gia đình chúng tôi lập phương án đề nghị QTD Thái Học cho chúng tôi vay số tiền là: ${rawValue} đồng (Bằng chữ: ${tienChu}).`
+      ? `. Vì vậy gia đình chúng tôi lập phương án đề nghị QTD Thái Học cho chúng tôi vay số tiền là: ${rawValue} đồng (Bằng chữ: ${this.tienChu}).`
       : '.';
 
     (this.formGroup.get('pavvRequest') as FormGroup).get('reason')?.setValue(prefix + suffix, {emitEvent: false});
   }
+
   initHanMucTable(hanMucTable: FormArray) {
     const defaultRows = [
       {
@@ -1140,8 +1245,8 @@ export class CreateCreditContractComponent implements OnInit {
         col5: '- Thỏa thuận và đảm bảo cạnh tranh, dự kiến tăng thời hạn trả chậm cho các khách hàng mua hàng thường xuyên và số lượng lớn nên thời gian dự kiến tăng.'
       },
       // Hai hàng cuối chỉ cần 3 cột
-      { col1: "Số ngày bình quân:", col4: "304", col5: "" },
-      { col1: "Vòng quay vốn lưu động", col4: "1.2", col5: "" }
+      {col1: "Số ngày bình quân:", col4: "304", col5: ""},
+      {col1: "Vòng quay vốn lưu động", col4: "1.2", col5: ""}
     ];
 
     defaultRows.forEach((row, index) => {
@@ -1171,7 +1276,7 @@ export class CreateCreditContractComponent implements OnInit {
       sourceCtrl.valueChanges.subscribe(value => {
         const taiSanArray = this.formGroup.get('taiSanArray') as FormArray;
         taiSanArray.controls.forEach((tsGroup: AbstractControl) => {
-          (tsGroup as FormGroup).get(targetField)?.setValue(value, { emitEvent: false });
+          (tsGroup as FormGroup).get(targetField)?.setValue(value, {emitEvent: false});
         });
       });
     }
@@ -1246,6 +1351,7 @@ export class CreateCreditContractComponent implements OnInit {
       this.fileUrls = urls;
     });
   }
+
   onExport(): void {
     const rawDateStr: string = this.formGroup.get('contractDate')?.value;
     const rawDate = rawDateStr ? new Date(rawDateStr) : null;
@@ -1436,6 +1542,7 @@ export class CreateCreditContractComponent implements OnInit {
       }));
     }
   }
+
 // Hàm cộng thêm số năm
   private addYears(date: Date, years: number): Date {
     const newDate = new Date(date);
@@ -1522,13 +1629,13 @@ export class CreateCreditContractComponent implements OnInit {
     const tongTaiSanBDChu = this.convertMoney.numberToVietnameseWordsMoney(total);
 
     // cập nhật trực tiếp vào form controls của tài sản
-    tsGroup.patchValue({ tongTaiSanBD, tongTaiSanBDChu }, { emitEvent: false });
+    tsGroup.patchValue({tongTaiSanBD, tongTaiSanBDChu}, {emitEvent: false});
 
     // ví dụ cập nhật col7 của dòng đầu tiên table2
     const table2 = tsGroup.get('table2') as FormArray;
     if (table2?.length > 0) {
       const firstRow = table2.at(0) as FormGroup;
-      firstRow.get('col7')?.setValue(tongTaiSanBD, { emitEvent: false });
+      firstRow.get('col7')?.setValue(tongTaiSanBD, {emitEvent: false});
     }
   }
 
@@ -1545,7 +1652,6 @@ export class CreateCreditContractComponent implements OnInit {
       col8: [defaultValues.col8 || 'VNĐ']
     });
   }
-
 
 
   initTables() {
@@ -1670,23 +1776,45 @@ export class CreateCreditContractComponent implements OnInit {
     return row;
   }
 
-  // Thêm một hàng mới
-  addChiPhiRow() {
+  addChiPhiRow(kieu: 'thuong' | 'laiVay' = 'thuong') {
     const row = this.fb.group({
       stt: [''],
-      danhMuc: [''],
+      danhMuc: [kieu === 'laiVay' ? 'Trả lãi tiền vay' : ''],
       donVi: [''],
-      soLuong: [0],
+      soLuong: [kieu === 'laiVay' ? 1 : 0],
       donGia: [0],
       thanhTien: [0],
       merge: [false],
       mergeTargets: [[]],
       mergedValue: [''],
       sum: [false],
-      sumTargets: [[]]
+      sumTargets: [[]],
+      tinhToanKieu: [kieu],
+      thanhTienManual: [false]   // 👈 true khi user đã tự sửa Thành tiền
     });
+
+    // soLuong đổi -> chỉ tính lại đơn giá (không đụng thanhTien)
+    row.get('soLuong')?.valueChanges.subscribe(() => this.updateThanhTien(row));
+
+    // donGia chỉ có ý nghĩa nhập tay ở hàng "thuong"
+    row.get('donGia')?.valueChanges.subscribe(() => {
+      if (row.get('tinhToanKieu')?.value !== 'laiVay') this.updateThanhTien(row);
+    });
+
     this.chiPhiRows.push(row);
+
+    if (kieu === 'laiVay') {
+      this.applyLaiVayFormula(row); // tính mặc định lần đầu
+    }
   }
+
+  addChiPhiRowLaiVay() {
+    this.addChiPhiRow('laiVay');
+  }
+
+  // addChiPhiRowLaiVay() {
+  //   this.addChiPhiRow('laiVay');
+  // }
 
 // Xóa hàng
   removeChiPhiRow(index: number) {
@@ -1698,14 +1826,52 @@ export class CreateCreditContractComponent implements OnInit {
     return value.toLocaleString('vi-VN'); // ví dụ: 10000 -> "10.000"
   }
 
-
+// Dispatcher — gọi khi soLuong hoặc donGia (hàng thường) thay đổi
   updateThanhTien(row: FormGroup) {
-    const soLuong = this.parseNumber(row.get('soLuong')?.value);
-    const donGia = this.parseNumber(row.get('donGia')?.value);
-    const thanhTien = soLuong * donGia;
-    row.get('thanhTien')?.setValue(thanhTien.toLocaleString('vi-VN'), {emitEvent: false});
+    const kieu = row.get('tinhToanKieu')?.value;
+
+    if (kieu === 'laiVay') {
+      // hàng lãi vay: soLuong đổi -> chỉ tính lại đơn giá từ thanhTien hiện có
+      this.recalcDonGiaFromThanhTien(row);
+    } else {
+      const soLuong = this.parseNumber(row.get('soLuong')?.value);
+      const donGia = this.parseNumber(row.get('donGia')?.value);
+      row.get('thanhTien')?.setValue(Math.round(soLuong * donGia), {emitEvent: false});
+    }
   }
 
+// Đơn giá = Thành tiền / Số lượng (dùng cho hàng lãi vay, luôn tính ngược)
+  private recalcDonGiaFromThanhTien(row: FormGroup) {
+    const thanhTien = this.parseNumber(row.get('thanhTien')?.value);
+    const soLuong = this.parseNumber(row.get('soLuong')?.value) || 1;
+    const donGia = soLuong !== 0 ? Math.round(thanhTien / soLuong) : 0;
+    row.get('donGia')?.setValue(donGia, {emitEvent: false});
+  }
+
+// Áp công thức mặc định (tienVay * laiSuat / 100) — CHỈ khi chưa bị sửa tay
+  private applyLaiVayFormula(row: FormGroup) {
+    if (row.get('thanhTienManual')?.value) return; // user đã tự chỉnh -> tôn trọng, không ghi đè
+
+    const tienVay = this.parseNumber(this.formGroup.get('tienSo')?.value);
+    const laiSuat = this.parseLaiSuatPercent(this.formGroup.get('laiSuat')?.value);
+    const thanhTien = Math.round(tienVay * laiSuat / 100);
+
+    row.get('thanhTien')?.setValue(thanhTien, {emitEvent: false});
+    this.recalcDonGiaFromThanhTien(row);
+  }
+
+// Cho nút "Khôi phục công thức" — reset về tự động tính lại
+  resetLaiVayFormula(row: FormGroup) {
+    row.get('thanhTienManual')?.setValue(false, {emitEvent: false});
+    this.applyLaiVayFormula(row);
+  }
+
+  // private parseLaiSuatPercent(val: any): number {
+  //   if (val == null) return 0;
+  //   const match = String(val).match(/[\d.,]+/);
+  //   if (!match) return 0;
+  //   return Number(match[0].replace(/\./g, '').replace(',', '.')) || 0;
+  // }
 
   // get table1(): FormArray<FormGroup> {
   //   return this.formGroup.get('table1') as FormArray<FormGroup>;
@@ -1722,9 +1888,11 @@ export class CreateCreditContractComponent implements OnInit {
   table1(ts: AbstractControl): FormGroup[] {
     return ((ts as FormGroup).get('table1') as FormArray).controls as FormGroup[];
   }
+
   table2(ts: AbstractControl): FormGroup[] {
     return ((ts as FormGroup).get('table2') as FormArray).controls as FormGroup[];
   }
+
   table3(ts: AbstractControl): FormGroup[] {
     return ((ts as FormGroup).get('table3') as FormArray).controls as FormGroup[];
   }
@@ -1813,6 +1981,7 @@ export class CreateCreditContractComponent implements OnInit {
       row.get('thanhTien')?.setValue(0);
     }
   }
+
   onSumRowChange(row: FormGroup, targetIndex: number, event: any) {
     let sumTargets: number[] = row.get('sumTargets')?.value || [];
 
@@ -1838,14 +2007,18 @@ export class CreateCreditContractComponent implements OnInit {
       total += thanhTien;
     });
 
-    // Format lại giống hàm formatOnBlur
-    row.patchValue({ thanhTien: total.toLocaleString('vi-VN') });
+    // 👇 Làm tròn đến hàng nghìn, đồng bộ với updateParentRows()
+    const roundedTotal = Math.round(total / 1000) * 1000;
+
+    row.patchValue({
+      thanhTien: roundedTotal
+    });
   }
 
   buildChiPhiTableRequest(table: FormArray): TableRequest {
     const rows: string[][] = table.controls.map(ctrl => {
       const row = ctrl as FormGroup;
-      return [
+      const base = [
         row.get('stt')?.value || '',
         row.get('danhMuc')?.value || '',
         row.get('donVi')?.value || '',
@@ -1853,6 +2026,10 @@ export class CreateCreditContractComponent implements OnInit {
         row.get('donGia')?.value || '',
         row.get('thanhTien')?.value || ''
       ];
+      if (row.get('tinhToanKieu')?.value === 'laiVay') {
+        base.push('laiVay'); // cột thứ 7, chỉ frontend dùng
+      }
+      return base;
     });
 
     const merges: MergeInfo[] = table.controls.map((ctrl, idx) => {
@@ -1872,6 +2049,7 @@ export class CreateCreditContractComponent implements OnInit {
       tableType: 'chiPhi'
     };
   }
+
 // Chọn cột để merge
   onMergeTargetChange(row: FormGroup, option: string, event: any) {
     const checked = event.target.checked;
@@ -1883,7 +2061,7 @@ export class CreateCreditContractComponent implements OnInit {
       targets = targets.filter((t: string) => t !== option);
     }
 
-    row.patchValue({ mergeTargets: targets });
+    row.patchValue({mergeTargets: targets});
   }
 
   giaTriQuyenSuDungDat(ts: FormGroup): number {
@@ -1902,7 +2080,6 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
 
-
   get chiPhiRows(): FormGroup[] {
     return this.chiPhiTable.controls as FormGroup[];
   }
@@ -1912,16 +2089,20 @@ export class CreateCreditContractComponent implements OnInit {
     const raw = event.target.value.replace(/\./g, '');
     const value = Number(raw) || 0;
 
-    rowGroup.get(field)?.setValue(value);
+    rowGroup.get(field)?.setValue(value, {emitEvent: false});
 
     if (field === 'col2') {
       event.target.value = value.toLocaleString('vi-VN');
     }
 
-    const soLuong = Number(rowGroup.get('soLuong')?.value || 0);
-    const donGia = Number(rowGroup.get('donGia')?.value || 0);
-    const thanhTien = soLuong * donGia;
-    rowGroup.get('thanhTien')?.setValue(thanhTien);
+    const kieu = rowGroup.get('tinhToanKieu')?.value;
+
+    if (kieu === 'laiVay' && field === 'thanhTien') {
+      rowGroup.get('thanhTienManual')?.setValue(true, {emitEvent: false}); // đánh dấu đã sửa tay
+      this.recalcDonGiaFromThanhTien(rowGroup);
+    } else {
+      this.updateThanhTien(rowGroup);
+    }
 
     const changedIndex = this.chiPhiRows.indexOf(rowGroup);
     this.updateParentRows(changedIndex);
@@ -1933,37 +2114,66 @@ export class CreateCreditContractComponent implements OnInit {
     let value = Number(rawValue);
 
     if (field === 'col2') {
-      rowGroup.patchValue({ [field]: value.toLocaleString('vi-VN') });
+      rowGroup.patchValue({[field]: value.toLocaleString('vi-VN')});
     }
 
     if (field === 'soLuong' || field === 'donGia') {
-      rowGroup.patchValue({ [field]: value.toLocaleString('vi-VN') });
+      rowGroup.patchValue({[field]: value.toLocaleString('vi-VN')});
       const soLuong = Number((rowGroup.get('soLuong')?.value || '0').toString().replace(/[^\d]/g, ''));
       const donGia = Number((rowGroup.get('donGia')?.value || '0').toString().replace(/[^\d]/g, ''));
-      const thanhTien = soLuong * donGia;
-      rowGroup.patchValue({ thanhTien: thanhTien.toLocaleString('vi-VN') });
+      const thanhTien = Math.round(soLuong * donGia);
+      rowGroup.patchValue({
+        thanhTien
+      });
     } else if (field === 'thanhTien') {
-      rowGroup.patchValue({ [field]: value.toLocaleString('vi-VN') });
+      rowGroup.patchValue({[field]: value.toLocaleString('vi-VN')});
     }
   }
 
   private updateParentRows(changedIndex: number) {
-    this.chiPhiRows.forEach((parentRow: FormGroup, parentIndex: number) => {
-      if (parentRow.get('sum')?.value) {
-        const sumTargets: number[] = parentRow.get('sumTargets')?.value || [];
-        if (sumTargets.includes(changedIndex)) {
-          // Tính lại tổng từ các hàng con
-          let total = 0;
-          sumTargets.forEach(idx => {
-            const childRow = this.chiPhiRows[idx] as FormGroup;
-            total += Number(childRow.get('thanhTien')?.value || 0);
-          });
-          parentRow.get('thanhTien')?.setValue(total);
-        }
+    this.chiPhiRows.forEach((parentRow: FormGroup) => {
+
+      // Chỉ xử lý các hàng có bật "Tính tổng"
+      if (!parentRow.get('sum')?.value) {
+        return;
       }
+
+      const sumTargets: number[] =
+        parentRow.get('sumTargets')?.value || [];
+
+      // Nếu hàng vừa thay đổi không nằm trong danh sách cần cộng
+      if (!sumTargets.includes(changedIndex)) {
+        return;
+      }
+
+      let total = 0;
+
+      sumTargets.forEach((idx: number) => {
+        const childRow = this.chiPhiRows[idx] as FormGroup;
+
+        let rawValue = childRow.get('thanhTien')?.value || 0;
+
+        // Xử lý trường hợp đang lưu dạng chuỗi có dấu chấm
+        if (typeof rawValue === 'string') {
+          rawValue = rawValue.replace(/[^\d]/g, '');
+        }
+
+        total += Number(rawValue) || 0;
+      });
+
+      // Làm tròn đến 1.000 đồng
+      const roundedTotal = Math.round(total / 1000) * 1000;
+
+      parentRow.patchValue(
+        {
+          thanhTien: roundedTotal
+        },
+        {
+          emitEvent: false
+        }
+      );
     });
   }
-
 
   insertM2(textarea: HTMLTextAreaElement) {
     const start = textarea.selectionStart || 0;
@@ -1977,6 +2187,7 @@ export class CreateCreditContractComponent implements OnInit {
     textarea.value = newValue;
     this.formGroup.get('landItems')?.setValue(newValue);
   }
+
   isRowAvailableForSum(currentIndex: number, targetIndex: number): boolean {
     if (currentIndex === targetIndex) return false;
 
@@ -1997,22 +2208,33 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
   formatCurrency(value: number | null | undefined): string {
-    if (!value) return '0';
-    return value.toLocaleString('vi-VN'); // 1000000 -> "1.000.000"
+    if (value == null) return '0';
+
+    return Math.round(Number(value)).toLocaleString('vi-VN');
   }
-  onTienSoInput(event: any, controlName: string): void {
-    // Lấy giá trị thô từ input
-    let rawValue = event.target.value.replace(/\D/g, ''); // bỏ ký tự không phải số
-    let num = rawValue ? Number(rawValue) : 0;
 
-    // Format lại số theo locale VN
-    const formatted = this.formatCurrency(num);
 
-    // Cập nhật vào đúng FormControl
-    this.formGroup.get(controlName)?.setValue(formatted, { emitEvent: true });
+  onTienSoInput(event: any, controlPath: string): void {
+    const rawValue = event.target.value.replace(/\D/g, '');
+    const control = this.formGroup.get(controlPath);
+    if (!control) {
+      console.warn('onTienSoInput: không tìm thấy control tại path', controlPath);
+      return;
+    }
 
-    // Nếu cần thì tính ra số tiền bằng chữ
-    this.convertToWords();
+    if (!rawValue) {
+      control.setValue('', {emitEvent: false});
+      return;
+    }
+
+    const num = Number(rawValue);
+    const formatted = num.toLocaleString('vi-VN');
+    control.setValue(formatted, {emitEvent: false});
+
+    // Chỉ tính lại "tiền chữ" khi đúng là ô tienSo (số tiền vay chính)
+    if (controlPath === 'tienSo') {
+      this.convertToWords();
+    }
   }
 
   get thuNhapTable(): FormArray {
@@ -2022,6 +2244,7 @@ export class CreateCreditContractComponent implements OnInit {
   get thuNhapRows(): FormGroup[] {
     return this.thuNhapTable.controls as FormGroup[];
   }
+
   loadThuNhapTable(tableRequest: TableRequest | undefined, formArray: FormArray): void {
     formArray.clear(); // 👉 clear trước để tránh dư hàng
 
@@ -2043,6 +2266,7 @@ export class CreateCreditContractComponent implements OnInit {
       formArray.push(group);
     });
   }
+
   buildThuNhapTableRequest(table: FormArray): TableRequest {
     const rows = table.controls.map(ctrl => {
       const row = ctrl as FormGroup;
@@ -2065,14 +2289,14 @@ export class CreateCreditContractComponent implements OnInit {
     rows[rows.length - 1] = ['Tổng cộng:', '', '', '', tong.toString()];
 
     return {
-      headers: ["Nội dung","Đơn vị","Số lượng","Đơn giá","Thành tiền"],
+      headers: ["Nội dung", "Đơn vị", "Số lượng", "Đơn giá", "Thành tiền"],
       rows,
       drawTable: true,
       tableType: 'thuNhapDuKien',
       merges: [
         {
           rowIndex: rows.length - 1, // hàng cuối
-          mergeTargets: ["noiDung","donVi","soLuong","donGia"], // merge 4 cột đầu
+          mergeTargets: ["noiDung", "donVi", "soLuong", "donGia"], // merge 4 cột đầu
           mergedValue: "Tổng cộng:"
         }
       ]
@@ -2106,6 +2330,7 @@ export class CreateCreditContractComponent implements OnInit {
     });
     formArray.push(totalGroup);
   }
+
   get tongThuNhap(): number {
     return this.thuNhapRows
       .slice(0, this.thuNhapRows.length - 1) // bỏ hàng cuối
@@ -2131,6 +2356,7 @@ export class CreateCreditContractComponent implements OnInit {
       formArray.removeAt(index);
     }
   }
+
 // Bảng phụ lục hạn mức table
   buildPhuLucHanMucTableRequest(table: FormArray): TableRequest {
     const rows: string[][] = table.controls.map((row: any, index: number) => {
@@ -2172,26 +2398,32 @@ export class CreateCreditContractComponent implements OnInit {
   }
 
 
-
   loadPhuLucHanMucTableArray(tableData: { rows: string[][] } | undefined, table: FormArray) {
     table.clear();
     if (!tableData || !tableData.rows) return;
 
-    tableData.rows.forEach((rowData, rowIndex) => {
-      const row = this.fb.group({
-        ngayGiaiNgan: [rowData[1] || ''],
-        ngayDenHan: [rowData[2] || ''],
-        soDuGoc: [rowData[3] || '']
-      });
+    tableData.rows
+      .filter(row => row[0] !== 'Tổng cộng')
+      .forEach((rowData) => {
 
-      // Tính lại tổng khi thay đổi số dư gốc
-      row.get('soDuGoc')?.valueChanges.subscribe(() => this.calculateTongSoDuPhuLuc());
-      table.push(row);
-    });
+        const row = this.fb.group({
+          ngayGiaiNgan: [rowData[1] || ''],
+          ngayDenHan: [rowData[2] || ''],
+          soDuGoc: [rowData[3] || '']
+        });
+
+        row.get('soDuGoc')?.valueChanges.subscribe(() =>
+          this.calculateTongSoDuPhuLuc()
+        );
+
+        table.push(row);
+      });
 
     this.calculateTongSoDuPhuLuc();
   }
+
   tongSoDuPhuLuc: number = 0;
+
   calculateTongSoDuPhuLuc() {
     this.tongSoDuPhuLuc = this.phuLucHanMucTable.controls.reduce((sum, row) => {
       const group = row as FormGroup; // ép kiểu
@@ -2231,6 +2463,7 @@ export class CreateCreditContractComponent implements OnInit {
   get taiSanArray(): FormArray {
     return this.formGroup.get('taiSanArray') as FormArray;
   }
+
   private taoTaiSan(): FormGroup {
     const group = this.fb.group({
       // Thông tin hợp đồng thế chấp
@@ -2269,6 +2502,8 @@ export class CreateCreditContractComponent implements OnInit {
       checkGhiChu: [false],
       checkHopDongBaoLanh: [false],
       checkNguoiDungTenBiaDo2: [false],
+      // checkTrongDo: [false],
+      // trongDo: [''],
 
       // ✅ UI-only, KHÔNG có trong CreditContractTSBD — loại khỏi payload lúc build assets
       checkTaiSanGanLienVoiDat: [true],
@@ -2323,18 +2558,75 @@ export class CreateCreditContractComponent implements OnInit {
       // ❌ ĐÃ XÓA: tsbdRequest: this.fb.group({...})
 
       table1: this.fb.array([
-        this.createRow({col1: 'Giá đất ở của nhà nước quy định', col2: '6.000.000', col3: 'đ/m²', col4: 'x', col5: '', col6: 'm²', col7: '', col8: 'VNĐ'}),
-        this.createRow({col1: 'Giá đất khác', col2: '140.000', col3: 'đ/m²', col4: 'x', col5: '', col6: 'm²', col7: '', col8: 'VNĐ'}),
+        this.createRow({
+          col1: 'Giá đất ở của nhà nước quy định',
+          col2: '6.000.000',
+          col3: 'đ/m²',
+          col4: 'x',
+          col5: '',
+          col6: 'm²',
+          col7: '',
+          col8: 'VNĐ'
+        }),
+        this.createRow({
+          col1: 'Giá đất khác',
+          col2: '140.000',
+          col3: 'đ/m²',
+          col4: 'x',
+          col5: '',
+          col6: 'm²',
+          col7: '',
+          col8: 'VNĐ'
+        }),
       ]),
       table2: this.fb.array([
-        this.createRow({col1: 'Giá đất ở của nhà nước quy định', col2: '', col3: 'đ/m²', col4: 'x', col5: '', col6: 'm²', col7: '', col8: 'VNĐ'}),
-        this.createRow({col1: 'Giá đất khác', col2: '', col3: 'đ/m²', col4: 'x', col5: '', col6: 'm²', col7: '', col8: 'VNĐ'})
+        this.createRow({
+          col1: 'Giá đất ở trên thị trường',
+          col2: '',
+          col3: 'đ/m²',
+          col4: 'x',
+          col5: '',
+          col6: 'm²',
+          col7: '',
+          col8: 'VNĐ'
+        }),
+        this.createRow({
+          col1: 'Giá đất khác',
+          col2: '',
+          col3: 'đ/m²',
+          col4: 'x',
+          col5: '',
+          col6: 'm²',
+          col7: '',
+          col8: 'VNĐ'
+        })
       ]),
       table3: this.fb.array([
-        this.createRow({col1: 'Giá đất ở của nhà nước quy định', col2: '', col3: 'đ/m²', col4: 'x', col5: '', col6: 'm²', col7: '', col8: 'VNĐ'}),
-        this.createRow({col1: 'Giá đất khác', col2: '', col3: 'đ/m²', col4: 'x', col5: '', col6: 'm²', col7: '', col8: 'VNĐ'})
+        this.createRow({
+          col1: 'Giá đất ở do hai bên thỏa thuận',
+          col2: '',
+          col3: 'đ/m²',
+          col4: 'x',
+          col5: '',
+          col6: 'm²',
+          col7: '',
+          col8: 'VNĐ'
+        }),
+        this.createRow({
+          col1: 'Giá đất khác',
+          col2: '',
+          col3: 'đ/m²',
+          col4: 'x',
+          col5: '',
+          col6: 'm²',
+          col7: '',
+          col8: 'VNĐ'
+        })
       ])
     });
+
+    // 👇 THÊM MỚI: tự động check checkDongSoHuu khi cả 2 người đều được chọn
+    this.setupDongSoHuuLogic(group);
 
     // Đổi tiêu đề người bảo lãnh
     group.get('checkHopDongBaoLanh')?.valueChanges.subscribe(checked => {
@@ -2394,6 +2686,7 @@ export class CreateCreditContractComponent implements OnInit {
       }
     });
   }
+
   // Hàm thêm tài sản mới
   themTaiSan(): void {
     const newAsset = this.taoTaiSan();
@@ -2402,23 +2695,25 @@ export class CreateCreditContractComponent implements OnInit {
     this.listenAssetChanges(newAsset);
     this.setupValueChangeListeners();
   }
+
   // Hàm xóa tài sản theo index
   xoaTaiSan(index: number): void {
     this.taiSanArray.removeAt(index);
   }
+
   private listenAssetChanges(tsGroup: FormGroup): void {
     tsGroup.get('dienTichDatSo')?.valueChanges.subscribe(rawValue => {
       if (rawValue) {
         // cập nhật hình thức sử dụng
         const formatted = `+ Sử dụng riêng: ${rawValue} m²; + Sử dụng chung: 0 m²`;
-        tsGroup.get('hinhThucSuDung')?.setValue(formatted, { emitEvent: false });
+        tsGroup.get('hinhThucSuDung')?.setValue(formatted, {emitEvent: false});
 
         // cập nhật diện tích bằng chữ
         const chu = this.convertMoney.numberToVietnamese(String(rawValue));
-        tsGroup.get('dienTichDatChu')?.setValue(chu, { emitEvent: false });
+        tsGroup.get('dienTichDatChu')?.setValue(chu, {emitEvent: false});
       } else {
-        tsGroup.get('hinhThucSuDung')?.setValue('', { emitEvent: false });
-        tsGroup.get('dienTichDatChu')?.setValue('', { emitEvent: false });
+        tsGroup.get('hinhThucSuDung')?.setValue('', {emitEvent: false});
+        tsGroup.get('dienTichDatChu')?.setValue('', {emitEvent: false});
       }
     });
     // Checkbox Mục đích sử dụng
@@ -2456,6 +2751,7 @@ export class CreateCreditContractComponent implements OnInit {
       }
     });
   }
+
   onNguoiDaiDienChange(value: string) {
     if (value === 'gd') {
       // Logic cũ: patch địa chỉ
@@ -2494,5 +2790,24 @@ export class CreateCreditContractComponent implements OnInit {
       loaiNha,
       ketCauXayDung
     };
+  }
+
+  private parseLaiSuatPercent(val: any): number {
+    if (val == null) return 0;
+    const str = String(val);
+    const match = str.match(/[\d.,]+/); // lấy "10,0" từ "10,0%/năm"
+    if (!match) return 0;
+    const numStr = match[0].replace(/\./g, '').replace(',', '.'); // "10,0" -> "10.0"
+    return Number(numStr) || 0;
+  }
+
+  private recalcAllLaiVayRows(): void {
+    this.chiPhiRows.forEach(row => {
+      if (row.get('tinhToanKieu')?.value === 'laiVay') {
+        this.applyLaiVayFormula(row); // tự bỏ qua nếu thanhTienManual = true
+        const idx = this.chiPhiRows.indexOf(row);
+        this.updateParentRows(idx);
+      }
+    });
   }
 }

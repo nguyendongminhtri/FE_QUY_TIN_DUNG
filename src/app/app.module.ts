@@ -90,6 +90,7 @@ import { ListCreditContractComponent } from './content/credit-contract/list-cred
 import { DetailCreaditContractComponent } from './content/credit-contract/detail-creadit-contract/detail-creadit-contract.component';
 import { CreateShortTermCreditContractComponent } from './content/credit-contract/create-short-term-credit-contract/create-short-term-credit-contract.component';
 import {MatTabsModule} from "@angular/material/tabs";
+import { MotivationBannerComponent } from './motivation-banner/motivation-banner.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -146,6 +147,7 @@ import {MatTabsModule} from "@angular/material/tabs";
     ListCreditContractComponent,
     DetailCreaditContractComponent,
     CreateShortTermCreditContractComponent,
+    MotivationBannerComponent,
   ],
   imports: [
     QuillModule.forRoot(),

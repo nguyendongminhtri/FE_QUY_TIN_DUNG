@@ -1,20 +1,27 @@
 export class CreditContractPAVV {
-  id?:number;
+  id?: number;
   name?: string;
   address?: string;
-  checkAddress?:boolean;
-  reason?:string;
+  checkAddress?: boolean;
+  reason?: string;
   reLoanSequence?: number;
   vayLai?: boolean;
   heSoVonKhac?: number;
-  nguoiChuyenKhoan?:string;
-  loaiPhuongAn?:string;
+  nguoiChuyenKhoan?: string;
+  loaiPhuongAn?: string;
   duNoTruoc?: number;
-  soTienVayLanNay?:number;
+  soTienVayLanNay?: number;
   giaiNganHM?: boolean;
   soGiaiNgan?: number;
   ngayGiaiNgan?: string;
   ngayHDTDCu?: string;
   soHDTDCu?: string;
   ngayThuLaiHM?: string;
+  tienNoQTDNDTH?: string;
+  tienVayTCTDK?: string;
+  khongLienQuan?: boolean;
+  tienMat?: boolean;
+  chuyenKhoan?: boolean;
+  tongChiPhiTHTD?: string;
+  tienLuongKH?: string;
 }

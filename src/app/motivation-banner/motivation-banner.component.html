@@ -1,0 +1,19 @@
+<div class="mb-stage">
+  <!-- Các hạt và ngôi sao lấp lánh -->
+  <div *ngFor="let s of sparkles" class="mb-sparkle" [ngStyle]="s.style"></div>
+  <div *ngFor="let star of stars" class="mb-star" [ngStyle]="star.style"></div>
+
+  <!-- Nội dung chính -->
+  <div class="mb-content">
+    <div class="mb-badge">Quỹ Tín Dụng Nhân Dân Thái Học</div>
+    <div class="mb-cup">☕</div>
+    <h1 class="mb-main-text">
+      Bạn hãy nhâm nhi một tách trà!<br>
+      Thảnh thơi nhập một bộ hồ sơ!<br>
+      Mang lại đam mê - lợi nhuận
+      <span class="mb-org">cho Quỹ Tín Dụng Nhân Dân Thái Học!</span>
+    </h1>
+    <div class="mb-line"></div>
+    <p class="mb-signature">— Trích lời: <b>Lương Cao</b> —</p>
+  </div>
+</div>
