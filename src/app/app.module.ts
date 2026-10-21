@@ -91,6 +91,7 @@ import { DetailCreaditContractComponent } from './content/credit-contract/detail
 import { CreateShortTermCreditContractComponent } from './content/credit-contract/create-short-term-credit-contract/create-short-term-credit-contract.component';
 import {MatTabsModule} from "@angular/material/tabs";
 import { MotivationBannerComponent } from './motivation-banner/motivation-banner.component';
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 @NgModule({
   declarations: [
     AppComponent,
@@ -180,7 +181,8 @@ import { MotivationBannerComponent } from './motivation-banner/motivation-banner
     CdkDrag,
     MatSlideToggleModule,
     MatCheckboxModule,
-    MatTabsModule
+    MatTabsModule,
+    MatSnackBarModule
   ],
   exports: [
     QuillContentComponent

@@ -58,3 +58,110 @@
     max-width: 100%;
   }
 }
+/* Khung bảng: cuộn ngang/dọc, header dính trên cùng */
+.table-container {
+  overflow: auto;
+  max-height: 70vh;
+}
+
+table {
+  width: 100%;
+  min-width: 1100px; /* nhỏ hơn thì cuộn ngang thay vì ép chữ xuống dòng */
+}
+
+/* Header */
+th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #e8f1f1;
+  font-weight: 600;
+  white-space: nowrap;
+  text-align: left;
+  padding: 0 12px;
+}
+
+/* Ô dữ liệu */
+td {
+  white-space: nowrap;
+  text-align: left;
+  padding: 8px 12px;
+}
+
+/* Zebra + hover */
+tr.mat-row:nth-child(even),
+tr.mat-mdc-row:nth-child(even) {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+tr.mat-row:hover,
+tr.mat-mdc-row:hover {
+  background: rgba(113, 191, 191, 0.18);
+}
+
+/* Cột dài: cắt bằng dấu ... */
+.cell-ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mat-column-tenKhachHang .cell-ellipsis {
+  max-width: 200px;
+}
+
+.mat-column-muchDichVay .cell-ellipsis {
+  max-width: 260px;
+}
+
+/* Cột ngắn: căn giữa, độ rộng gọn */
+.mat-column-id {
+  width: 60px;
+  text-align: center;
+}
+
+.mat-column-reLoanSequence,
+.mat-column-update,
+.mat-column-delete {
+  text-align: center;
+  width: 110px;
+}
+
+th.mat-column-id,
+th.mat-column-reLoanSequence,
+th.mat-column-update,
+th.mat-column-delete {
+  text-align: center;
+}
+
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Chặn cột text dài làm bảng phình ra, hover vẫn xem đủ nhờ [title] */
+.cell-ellipsis {
+  display: inline-block;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Cột sticky cần nền đặc, nếu không chữ bên dưới sẽ lòi ra khi cuộn */
+th.mat-header-cell.mat-table-sticky,
+td.mat-cell.mat-table-sticky,
+th.mat-mdc-header-cell.mat-table-sticky,
+td.mat-mdc-cell.mat-table-sticky {
+  background: #fff;
+  z-index: 2;
+}
+
+/* Đổ bóng nhẹ để thấy ranh giới cột cố định */
+th.mat-table-sticky-border-elem-right,
+td.mat-table-sticky-border-elem-right {
+  box-shadow: -4px 0 6px -4px rgba(0, 0, 0, 0.25);
+  border-left: none;
+}

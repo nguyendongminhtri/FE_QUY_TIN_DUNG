@@ -18,6 +18,7 @@ export class CreditContractTSBD {
   dienTichDatSo?: string;
   dienTichDatChu?: string;
   thoiHanSuDung?: string;
+  checkHinhThucSuDung?: boolean;
   hinhThucSuDung?: string;
   dienTichTS?: string;
   loaiNha?: string;
@@ -61,12 +62,15 @@ export class CreditContractTSBD {
   checkCMNDDungTenBiaDo1?: boolean;
   checkNgayCapCCCDTruocDayDungTenBiaDo1?: boolean;
   checkDiaChiThuongTruDungTenBiaDo1?: boolean;
+  diaChiThuongTruDungTenBiaDo1Cu?: string;
   checkChiMangTenNguoi1?: boolean;
+  noiDungTuLuong?:string;
 
   cmndDungTenBiaDo2?: string;
   ngayCapCCCDTruocDayDungTenBiaDo2?: string;
   checkCMNDDungTenBiaDo2?: boolean;
   checkNgayCapCCCDTruocDayDungTenBiaDo2?: boolean;
+  diaChiThuongTruDungTenBiaDo2Cu?: string;
   checkDiaChiThuongTruDungTenBiaDo2?: boolean;
   checkChiMangTenNguoi2?: boolean;
   checkDongSoHuu?: boolean;
@@ -77,9 +81,8 @@ export class CreditContractTSBD {
   landItems?: string;
   tongTaiSanBD?: string;
   tongTaiSanBDChu?: string;
-
-  checkTrongDo?: boolean;
-  trongDo?: string;
+  checkKhacPhuong2?: boolean;
+  checkKhacPhuong1?: boolean;
 
   // ✅ Bổ sung các bảng riêng cho từng tài sản
   table1?: TableRequest;

@@ -109,7 +109,11 @@
                   <mat-option value="pgd">DƯƠNG QUANG TUẤN</mat-option>
                 </mat-select>
               </mat-form-field>
-
+            </div>
+            <div class="form-col">
+              <mat-checkbox formControlName="tatToan">
+                <span style="color: red">TẤT TOÁN</span>
+              </mat-checkbox>
             </div>
           </div>
           <br>
@@ -289,7 +293,7 @@
             <div class="form-col">
               <mat-form-field appearance="fill">
                 <mat-label>Thời hạn cho vay:</mat-label>
-                <input matInput formControlName="hanMuc" placeholder="Ví dụ: 12 tháng">
+                <input matInput formControlName="hanMuc" placeholder="Ví dụ: 12">
               </mat-form-field>
             </div>
             <div class="form-col">
@@ -548,16 +552,9 @@
                     <textarea matInput formControlName="muchDichSuDung"></textarea>
                   </mat-form-field>
                 </div>
-                <!--                &lt;!&ndash; Checkbox Trong đó sử dụng &ndash;&gt;-->
-                <!--                <div class="form-col checkbox-input-col">-->
-                <!--                  <mat-checkbox formControlName="checkTrongDo"></mat-checkbox>-->
-                <!--                  <mat-form-field appearance="fill">-->
-                <!--                    <mat-label>Trong đó</mat-label>-->
-                <!--                    <textarea matInput formControlName="trongDo"></textarea>-->
-                <!--                  </mat-form-field>-->
-                <!--                </div>-->
-                <!-- Hình thức sử dụng -->
-                <div class="form-col">
+                <!-- Checkbox Mục đích sử dụng -->
+                <div class="form-col checkbox-input-col">
+                  <mat-checkbox formControlName="checkHinhThucSuDung"></mat-checkbox>
                   <mat-form-field appearance="fill">
                     <mat-label>Hình thức sử dụng</mat-label>
                     <textarea matInput formControlName="hinhThucSuDung"></textarea>
@@ -650,6 +647,16 @@
                         <mat-label>Ngày cấp CCCD trước đây 1</mat-label>
                         <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo1" placeholder="dd/MM/yyyy">
                       </mat-form-field>
+                      <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo1">
+                        <span style="color: #24af05">Có địa chỉ cũ</span>
+                      </mat-checkbox>
+                      <mat-form-field *ngIf="ts.get('checkDiaChiThuongTruDungTenBiaDo1')?.value">
+                        <mat-label>Địa chỉ cũ trên bìa: </mat-label>
+                        <input matInput formControlName="diaChiThuongTruDungTenBiaDo1Cu" placeholder="TDP Ninh Chấp, phương Chu Văn An, thành phố Hải Phòng">
+                      </mat-form-field>
+                      <mat-checkbox formControlName="checkKhacPhuong1">
+                        <span style="color: #24af05">Địa chỉ cũ 1 KHÁC PHƯỜNG hiện tại</span>
+                      </mat-checkbox>
                       <mat-checkbox formControlName="checkChiMangTenNguoi1">
                         <span style="color: red">Bìa Đỏ mang tên người 1</span>
                       </mat-checkbox>
@@ -730,6 +737,16 @@
                         <mat-label>Ngày cấp CCCD trước đây 2</mat-label>
                         <input matInput formControlName="ngayCapCCCDTruocDayDungTenBiaDo2" placeholder="dd/MM/yyyy">
                       </mat-form-field>
+                      <mat-checkbox formControlName="checkDiaChiThuongTruDungTenBiaDo2">
+                        <span style="color: #24af05">Có địa chỉ cũ</span>
+                      </mat-checkbox>
+                      <mat-form-field *ngIf="ts.get('checkDiaChiThuongTruDungTenBiaDo2')?.value">
+                        <mat-label>Địa chỉ cũ trên bìa: </mat-label>
+                        <input matInput formControlName="diaChiThuongTruDungTenBiaDo2Cu" placeholder="TDP Ninh Chấp, phương Chu Văn An, thành phố Hải Phòng">
+                      </mat-form-field>
+                      <mat-checkbox formControlName="checkKhacPhuong2">
+                        <span style="color: #24af05">Địa chỉ cũ 2 KHÁC PHƯỜNG hiện tại</span>
+                      </mat-checkbox>
                       <mat-checkbox formControlName="checkChiMangTenNguoi2">
                         <span style="color: red">Bìa Đỏ mang tên người 2</span>
                       </mat-checkbox>
@@ -981,9 +998,29 @@
             </div>
             <div class="form-col" *ngIf="showTHTDInput">
               <mat-form-field appearance="fill">
+                <mat-label style="color: red">ND Từ Lương của ...: </mat-label>
+                <textarea matInput formControlName="noiDungTuLuong" placeholder="Từ lương của ... "></textarea>
+              </mat-form-field>
+            </div>
+            <div class="form-col" *ngIf="showTHTDInput">
+              <mat-form-field appearance="fill">
                 <mat-label style="color: red">Tiền lương của khách hàng</mat-label>
                 <input matInput formControlName="tienLuongKH"
                        (input)="onTienSoInput($event, 'pavvRequest.tienLuongKH')"
+                       placeholder="200.000.000.000">
+              </mat-form-field>
+            </div>
+            <div class="form-col" *ngIf="showTHTDInput">
+              <mat-form-field appearance="fill">
+                <mat-label style="color: red">ND Nguồn thu từ Sxkd (bổ sung nếu cần sửa): </mat-label>
+                <textarea matInput formControlName="noiDungNguonThuKhac" placeholder="Từ sản xuất, kinh doanh: "></textarea>
+              </mat-form-field>
+            </div>
+            <div class="form-col" *ngIf="showTHTDInput">
+              <mat-form-field appearance="fill">
+                <mat-label style="color: red">Tiền Từ sxkd: </mat-label>
+                <input matInput formControlName="tienNguonThuNhapKhac"
+                       (input)="onTienSoInput($event, 'pavvRequest.tienNguonThuNhapKhac')"
                        placeholder="200.000.000.000">
               </mat-form-field>
             </div>
