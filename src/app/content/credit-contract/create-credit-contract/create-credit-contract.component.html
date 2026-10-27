@@ -1024,6 +1024,24 @@
                        placeholder="200.000.000.000">
               </mat-form-field>
             </div>
+            <br>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label><span style="color: #09ef1c">Thông tin tra CIC</span></mat-label>
+                <textarea matInput formControlName="noiDungCIC" rows="8"
+                          (input)="onCicManualEdit()"></textarea>
+              </mat-form-field>
+              <button mat-stroked-button color="primary" type="button" (click)="resetCic()">Tạo lại từ thông tin KH</button>
+              <button mat-stroked-button color="accent" type="button" (click)="generateCicKhongCoNo()">Không có nợ tổ chức nào</button>
+            </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
+                <mat-label><span style="color: #09ef1c">*Nhận xét kết quả tra CIC</span></mat-label>
+                <textarea matInput formControlName="nhanXetCIC" rows="5"
+                          (input)="onNhanXetCicManualEdit()"></textarea>
+              </mat-form-field>
+              <button mat-stroked-button type="button" (click)="resetNhanXetCic()">Tạo lại nhận xét CIC mặc định</button>
+            </div>
           </div>
           <!--          </div>-->
           <!--          CHỈ HIỆN THỊ VỚI HỢP ĐỒNG HẠN MỨC-->

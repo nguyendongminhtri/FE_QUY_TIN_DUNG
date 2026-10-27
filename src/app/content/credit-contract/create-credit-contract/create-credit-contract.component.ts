@@ -10,7 +10,7 @@ import {ActivatedRoute} from "@angular/router";
 import {MergeInfo, TableRequest} from "../../../model/TableRequest";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
-import {combineLatest, startWith, Subject, Subscription, takeUntil} from "rxjs";
+import {combineLatest, debounceTime, merge, startWith, Subject, Subscription, takeUntil} from "rxjs";
 
 const COLUMN_ORDER = ['stt', 'danhMuc', 'donVi', 'soLuong', 'donGia'];
 
@@ -49,7 +49,8 @@ export class CreateCreditContractComponent implements OnInit {
 
   private destroy$ = new Subject<void>();
   phuongAnOptionsNganHan = [
-    {value: 'chanNuoi', label: 'Chăn Nuôi'},
+    {value: 'chanNuoiDuoi', label: 'Chăn Nuôi Dưới Nước'},
+    {value: 'chanNuoiTren', label: 'Chăn Nuôi Dưới Trên Cạn'},
     {value: 'kinhDoanh', label: 'Kinh Doanh'}
   ];
   phuongAnOptionsHanMuc = [
@@ -177,6 +178,7 @@ export class CreateCreditContractComponent implements OnInit {
     // Gọi ngay để set header mặc định theo giá trị ban đầu
     this.formGroup.get('loaiVay')?.updateValueAndValidity();
     this.updateDiaChiThuaDat(this.formGroup.get('nguoiDaiDien')?.value);
+    this.setupCicAutoFill();
   }
 
   /* ---------- Helper methods ---------- */
@@ -254,7 +256,9 @@ export class CreateCreditContractComponent implements OnInit {
         tienLuongKH: ['0'],
         noiDungNguonThuKhac: ['Từ sản xuất, kinh doanh: '],
         noiDungTuLuong: ['Từ Lương: '],
-        tienNguonThuNhapKhac: ['0']
+        tienNguonThuNhapKhac: ['0'],
+        noiDungCIC: [''],
+        nhanXetCIC: ['Theo kết quả thẩm định và kết quả tra cứu CIC cho thấy khách hàng không có nợ cần chú ý trong 12 tháng gần nhất, không có nợ bán cho VAMC, không có nợ xấu trong 05 năm gần nhất, không bị chậm thanh toán thẻ tín dụng trong 03 năm gần nhất.'],
       }),
 
       // // Các bảng phụ
@@ -339,6 +343,8 @@ export class CreateCreditContractComponent implements OnInit {
 
   private patchSimpleFields(contract: any): void {
     // Patch những field đơn giản, tránh patch toàn bộ object
+    this.cicManual = !!contract.pavvRequest?.noiDungCIC;
+    this.nhanXetCicManual = !!contract.pavvRequest?.nhanXetCIC;
     this.formGroup.patchValue({
       soHopDongTD: contract.soHopDongTD,
       nguoiDaiDien: contract.nguoiDaiDien,
@@ -413,6 +419,8 @@ export class CreateCreditContractComponent implements OnInit {
         tienNguonThuNhapKhac: contract.pavvRequest.tienNguonThuNhapKhac ?? '',
         noiDungNguonThuKhac: contract.pavvRequest.noiDungNguonThuKhac ?? '',
         noiDungTuLuong: contract.pavvRequest.noiDungTuLuong ?? '',
+        noiDungCIC: contract.pavvRequest.noiDungCIC ?? '',
+        nhanXetCIC: contract.pavvRequest.nhanXetCIC ?? '',
       }
     });
     this.tienChu = contract.tienChu || '';
@@ -2203,7 +2211,6 @@ export class CreateCreditContractComponent implements OnInit {
     return Math.round(Number(value)).toLocaleString('vi-VN');
   }
 
-
   onTienSoInput(event: any, controlPath: string): void {
     const rawValue = event.target.value.replace(/\D/g, '');
     const control = this.formGroup.get(controlPath);
@@ -2823,5 +2830,96 @@ export class CreateCreditContractComponent implements OnInit {
         this.updateParentRows(idx);
       }
     });
+  }
+  // THÔNG TIN TRA CIC
+  cicManual = false; // true khi người dùng đã tự sửa nội dung CIC
+  nhanXetCicManual = false; // true khi người dùng đã tự sửa nhận xét CIC
+
+  private readonly NHAN_XET_CIC_MAC_DINH =
+    'Theo kết quả thẩm định và kết quả tra cứu CIC cho thấy khách hàng không có nợ cần chú ý trong 12 tháng gần nhất, ' +
+    'không có nợ bán cho VAMC, không có nợ xấu trong 05 năm gần nhất, ' +
+    'không bị chậm thanh toán thẻ tín dụng trong 03 năm gần nhất.';
+  // Tự sinh nội dung CIC khi tên / giới tính KH hoặc người thân thay đổi
+  private setupCicAutoFill(): void {
+    const fields = ['tenKhachHang', 'gtkh', 'tenNguoiThan', 'gtnt'];
+    merge(...fields.map(f => this.formGroup.get(f)!.valueChanges))
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (!this.cicManual) this.generateCic();
+        if (!this.nhanXetCicManual) this.generateNhanXetCic();
+      });
+  }
+
+// "ĐOÀN THỊ CHIÊN" -> "Đoàn Thị Chiên"
+  private toTitleCase(name: string): string {
+    return (name || '')
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(w => w)
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  }
+
+  private buildCicParagraph(gt: string, ten: string): string {
+    const name = this.toTitleCase(ten);
+    if (!name) return '';
+    const xungHo = gt || 'Ông/Bà';
+    return `- ${xungHo} ${name} có dư nợ … triệu đồng vay không có TSBĐ tại … , dư nợ vay … hạn. ` +
+      `Theo kiểm tra, cập nhật tình hình dư nợ thực tế vẫn còn, ` +
+      `khách hàng sử dụng vốn vay nói trên vào mục đích ….`;
+  }
+
+  generateCic(): void {
+    const kh = this.buildCicParagraph(
+      this.formGroup.get('gtkh')?.value,
+      this.formGroup.get('tenKhachHang')?.value
+    );
+    const nt = this.buildCicParagraph(
+      this.formGroup.get('gtnt')?.value,
+      this.formGroup.get('tenNguoiThan')?.value
+    );
+
+    const content = [kh, nt].filter(p => p).join('\n');
+    this.formGroup.get('pavvRequest.noiDungCIC')?.setValue(content, {emitEvent: false});
+  }
+
+// Người dùng gõ tay vào textarea -> không ghi đè nữa
+  onCicManualEdit(): void {
+    this.cicManual = true;
+  }
+
+// Nút "Tạo lại" -> bỏ khóa và sinh lại từ đầu
+  resetCic(): void {
+    this.cicManual = false;
+    this.generateCic();
+  }
+  // NHẬN XÉT CIC
+  // Có tên khách hàng thì điền nhận xét mặc định, chưa có thì để trống
+  generateNhanXetCic(): void {
+    const ten = (this.formGroup.get('tenKhachHang')?.value || '').trim();
+    this.formGroup.get('pavvRequest.nhanXetCIC')
+      ?.setValue(ten ? this.NHAN_XET_CIC_MAC_DINH : '', {emitEvent: false});
+  }
+
+  onNhanXetCicManualEdit(): void {
+    this.nhanXetCicManual = true;
+  }
+
+  resetNhanXetCic(): void {
+    this.nhanXetCicManual = false;
+    this.generateNhanXetCic();
+  }
+  // Nút "Không có nợ": thay nội dung CIC bằng câu không có dư nợ ở tổ chức tín dụng nào
+  generateCicKhongCoNo(): void {
+    const lines = ['tenKhachHang', 'tenNguoiThan']
+      .map(f => (this.formGroup.get(f)?.value || '').trim().toUpperCase())
+      .filter(ten => ten)
+      .map(ten => `Ông/bà: ${ten} không có nợ vay tại các tổ chức tín dụng nào.`);
+
+    this.formGroup.get('pavvRequest.noiDungCIC')?.setValue(lines.join('\n'), {emitEvent: false});
+
+    // Khóa để tự động sinh (theo tên/giới tính) không ghi đè lại nội dung này
+    this.cicManual = true;
   }
 }

@@ -26,4 +26,6 @@ export class CreditContractPAVV {
   tienLuongKH?: string;
   noiDungNguonThuKhac?: string;
   tienNguonThuNhapKhac?: string;
+  noiDungCIC?: string;
+  nhanXetCIC?: string;
 }
