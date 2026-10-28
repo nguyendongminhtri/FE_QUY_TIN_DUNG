@@ -49,12 +49,16 @@ export class CreateCreditContractComponent implements OnInit {
 
   private destroy$ = new Subject<void>();
   phuongAnOptionsNganHan = [
-    {value: 'chanNuoiDuoi', label: 'Chăn Nuôi Dưới Nước'},
-    {value: 'chanNuoiTren', label: 'Chăn Nuôi Dưới Trên Cạn'},
-    {value: 'kinhDoanh', label: 'Kinh Doanh'}
+    {value: 'chanNuoiDuoi', label: '(NH) Chăn Nuôi Dưới Nước'},
+    {value: 'chanNuoiTren', label: '(NH) Chăn Nuôi Dưới Trên Cạn'},
+    {value: 'kd_tapHoa', label: '(NH) Kinh Doanh'},
+    {value: 'kd_vanTai', label: '(HM) Kinh Doanh Vận Tải'}
   ];
   phuongAnOptionsHanMuc = [
-    {value: 'khac', label: 'Hạn Mức'}
+    {value: 'chanNuoiDuoi', label: '(HM) Chăn Nuôi Dưới Nước'},
+    {value: 'chanNuoiTren', label: '(HM) Chăn Nuôi Dưới Trên Cạn'},
+    {value: 'kd_tapHoa', label: '(HM) Kinh Doanh Tạp Hoá'},
+    {value: 'kd_vanTai', label: '(HM) Kinh Doanh Vận Tải'}
   ];
   phuongAnOptionsTrungHan = [
     {value: 'sanXuat', label: 'Sản Xuất'},
@@ -1204,7 +1208,7 @@ export class CreateCreditContractComponent implements OnInit {
     const rawValue = this.formGroup.get('tienSo')?.value;
 
     let prefix = '';
-    if (loai === 'khac') {
+    if (loai === 'kd_tapHoa' || 'kd_vanTai') {
       prefix = '- Lý do thực hiện phương án: Gia đình tôi có nhu cầu mở rộng sản xuất kinh doanh: (' + mucDichVV + ') nên cần một lượng vốn lưu động, vốn tự có của gia đình chưa đáp ứng đủ vốn kinh doanh';
     } else if (loai === 'sanXuat' || loai === 'tieuDung') {
       prefix = '- Lý do thực hiện phương án: Gia đình tôi dự kiến: ' + mucDichVV + ' với số tiền là:  ' + rawValue + ' đồng. Do nhu cầu thực vốn thực tế của gia đình hiện nay chưa đủ đáp ứng';
