@@ -1,0 +1,27 @@
+.user-mgmt-container {
+  padding: 24px 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.filter-field {
+  width: 100%;
+  max-width: 360px;
+  margin-top: 16px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.role-select {
+  min-width: 140px;
+}
+
+.locked-row {
+  background: rgba(244, 67, 54, 0.06);
+}

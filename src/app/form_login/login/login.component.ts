@@ -28,25 +28,35 @@ export class LoginComponent implements OnInit{
       this.form.username,
       this.form.password
     )
-    this.authService.signIn(this.signIpForm).subscribe(data => {
-      // console.log("user account -------> ", data);
-      // @ts-ignore
-      if (data.status == 202) {
-        this.status = 'Login failed! Please check your account!';
-      } else {
+    this.authService.signIn(this.signIpForm).subscribe({
+      next: data => {
+        console.log('data', data);
         // @ts-ignore
-        this.tokenService.setName(data.name);
-        // @ts-ignore
-        this.tokenService.setAvatar(data.avatar);
-        // @ts-ignore
-        this.tokenService.setToken(data.token);
-        // @ts-ignore
-        this.tokenService.setRole(data.roles);
-        this.router.navigate(['']).then(() => {
-          window.location.reload();
-        })
+        if (data.status == 202) {
+          this.status = 'Login failed! Please check your account!';
+        } else {
+          // @ts-ignore
+          this.tokenService.setName(data.name);
+          // @ts-ignore
+          this.tokenService.setAvatar(data.avatar);
+          // @ts-ignore
+          this.tokenService.setToken(data.token);
+          // @ts-ignore
+          this.tokenService.setRole(data.roles);
+          this.router.navigate(['']).then(() => {
+            window.location.reload();
+          })
+        }
+      },
+      error: err => {
+        console.log('error', err)
+        if (err.status === 403 && err.error?.message === 'locked') {
+          this.status = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ quản trị viên';
+        } else {
+          this.status = 'Login failed! Please check your account!';
+        }
       }
-    })
+    });
   }
 
   ngOnInit(): void {

@@ -72,6 +72,14 @@
             <mat-icon>person</mat-icon>
             <span>Trang cá nhân</span>
           </button>
+          <button *ngIf="isAdmin" mat-menu-item [routerLink]="'/admin/users'">
+            <mat-icon>manage_accounts</mat-icon>
+            <span>Quản lý user</span>
+          </button>
+          <button mat-menu-item [routerLink]="'/change-password'">
+            <mat-icon>lock_reset</mat-icon>
+            <span>Đổi mật khẩu</span>
+          </button>
           <button mat-menu-item (click)="logOut()">
             <mat-icon>logout</mat-icon>
             <span>Đăng xuất</span>

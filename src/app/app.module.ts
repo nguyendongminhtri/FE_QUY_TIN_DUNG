@@ -92,6 +92,8 @@ import { CreateShortTermCreditContractComponent } from './content/credit-contrac
 import {MatTabsModule} from "@angular/material/tabs";
 import { MotivationBannerComponent } from './motivation-banner/motivation-banner.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {ChangePasswordComponent} from "./form_login/change-password/change-password.component";
+import { UserManagementComponent } from './form_login/user-management/user-management.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -149,6 +151,8 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
     DetailCreaditContractComponent,
     CreateShortTermCreditContractComponent,
     MotivationBannerComponent,
+    ChangePasswordComponent,
+    UserManagementComponent,
   ],
   imports: [
     QuillModule.forRoot(),

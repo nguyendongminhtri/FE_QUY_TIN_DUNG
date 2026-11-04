@@ -13,7 +13,8 @@ import {ChangeAvatar} from "../model/ChangeAvatar";
 export class AuthService {
   private API_SIGNUP = environment.API + 'auth/signup';
   private API_SIGNIN = environment.API + 'auth/signin';
-  private API_UPDATE_AVATAR = environment.API+'auth/change-avatar'
+  private API_UPDATE_AVATAR = environment.API+'auth/change-avatar';
+  private API_CHANGE_PASS = environment.API+'auth/change-password';
 
   constructor(private httpClient: HttpClient) {
   }
@@ -36,5 +37,8 @@ export class AuthService {
   }
   getRegister(){
     return this.checkRegister;
+  }
+  changePassword(oldPassword: string, newPassword: string): Observable<any> {
+    return this.httpClient.put(this.API_CHANGE_PASS, { oldPassword, newPassword });
   }
 }

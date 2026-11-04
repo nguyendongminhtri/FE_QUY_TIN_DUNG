@@ -37,6 +37,9 @@ import {
 import {
   DetailCreaditContractComponent
 } from "./content/credit-contract/detail-creadit-contract/detail-creadit-contract.component";
+import {ChangePasswordComponent} from "./form_login/change-password/change-password.component";
+import {UserManagementComponent} from "./form_login/user-management/user-management.component";
+import {adminGuard} from "./guards/guards/admin.guard";
 
 
 const routes: Routes = [
@@ -45,6 +48,8 @@ const routes: Routes = [
   {path: 'login' ,component:LoginComponent, canActivate:[CheckLoginGuard]},
   {path:'change-avatar',component:ChangeAvatarComponent, canActivate:[CheckLogoutGuard] },
   {path: 'profile', component: ProfileComponent, canActivate:[CheckLogoutGuard] },
+  { path: 'change-password', component: ChangePasswordComponent },
+  { path: 'admin/users', component: UserManagementComponent, canActivate: [adminGuard] },
 
   {path:'category',component:PageCategoryComponent},
   {path:'create-category',component:CreateCategoryComponent},

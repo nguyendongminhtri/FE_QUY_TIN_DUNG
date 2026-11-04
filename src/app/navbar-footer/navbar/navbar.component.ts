@@ -22,6 +22,7 @@ export class NavbarComponent implements OnInit {
   listCategoriesStorySuccess: Category[] | undefined;
   listCategoriesProduct: Category[] | undefined;
   listIntroduce?: Introduce[];
+  isAdmin = false;
   constructor(private tokenService: TokenService,
               private introduceService: IntroduceService,
               private categoryService: CategoryService,) {
@@ -42,6 +43,8 @@ export class NavbarComponent implements OnInit {
     this.introduceService.getListIntroduce().subscribe(data=>{
       this.listIntroduce = data;
     })
+    const roles: any[] = this.tokenService.getRole() || [];
+    this.isAdmin = roles.some(r => (r?.authority ?? r) === 'ADMIN');
   }
   logOut() {
     sessionStorage.clear();

@@ -8,6 +8,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {Router} from "@angular/router";
 import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
 import {MatDialog} from "@angular/material/dialog";
+import {TokenService} from "../../../service/token.service";
 
 @Component({
   selector: 'app-list-credit-contract',
@@ -20,7 +21,7 @@ export class ListCreditContractComponent implements OnInit {
 
   // Trạng thái thu gọn / mở rộng bảng
   collapsed = false;
-
+  isAdmin = false;
   // Cột luôn hiển thị (chuyển tên cột qua lại giữa các nhóm để tùy chỉnh)
   private readonly alwaysColumns: string[] = [
     'id', 'tenKhachHang', 'cccdKhachHang', 'loaiVay', 'soHopDongTD'
@@ -45,13 +46,21 @@ export class ListCreditContractComponent implements OnInit {
   constructor(private creditContractService: CreditContractService,
               private router: Router,
               private dialog: MatDialog,
-              private snackBar: MatSnackBar) {
+              private snackBar: MatSnackBar,
+              private tokenService: TokenService
+  ) {
   }
 
   ngOnInit(): void {
     this.collapsed = localStorage.getItem('creditContractCollapsed') === 'true';
     this.updateColumns();
     this.loadListCreditContract();
+    const roles: any[] = this.tokenService.getRole() || [];
+    this.isAdmin = roles.some(r => (r?.authority ?? r) === 'ADMIN');
+    // Người không phải ADMIN: bỏ hẳn cột xoá (cả tiêu đề lẫn nút)
+    if (!this.isAdmin) {
+      this.displayedColumns = this.displayedColumns.filter(c => c !== 'delete');
+    }
   }
 
   toggleCollapse(): void {

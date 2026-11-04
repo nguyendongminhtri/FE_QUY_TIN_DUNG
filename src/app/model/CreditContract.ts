@@ -54,6 +54,7 @@ export class CreditContract {
   fileAvatarUrls?: FileMetadataEntity[] = [];
   // avatars?: FileMetadataEntity[] = [];
   tableRequest?: string;
+  nguonTraNoTable?: TableRequest | null;
   table1?: TableRequest;
   table2?: TableRequest;
   table3?: TableRequest;

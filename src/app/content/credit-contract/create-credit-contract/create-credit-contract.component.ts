@@ -35,7 +35,7 @@ export class CreateCreditContractComponent implements OnInit {
   contractUpdate: any;
   phuong = ''
   showTHTDInput: boolean = false;
-
+  isUpdatingReasonManually: boolean = false;
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -52,13 +52,15 @@ export class CreateCreditContractComponent implements OnInit {
     {value: 'chanNuoiDuoi', label: '(NH) Chăn Nuôi Dưới Nước'},
     {value: 'chanNuoiTren', label: '(NH) Chăn Nuôi Dưới Trên Cạn'},
     {value: 'kd_tapHoa', label: '(NH) Kinh Doanh'},
-    {value: 'kd_vanTai', label: '(HM) Kinh Doanh Vận Tải'}
+    {value: 'kd_vanTai', label: '(NH) Kinh Doanh Vận Tải'},
+    {value: 'kd_kimKhi', label: '(NH) Kinh Kim Khí'}
   ];
   phuongAnOptionsHanMuc = [
     {value: 'chanNuoiDuoi', label: '(HM) Chăn Nuôi Dưới Nước'},
     {value: 'chanNuoiTren', label: '(HM) Chăn Nuôi Dưới Trên Cạn'},
     {value: 'kd_tapHoa', label: '(HM) Kinh Doanh Tạp Hoá'},
-    {value: 'kd_vanTai', label: '(HM) Kinh Doanh Vận Tải'}
+    {value: 'kd_vanTai', label: '(HM) Kinh Doanh Vận Tải'},
+    {value: 'kd_kimKhi', label: '(HM) Kinh Doanh Kim Khí'}
   ];
   phuongAnOptionsTrungHan = [
     {value: 'sanXuat', label: 'Sản Xuất'},
@@ -261,6 +263,7 @@ export class CreateCreditContractComponent implements OnInit {
         noiDungNguonThuKhac: ['Từ sản xuất, kinh doanh: '],
         noiDungTuLuong: ['Từ Lương: '],
         tienNguonThuNhapKhac: ['0'],
+        chiPhiHangThangTHTD: ['0'],
         noiDungCIC: [''],
         nhanXetCIC: ['Theo kết quả thẩm định và kết quả tra cứu CIC cho thấy khách hàng không có nợ cần chú ý trong 12 tháng gần nhất, không có nợ bán cho VAMC, không có nợ xấu trong 05 năm gần nhất, không bị chậm thanh toán thẻ tín dụng trong 03 năm gần nhất.'],
       }),
@@ -421,6 +424,7 @@ export class CreateCreditContractComponent implements OnInit {
         tongChiPhiTHTD: contract.pavvRequest.tongChiPhiTHTD ?? '',
         tienLuongKH: contract.pavvRequest.tienLuongKH ?? '',
         tienNguonThuNhapKhac: contract.pavvRequest.tienNguonThuNhapKhac ?? '',
+        chiPhiHangThangTHTD: contract.pavvRequest.chiPhiHangThangTHTD ?? '',
         noiDungNguonThuKhac: contract.pavvRequest.noiDungNguonThuKhac ?? '',
         noiDungTuLuong: contract.pavvRequest.noiDungTuLuong ?? '',
         noiDungCIC: contract.pavvRequest.noiDungCIC ?? '',
@@ -1090,6 +1094,14 @@ export class CreateCreditContractComponent implements OnInit {
         this.formGroup.get('choVay')?.disable();
       }
     });
+    this.formGroup.get('pavvRequest.vayLai')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isVayLai: boolean) => {
+        if (!isVayLai) {
+          this.formGroup.get('pavvRequest.reLoanSequence')?.setValue(0);
+        }
+      });
+
     // Cập nhật reason khi đổi loại phương án hoặc số tiền vay
     pavvGroup.get('loaiPhuongAn')?.valueChanges.subscribe(() => {
       this.updateReason();
@@ -1203,12 +1215,18 @@ export class CreateCreditContractComponent implements OnInit {
 
 
   private updateReason(): void {
+    // Nếu đang ở mode update và form đã có sẵn reason từ backend thì không tự động sinh đè nữa
+    const currentReason = this.formGroup.get('pavvRequest')?.get('reason')?.value;
+    if (this.mode === 'update' && currentReason && !this.isUpdatingReasonManually) {
+      return;
+    }
+
     const loai = this.formGroup.get('pavvRequest')?.get('loaiPhuongAn')?.value;
     const mucDichVV = this.formGroup.get('pavvRequest')?.get('name')?.value;
     const rawValue = this.formGroup.get('tienSo')?.value;
 
     let prefix = '';
-    if (loai === 'kd_tapHoa' || 'kd_vanTai') {
+    if (loai === 'kd_tapHoa' || 'kd_vanTai' || 'kd_kimKhi') {
       prefix = '- Lý do thực hiện phương án: Gia đình tôi có nhu cầu mở rộng sản xuất kinh doanh: (' + mucDichVV + ') nên cần một lượng vốn lưu động, vốn tự có của gia đình chưa đáp ứng đủ vốn kinh doanh';
     } else if (loai === 'sanXuat' || loai === 'tieuDung') {
       prefix = '- Lý do thực hiện phương án: Gia đình tôi dự kiến: ' + mucDichVV + ' với số tiền là:  ' + rawValue + ' đồng. Do nhu cầu thực vốn thực tế của gia đình hiện nay chưa đủ đáp ứng';
@@ -1347,6 +1365,7 @@ export class CreateCreditContractComponent implements OnInit {
       chiPhiTable: this.buildChiPhiTableRequest(this.chiPhiTable),
       thuNhapDuKienTable: this.buildThuNhapTableRequest(this.thuNhapTable),
       phuLucHanMucTable: this.buildPhuLucHanMucTableRequest(this.phuLucHanMucTable),
+      nguonTraNoTable: this.buildNguonTraNoTableRequest(),
       giaTriQuyenSuDungDat: this.giaTriQuyenSuDungDat,
     };
     this.creditContractService.previewContract(payload).subscribe(urls => {
@@ -1421,6 +1440,7 @@ export class CreateCreditContractComponent implements OnInit {
       chiPhiTable: this.buildChiPhiTableRequest(this.chiPhiTable),
       thuNhapDuKienTable: this.buildThuNhapTableRequest(this.thuNhapTable),
       phuLucHanMucTable: this.buildPhuLucHanMucTableRequest(this.phuLucHanMucTable),
+      nguonTraNoTable: this.buildNguonTraNoTableRequest(),
       // giaTriQuyenSuDungDat: this.giaTriQuyenSuDungDat,
       pavvRequest: {
         ...this.formGroup.get('pavvRequest')?.value,
@@ -2926,4 +2946,104 @@ export class CreateCreditContractComponent implements OnInit {
     // Khóa để tự động sinh (theo tên/giới tính) không ghi đè lại nội dung này
     this.cicManual = true;
   }
+  /* ===== BẢNG NGUỒN TRẢ NỢ VAY TRUNG HẠN ===== */
+
+  // Chỉ hiển thị với loại vay TRUNG HẠN (ô chọn loại đang bật) và có bảng kỳ hạn vay
+  get showBangTraNoTH(): boolean {
+    const loaiVay = this.formGroup.get('loaiVay');
+    return !!loaiVay?.enabled
+      && loaiVay.value === 'trung_han'
+      && !!this.formGroup.get('hasTable')?.value
+      && this.tableRows.length > 0;
+  }
+
+  // "120.000.000 đồng" -> 120000000 (parseNumber cũ sẽ ra 0 nếu có chữ "đồng")
+  private toSoTien(val: any): number {
+    if (val == null) return 0;
+    if (typeof val === 'number') return val;
+    return Number(String(val).replace(/[^\d]/g, '')) || 0;
+  }
+
+  private parseNgayDDMMYYYY(val: any): Date | null {
+    const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(val ?? '').trim());
+    return m ? new Date(+m[3], +m[2] - 1, +m[1]) : null;
+  }
+
+  private soThangGiua(from: Date, to: Date): number {
+    return (to.getFullYear() - from.getFullYear()) * 12
+      + (to.getMonth() - from.getMonth())
+      + (to.getDate() - from.getDate()) / 30;
+  }
+
+  private nhanTienVay(tienVay: number): string {
+    return tienVay % 1000000 === 0
+      ? `${tienVay / 1000000} triệu`
+      : `${this.formatCurrency(tienVay)} đồng`;
+  }
+
+  get bangTraNoTH() {
+    const tienVay = this.toSoTien(this.formGroup.get('tienSo')?.value);
+    const laiSuat = this.parseLaiSuatPercent(this.formGroup.get('laiSuat')?.value);
+
+    // Nguồn trả nợ = lương + thu nhập khác (cộng cả hai)
+    const pavv = this.formGroup.get('pavvRequest');
+    const nguonTraNo =
+      this.toSoTien(pavv?.get('tienLuongKH')?.value)
+      + this.toSoTien(pavv?.get('tienNguonThuNhapKhac')?.value);
+
+    let duNo = tienVay;
+
+    const cols = this.tableRows.controls.map((ctrl, i) => {
+      const ngay = this.parseNgayDDMMYYYY(ctrl.value.col2);
+      const goc = this.toSoTien(ctrl.value.col3);
+
+      // Mỗi cột là 1 năm: lãi = dư nợ đầu kỳ x lãi suất/năm
+      const lai = Math.round(Math.max(duNo, 0) * laiSuat / 100);
+      duNo -= goc;   // trừ gốc đã trả để tính lãi cho năm sau
+
+      return {
+        tieuDe: ngay ? `Năm ${ngay.getFullYear()}` : `Kỳ ${i + 1}`,
+        nguonTraNo,
+        lai,
+        goc,
+        tong: lai + goc,
+        chenhLech: nguonTraNo - (lai + goc)
+      };
+    });
+
+    return {
+      tienVay,
+      laiSuat,
+      nhan: this.nhanTienVay(tienVay),
+      nhanNguon: 'Nguồn trả nợ (thu nhập ròng)',
+      cols
+    };
+  }
+  buildNguonTraNoTableRequest(): TableRequest | null {
+    if (!this.showBangTraNoTH) return null;
+
+    const b = this.bangTraNoTH;
+    const fmt = (n: number) => this.formatCurrency(n);
+
+    const rows: string[][] = [
+      ['I', b.nhanNguon, ...b.cols.map(c => fmt(c.nguonTraNo))],
+      ['II', 'Tổng gốc và lãi các khoản vay', ...b.cols.map(c => fmt(c.tong))],
+      ['1', `Lãi phải trả của ${b.nhan}`, ...b.cols.map(c => fmt(c.lai))],
+      ['2', `Gốc phải trả của ${b.nhan}`, ...b.cols.map(c => fmt(c.goc))],
+      ['III', 'Chênh lệch (III=I-II)', ...b.cols.map(c => fmt(c.chenhLech))]
+    ];
+
+    return {
+      drawTable: true,
+      headers: ['STT', 'Nội dung', ...b.cols.map(c => c.tieuDe)],
+      rows,
+      merges: [],
+      tableType: 'nguonTraNo'
+    };
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
 }

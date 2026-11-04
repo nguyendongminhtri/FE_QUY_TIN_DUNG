@@ -40,320 +40,7 @@
             </div>
             <div formGroupName="pavvRequest">
               <mat-checkbox formControlName="vayLai">
-                <span style="
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                color: red">Tích chọn nếu vay lại</span>
+                <span style="color: red">Tích chọn nếu vay lại</span>
               </mat-checkbox>
               <!-- Chỉ hiển thị khi checkbox vayLai = true -->
               <div *ngIf="formGroup.get('pavvRequest.vayLai')?.value">
@@ -1214,6 +901,46 @@
             <mat-icon>home_work</mat-icon>
           </button>
           <h2>Nhập thông tin: PHƯƠNG ÁN VAY VỐN</h2>
+          <ng-container *ngIf="showBangTraNoTH">
+            <h3>Bảng nguồn trả nợ</h3>
+
+            <table *ngIf="bangTraNoTH as b" class="table table-bordered">
+              <thead>
+              <tr>
+                <th>STT</th>
+                <th>Nội dung</th>
+                <th *ngFor="let c of b.cols">{{ c.tieuDe }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td><strong>I</strong></td>
+                <td>{{ b.nhanNguon }}</td>
+                <td *ngFor="let c of b.cols">{{ formatCurrency(c.nguonTraNo) }}</td>
+              </tr>
+              <tr>
+                <td><strong>II</strong></td>
+                <td>Tổng gốc và lãi các khoản vay</td>
+                <td *ngFor="let c of b.cols">{{ formatCurrency(c.tong) }}</td>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>Lãi phải trả của {{ b.nhan }}</td>
+                <td *ngFor="let c of b.cols">{{ formatCurrency(c.lai) }}</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Gốc phải trả của {{ b.nhan }}</td>
+                <td *ngFor="let c of b.cols">{{ formatCurrency(c.goc) }}</td>
+              </tr>
+              <tr>
+                <td><strong>III</strong></td>
+                <td>Chênh lệch (III=I-II)</td>
+                <td *ngFor="let c of b.cols">{{ formatCurrency(c.chenhLech) }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </ng-container>
           <!--          <div class="form-row-3 pavv-grid">-->
           <div formGroupName="pavvRequest" class="form-col checkbox-input-col pavv-form-grid">
             <!-- Thêm select Loại phương án -->
@@ -1334,6 +1061,14 @@
                 <mat-label style="color: red">Tiền Từ sxkd: </mat-label>
                 <input matInput formControlName="tienNguonThuNhapKhac"
                        (input)="onTienSoInput($event, 'pavvRequest.tienNguonThuNhapKhac')"
+                       placeholder="200.000.000.000">
+              </mat-form-field>
+            </div>
+            <div class="form-col" *ngIf="showTHTDInput">
+              <mat-form-field appearance="fill">
+                <mat-label style="color: red">Chi Phí hàng tháng:</mat-label>
+                <input matInput formControlName="chiPhiHangThangTHTD"
+                       (input)="onTienSoInput($event, 'pavvRequest.chiPhiHangThangTHTD')"
                        placeholder="200.000.000.000">
               </mat-form-field>
             </div>
