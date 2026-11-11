@@ -1,16 +1,21 @@
-<div class="container">
-  <div class="row">
-    <div class="col-12" style="max-width: 600px;margin: auto;">
-      <mat-card style="padding: 20px;background: rgba(255,255,255,0.7)">
+<div class="avatar-container">
+  <h2>Thay đổi ảnh đại diện</h2>
 
-        <h1 style="font-weight: 600;margin: auto;color: #333333;text-shadow: 0px 0px 10px #65a4ec">Cập nhật ảnh đại diện</h1>
-        <mat-error  class="alert form-angular">{{status}}</mat-error>
-        <form class="form-angular" #f="ngForm" (ngSubmit)="f.form.valid && updateAvatar()" novalidate>
-<!--          <app-upload-avatar (giveURLtoCreate)="onUpload($event)"></app-upload-avatar>-->
-          <br>
-          <button style="margin-left: 200px" mat-stroked-button class="mat-button-toggle-group">Cập nhật</button>
-        </form>
-      </mat-card>
-    </div>
+  <div class="avatar-preview">
+    <img [src]="avatar" width="120" height="120" alt="Ảnh đại diện">
   </div>
+
+  <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)">
+  <button mat-stroked-button type="button" (click)="fileInput.click()">
+    Chọn ảnh từ máy
+  </button>
+  <p class="file-name" *ngIf="selectedFile">{{ selectedFile.name }}</p>
+
+  <p class="msg-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="msg-success" *ngIf="successMessage">{{ successMessage }}</p>
+
+  <button mat-raised-button color="primary" class="btn-save"
+          [disabled]="!selectedFile || loading" (click)="updateAvatar()">
+    {{ loading ? 'Đang lưu...' : 'Lưu ảnh đại diện' }}
+  </button>
 </div>

@@ -1,0 +1,13 @@
+.menu-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;          /* màn hình nhỏ thì tự xuống hàng */
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.menu-buttons button {
+  flex: 1 1 220px;          /* chia đều chiều rộng, tối thiểu 220px */
+  max-width: 320px;
+}

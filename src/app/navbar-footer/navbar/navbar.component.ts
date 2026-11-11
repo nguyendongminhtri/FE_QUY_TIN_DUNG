@@ -4,6 +4,8 @@ import {CategoryService} from "../../service/category.service";
 import {Category} from "../../model/Category";
 import {IntroduceService} from "../../service/introduce.service";
 import {Introduce} from "../../model/Introduce";
+import {AuthService} from "../../service/auth.service";
+import {Subscription} from "rxjs";
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -23,17 +25,23 @@ export class NavbarComponent implements OnInit {
   listCategoriesProduct: Category[] | undefined;
   listIntroduce?: Introduce[];
   isAdmin = false;
+  private avatarSub?: Subscription;
   constructor(private tokenService: TokenService,
               private introduceService: IntroduceService,
-              private categoryService: CategoryService,) {
+              private categoryService: CategoryService,
+              private authService: AuthService,) {
   }
 
   ngOnInit(): void {
     if (this.tokenService.getToken()) {
       this.name = this.tokenService.getName();
-      this.avatar = this.tokenService.getAvatar();
       this.checkLogin = true;
     }
+    // MỚI: avatar tự cập nhật mỗi khi TokenService.setAvatar được gọi
+    this.avatarSub = this.tokenService.avatar$.subscribe(a => {
+      this.avatar = this.authService.getAvatarUrl(a);
+    });
+
     this.categoryService.getListCategoryService().subscribe(data=>{
       this.listCategoriesNews = data.filter((c: Category) => c.type === 'news');
       this.listCategoriesStorySuccess = data.filter((c: Category) => c.type === 'story');
@@ -48,6 +56,7 @@ export class NavbarComponent implements OnInit {
   }
   logOut() {
     sessionStorage.clear();
+    this.tokenService.setAvatar(null);
     window.location.reload();
   }
 
@@ -55,6 +64,10 @@ export class NavbarComponent implements OnInit {
     this.isMenuOpen = !this.isMenuOpen;
     this.menuIcon.nativeElement.classList.toggle('bx-x');
     this.navbar.nativeElement.classList.toggle('open');
+  }
+
+  ngOnDestroy(): void {
+    this.avatarSub?.unsubscribe();
   }
 
 }

@@ -63,7 +63,10 @@
         <a routerLink="register">Đăng ký</a>
       </div>
       <div class="main" *ngIf="checkLogin">
-        <img [src]="avatar" width="45" height="45" class="avatar">
+        <img [src]="avatar" width="45" height="45" class="avatar"
+             [routerLink]="'/change-avatar'"
+             style="cursor: pointer;"
+             title="Thay đổi ảnh đại diện">
         <button mat-icon-button [matMenuTriggerFor]="menu">
           <mat-icon>arrow_drop_down</mat-icon>
         </button>
@@ -71,6 +74,10 @@
           <button mat-menu-item [routerLink]="'/profile'">
             <mat-icon>person</mat-icon>
             <span>Trang cá nhân</span>
+          </button>
+          <button mat-menu-item [routerLink]="'/change-profile'">
+            <mat-icon>badge</mat-icon>
+            <span>Thay đổi thông tin cá nhân</span>
           </button>
           <button *ngIf="isAdmin" mat-menu-item [routerLink]="'/admin/users'">
             <mat-icon>manage_accounts</mat-icon>

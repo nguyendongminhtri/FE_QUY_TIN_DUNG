@@ -40,6 +40,8 @@ import {
 import {ChangePasswordComponent} from "./form_login/change-password/change-password.component";
 import {UserManagementComponent} from "./form_login/user-management/user-management.component";
 import {adminGuard} from "./guards/guards/admin.guard";
+import {ContractStatsComponent} from "./content/credit-contract/contract-stats/contract-stats.component";
+import {ChangeProfileComponent} from "./form_login/change-profile/change-profile.component";
 
 
 const routes: Routes = [
@@ -49,6 +51,7 @@ const routes: Routes = [
   {path:'change-avatar',component:ChangeAvatarComponent, canActivate:[CheckLogoutGuard] },
   {path: 'profile', component: ProfileComponent, canActivate:[CheckLogoutGuard] },
   { path: 'change-password', component: ChangePasswordComponent },
+  { path: 'change-profile', component: ChangeProfileComponent },
   { path: 'admin/users', component: UserManagementComponent, canActivate: [adminGuard] },
 
   {path:'category',component:PageCategoryComponent},
@@ -86,7 +89,8 @@ const routes: Routes = [
   //credit-contract
   {path: 'create-credit-contract', component: CreateCreditContractComponent},
   {path: 'list-credit-contract', component: ListCreditContractComponent},
-  {path: 'credit-contract-update/:id', component: CreateCreditContractComponent}
+  {path: 'credit-contract-update/:id', component: CreateCreditContractComponent},
+  { path: 'contract-stats', component: ContractStatsComponent, canActivate: [adminGuard] }
 
 ];
 

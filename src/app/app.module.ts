@@ -94,6 +94,9 @@ import { MotivationBannerComponent } from './motivation-banner/motivation-banner
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {ChangePasswordComponent} from "./form_login/change-password/change-password.component";
 import { UserManagementComponent } from './form_login/user-management/user-management.component';
+import { ContractStatsComponent } from './content/credit-contract/contract-stats/contract-stats.component';
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import { ChangeProfileComponent } from './form_login/change-profile/change-profile.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -153,6 +156,8 @@ import { UserManagementComponent } from './form_login/user-management/user-manag
     MotivationBannerComponent,
     ChangePasswordComponent,
     UserManagementComponent,
+    ContractStatsComponent,
+    ChangeProfileComponent,
   ],
   imports: [
     QuillModule.forRoot(),
@@ -186,7 +191,8 @@ import { UserManagementComponent } from './form_login/user-management/user-manag
     MatSlideToggleModule,
     MatCheckboxModule,
     MatTabsModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatButtonToggleModule
   ],
   exports: [
     QuillContentComponent

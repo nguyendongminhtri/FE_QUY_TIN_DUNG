@@ -9,6 +9,11 @@
             <mat-icon>post_add</mat-icon>
             Tạo Hợp Đồng Mới
           </button>
+
+          <button *ngIf="isAdmin" routerLink="/contract-stats" color="primary" mat-raised-button>
+            <mat-icon>bar_chart</mat-icon>
+            Thống kê
+          </button>
         </div>
 
         <div class="search-row">
@@ -17,19 +22,24 @@
             <mat-label>Tìm kiếm hợp đồng</mat-label>
             <input matInput
                    [(ngModel)]="searchKeyword"
-                   (ngModelChange)="applyFilter()"
-                   placeholder="Tìm theo tên KH, CCCD, SĐT, số thẻ, số HĐTD...">
+                   (ngModelChange)="onKeywordChange()"
+                   placeholder="Tìm theo tên KH, CCCD, SĐT, số thẻ, số HĐTD, người tạo...">
             <button *ngIf="searchKeyword" matSuffix mat-icon-button
                     class="clear-btn" aria-label="Clear" (click)="clearSearch()">
               <mat-icon>close</mat-icon>
             </button>
           </mat-form-field>
         </div>
+
         <h1>DANH SÁCH CÁC HỢP ĐỒNG TÍN DỤNG</h1>
+
         <button mat-stroked-button (click)="toggleCollapse()">
           <mat-icon>{{ collapsed ? 'unfold_more' : 'unfold_less' }}</mat-icon>
           {{ collapsed ? 'Mở rộng bảng' : 'Thu gọn bảng' }}
         </button>
+
+        <p *ngIf="loading" style="margin: 8px 0">Đang tải dữ liệu...</p>
+
         <div class="mat-elevation-z8">
           <div class="table-container">
             <table mat-table [dataSource]="dataSource">
@@ -37,7 +47,7 @@
               <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef> STT</th>
                 <td mat-cell *matCellDef="let element; let i = index">
-                  {{ (paginator?.pageIndex ?? 0) * (paginator?.pageSize ?? 0) + i + 1 }}
+                  {{ pageIndex * pageSize + i + 1 }}
                 </td>
               </ng-container>
 
@@ -95,10 +105,8 @@
               <ng-container matColumnDef="reLoanSequence">
                 <th mat-header-cell *matHeaderCellDef>Hợp Đồng Vay Lại</th>
                 <td mat-cell *matCellDef="let element">
-                  <span *ngIf="element.pavvRequest?.vayLai">
-                    {{ element.pavvRequest?.reLoanSequence }}
-                  </span>
-                  <span *ngIf="!element.pavvRequest?.vayLai">-</span>
+                  <span *ngIf="element.vayLai">{{ element.reLoanSequence }}</span>
+                  <span *ngIf="!element.vayLai">-</span>
                 </td>
               </ng-container>
 
@@ -118,6 +126,16 @@
                     {{ element.tatToan }}
                   </span>
                 </td>
+              </ng-container>
+
+              <ng-container matColumnDef="createdByUsername">
+                <th mat-header-cell *matHeaderCellDef>Người tạo</th>
+                <td mat-cell *matCellDef="let element">{{ element.createdByUsername || '—' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>Ngày tạo</th>
+                <td mat-cell *matCellDef="let element">{{ element.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
               </ng-container>
 
               <!-- Cố định ở mép phải -->
@@ -144,9 +162,17 @@
             </table>
           </div>
 
-          <mat-paginator [pageSizeOptions]="[50, 100, 150, 200]"
+          <p *ngIf="!loading && dataSource.data.length === 0" style="padding: 16px">
+            Không tìm thấy hợp đồng nào.
+          </p>
+
+          <mat-paginator [length]="total"
+                         [pageSize]="pageSize"
+                         [pageIndex]="pageIndex"
+                         [pageSizeOptions]="[50, 100, 150, 200]"
                          showFirstLastButtons
-                         aria-label="Select page of periodic elements">
+                         (page)="onPage($event)"
+                         aria-label="Chọn trang hợp đồng">
           </mat-paginator>
         </div>
 

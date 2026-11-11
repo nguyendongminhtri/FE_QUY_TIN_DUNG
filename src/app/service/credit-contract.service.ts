@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import {environment} from "../../environments/environment.development";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CreditContract} from "../model/CreditContract";
 import {FileMetadataEntity} from "../model/FileMetadataEntity";
 import {Introduce} from "../model/Introduce";
+import {CreditContractListItem, PageResponse} from "../model/CreditContractListItem";
 
 @Injectable({
   providedIn: 'root'
@@ -33,5 +34,13 @@ export class CreditContractService {
   deleteCreditContract(id: number): Observable<any> {
     console.log('API XOA --> ',this.API_CREDIT_CONTRACT + '/' + id)
     return this.http.delete(this.API_CREDIT_CONTRACT + '/' + id);
+  }
+  searchCreditContracts(keyword: string, page: number, size: number): Observable<PageResponse<CreditContractListItem>> {
+    const params = new HttpParams()
+      .set('keyword', keyword)
+      .set('page', page)
+      .set('size', size);
+    // Dùng đúng biến base URL mà các hàm khác trong service này đang dùng
+    return this.http.get<PageResponse<CreditContractListItem>>(`${this.API_CREDIT_CONTRACT}/search`, {params});
   }
 }

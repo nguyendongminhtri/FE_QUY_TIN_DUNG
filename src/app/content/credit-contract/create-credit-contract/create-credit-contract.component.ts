@@ -51,16 +51,18 @@ export class CreateCreditContractComponent implements OnInit {
   phuongAnOptionsNganHan = [
     {value: 'chanNuoiDuoi', label: '(NH) Chăn Nuôi Dưới Nước'},
     {value: 'chanNuoiTren', label: '(NH) Chăn Nuôi Dưới Trên Cạn'},
-    {value: 'kd_tapHoa', label: '(NH) Kinh Doanh'},
+    {value: 'kd_tapHoa', label: '(NH) Kinh Doanh Tạp Hoá'},
     {value: 'kd_vanTai', label: '(NH) Kinh Doanh Vận Tải'},
-    {value: 'kd_kimKhi', label: '(NH) Kinh Kim Khí'}
+    {value: 'kd_kimKhi', label: '(NH) Kinh Kim Khí'},
+    {value: 'kd_chung', label: '(NH) Kinh Doanh'}
   ];
   phuongAnOptionsHanMuc = [
     {value: 'chanNuoiDuoi', label: '(HM) Chăn Nuôi Dưới Nước'},
     {value: 'chanNuoiTren', label: '(HM) Chăn Nuôi Dưới Trên Cạn'},
     {value: 'kd_tapHoa', label: '(HM) Kinh Doanh Tạp Hoá'},
     {value: 'kd_vanTai', label: '(HM) Kinh Doanh Vận Tải'},
-    {value: 'kd_kimKhi', label: '(HM) Kinh Doanh Kim Khí'}
+    {value: 'kd_kimKhi', label: '(HM) Kinh Doanh Kim Khí'},
+    {value: 'kd_chung', label: '(HM) Kinh Doanh'}
   ];
   phuongAnOptionsTrungHan = [
     {value: 'sanXuat', label: 'Sản Xuất'},
@@ -2425,49 +2427,71 @@ export class CreateCreditContractComponent implements OnInit {
 
     tableData.rows
       .filter(row => row[0] !== 'Tổng cộng')
-      .forEach((rowData) => {
-
-        const row = this.fb.group({
-          ngayGiaiNgan: [rowData[1] || ''],
-          ngayDenHan: [rowData[2] || ''],
-          soDuGoc: [rowData[3] || '']
+      .forEach(rowData => {
+        // dùng chung addPhuLucHanMucRow để dòng cũ cũng có logic +10 tháng
+        this.addPhuLucHanMucRow({
+          ngayGiaiNgan: rowData[1] || '',
+          ngayDenHan: rowData[2] || '',
+          soDuGoc: this.toNumber(rowData[3])
         });
-
-        row.get('soDuGoc')?.valueChanges.subscribe(() =>
-          this.calculateTongSoDuPhuLuc()
-        );
-
-        table.push(row);
       });
-
-    this.calculateTongSoDuPhuLuc();
   }
 
-  tongSoDuPhuLuc: number = 0;
+  // tongSoDuPhuLuc: number = 0;
+  //
+  // calculateTongSoDuPhuLuc() {
+  //   this.tongSoDuPhuLuc = this.phuLucHanMucTable.controls.reduce((sum, row) => {
+  //     const group = row as FormGroup; // ép kiểu
+  //     const val = Number(group.get('soDuGoc')?.value || 0);
+  //     return sum + val;
+  //   }, 0);
+  // }
 
-  calculateTongSoDuPhuLuc() {
-    this.tongSoDuPhuLuc = this.phuLucHanMucTable.controls.reduce((sum, row) => {
-      const group = row as FormGroup; // ép kiểu
-      const val = Number(group.get('soDuGoc')?.value || 0);
-      return sum + val;
-    }, 0);
-  }
 
-
-  addPhuLucHanMucRow() {
+  addPhuLucHanMucRow(data?: { ngayGiaiNgan?: string; ngayDenHan?: string; soDuGoc?: number }) {
     const row = this.fb.group({
-      ngayGiaiNgan: [''],
-      ngayDenHan: [''],
-      soDuGoc: [0]
+      ngayGiaiNgan: [data?.ngayGiaiNgan ?? ''],
+      ngayDenHan: [data?.ngayDenHan ?? ''],
+      soDuGoc: [data?.soDuGoc ?? 0]
     });
 
-    row.get('soDuGoc')?.valueChanges.subscribe(() => this.calculateTongSoDuPhuLuc());
+    // Nhập ngày giải ngân -> tự điền ngày đến hạn (+10 tháng)
+    row.get('ngayGiaiNgan')?.valueChanges.subscribe(value => {
+      const d = this.parseDate(value);
+      if (!d) return; // chưa nhập đủ/đúng dd/MM/yyyy thì bỏ qua
+      row.get('ngayDenHan')?.setValue(
+        this.formatDateHM(this.addMonths(d, 10)),
+        { emitEvent: false }
+      );
+    });
+
     this.phuLucHanMucTable.push(row);
+  }
+
+  private parseDate(s: string | null | undefined): Date | null {
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec((s ?? '').trim());
+    if (!m) return null;
+    const day = +m[1], month = +m[2] - 1, year = +m[3];
+    const dt = new Date(year, month, day);
+    return dt.getFullYear() === year && dt.getMonth() === month && dt.getDate() === day ? dt : null;
+  }
+
+  private addMonths(d: Date, months: number): Date {
+    const day = d.getDate();
+    const r = new Date(d.getFullYear(), d.getMonth() + months, 1);
+    const lastDay = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+    r.setDate(Math.min(day, lastDay)); // ví dụ 31/08 + 10 tháng -> 30/06, không bị tràn sang tháng sau
+    return r;
+  }
+
+  private formatDateHM(d: Date): string {
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`;
   }
 
   removePhuLucHanMucRow(index: number) {
     this.phuLucHanMucTable.removeAt(index);
-    this.calculateTongSoDuPhuLuc();
+    // this.calculateTongSoDuPhuLuc();
   }
 
   initPhuLucHanMucTable() {
@@ -2477,7 +2501,7 @@ export class CreateCreditContractComponent implements OnInit {
     this.addPhuLucHanMucRow();
 
     // Tính tổng ngay từ đầu
-    this.calculateTongSoDuPhuLuc();
+    // this.calculateTongSoDuPhuLuc();
   }
 
 //THÊM NHIỀU TÀI SẢN
@@ -3045,5 +3069,15 @@ export class CreateCreditContractComponent implements OnInit {
     this.destroy$.next();
     this.destroy$.complete();
   }
+// Thay cho field tongSoDuPhuLuc + calculateTongSoDuPhuLuc()
+  get tongSoDuPhuLuc(): number {
+    return this.phuLucHanMucTable.controls.reduce(
+      (sum, row) => sum + this.toNumber(row.get('soDuGoc')?.value), 0);
+  }
 
+  private toNumber(v: any): number {
+    if (typeof v === 'number') return v;
+    const n = Number(String(v ?? '').replace(/[^\d-]/g, ''));
+    return isNaN(n) ? 0 : n;
+  }
 }

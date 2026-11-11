@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {HttpErrorResponse} from "@angular/common/http";
-import {MatPaginator} from "@angular/material/paginator";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {CreditContract} from "../../../model/CreditContract";
 import {CreditContractService} from "../../../service/credit-contract.service";
@@ -9,6 +9,10 @@ import {Router} from "@angular/router";
 import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete.component";
 import {MatDialog} from "@angular/material/dialog";
 import {TokenService} from "../../../service/token.service";
+import {CreditContractListItem} from "../../../model/CreditContractListItem";
+import {catchError, debounceTime, of, Subject, switchMap, takeUntil, tap} from "rxjs";
+
+
 
 @Component({
   selector: 'app-list-credit-contract',
@@ -16,12 +20,23 @@ import {TokenService} from "../../../service/token.service";
   styleUrls: ['./list-credit-contract.component.css']
 })
 export class ListCreditContractComponent implements OnInit {
-  listCreditContract: CreditContract[] = [];
-  dataSource: MatTableDataSource<CreditContract> = new MatTableDataSource<CreditContract>([]);
+  dataSource: MatTableDataSource<CreditContractListItem> = new MatTableDataSource<CreditContractListItem>([]);
 
   // Trạng thái thu gọn / mở rộng bảng
   collapsed = false;
   isAdmin = false;
+
+  // Phân trang và tìm kiếm do server xử lý
+  total = 0;
+  pageIndex = 0;
+  pageSize = 50;
+  loading = false;
+  searchKeyword: string = '';
+
+  private readonly load$ = new Subject<void>();
+  private readonly keyword$ = new Subject<string>();
+  private readonly destroy$ = new Subject<void>();
+
   // Cột luôn hiển thị (chuyển tên cột qua lại giữa các nhóm để tùy chỉnh)
   private readonly alwaysColumns: string[] = [
     'id', 'tenKhachHang', 'cccdKhachHang', 'loaiVay', 'soHopDongTD'
@@ -30,18 +45,13 @@ export class ListCreditContractComponent implements OnInit {
   // Nhóm cột bị ẩn khi thu gọn
   private readonly collapsibleColumns: string[] = [
     'namSinhKhachHang', 'phoneKhachHang', 'soTheThanhVienKhachHang',
-    'reLoanSequence', 'muchDichVay', 'tatToan'
+    'reLoanSequence', 'muchDichVay', 'tatToan', 'createdByUsername', 'createdAt'
   ];
 
   // Cột thao tác luôn nằm cuối
   private readonly actionColumns: string[] = ['update', 'delete'];
 
   displayedColumns: string[] = [];
-
-  // Từ khóa tìm kiếm
-  searchKeyword: string = '';
-
-  @ViewChild(MatPaginator) paginator?: MatPaginator;
 
   constructor(private creditContractService: CreditContractService,
               private router: Router,
@@ -52,15 +62,46 @@ export class ListCreditContractComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.collapsed = localStorage.getItem('creditContractCollapsed') === 'true';
-    this.updateColumns();
-    this.loadListCreditContract();
     const roles: any[] = this.tokenService.getRole() || [];
     this.isAdmin = roles.some(r => (r?.authority ?? r) === 'ADMIN');
-    // Người không phải ADMIN: bỏ hẳn cột xoá (cả tiêu đề lẫn nút)
-    if (!this.isAdmin) {
-      this.displayedColumns = this.displayedColumns.filter(c => c !== 'delete');
-    }
+
+    this.collapsed = localStorage.getItem('creditContractCollapsed') === 'true';
+    this.updateColumns();
+
+    // Mỗi lần load$ phát ra thì gọi API; yêu cầu cũ bị hủy nếu có yêu cầu mới (switchMap)
+    this.load$.pipe(
+      tap(() => this.loading = true),
+      switchMap(() =>
+        this.creditContractService
+          .searchCreditContracts(this.searchKeyword.trim(), this.pageIndex, this.pageSize)
+          .pipe(catchError(() => of(null)))
+      ),
+      takeUntil(this.destroy$)
+    ).subscribe(res => {
+      this.loading = false;
+      if (res) {
+        this.dataSource.data = res.content;
+        this.total = res.totalElements;
+      } else {
+        this.notify('Không tải được danh sách hợp đồng');
+      }
+    });
+
+    // Gõ phím: chờ 300ms rồi mới gọi API, và quay về trang đầu
+    this.keyword$.pipe(
+      debounceTime(300),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.pageIndex = 0;
+      this.load$.next();
+    });
+
+    this.load$.next();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   toggleCollapse(): void {
@@ -70,69 +111,40 @@ export class ListCreditContractComponent implements OnInit {
   }
 
   private updateColumns(): void {
+    const actions = this.isAdmin
+      ? this.actionColumns
+      : this.actionColumns.filter(c => c !== 'delete'); // không phải ADMIN: bỏ cột xóa
     this.displayedColumns = [
       ...this.alwaysColumns,
       ...(this.collapsed ? [] : this.collapsibleColumns),
-      ...this.actionColumns,
+      ...actions,
     ];
   }
 
-  goToEdit(element: any) {
+  goToEdit(element: CreditContractListItem) {
     this.router.navigate(['/credit-contract-update', element.id]);
   }
 
-  loadListCreditContract() {
-    this.creditContractService.getListCreditContract().subscribe(data => {
-      this.listCreditContract = data;
-      console.log('listCreditContract', this.listCreditContract);
-      this.dataSource = new MatTableDataSource<CreditContract>(this.listCreditContract);
-      this.dataSource.paginator = this.paginator ?? null;
-
-      // filterPredicate custom để search gần đúng nhiều field
-      this.dataSource.filterPredicate = (element: any, filter: string): boolean => {
-        const normalize = (val: any) =>
-          (val ?? '').toString().toLowerCase().normalize('NFC');
-
-        const searchableFields = [
-          element.soHopDongTD,
-          element.tenKhachHang,
-          element.cccdKhachHang,
-          element.phoneKhachHang,
-          element.soTheThanhVienKhachHang,
-          element.namSinhKhachHang,
-          element.loaiVay,
-          element.muchDichVay,
-          element.pavvRequest?.reLoanSequence,
-          ...(element.taiSanArray ?? []).flatMap((ts: any) => [
-            ts.soHopDongTheChapQSDD,
-            ts.dungTenBiaDo1,
-            ts.dungTenBiaDo2,
-            ts.cccdDungTenBiaDo1,
-            ts.cccdDungTenBiaDo2,
-          ])
-        ];
-
-        const combined = searchableFields.map(normalize).join(' ');
-        return combined.includes(normalize(filter));
-      };
-    });
+  // Gọi khi gõ vào ô tìm kiếm
+  onKeywordChange(): void {
+    this.keyword$.next(this.searchKeyword);
   }
 
-  // Áp dụng filter khi gõ vào ô search
-  applyFilter(): void {
-    this.dataSource.filter = this.searchKeyword.trim();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+  // Gọi khi đổi trang hoặc đổi số dòng mỗi trang
+  onPage(e: PageEvent): void {
+    this.pageIndex = e.pageIndex;
+    this.pageSize = e.pageSize;
+    this.load$.next();
   }
 
   // Xóa từ khóa tìm kiếm
   clearSearch(): void {
     this.searchKeyword = '';
-    this.applyFilter();
+    this.pageIndex = 0;
+    this.load$.next();
   }
 
-  deleteCreditContract(element: CreditContract): void {
+  deleteCreditContract(element: CreditContractListItem): void {
     const dialogRef = this.dialog.open(DialogDeleteComponent, {
       width: '400px',
       data: {
@@ -144,15 +156,15 @@ export class ListCreditContractComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (!result) return;
 
-      this.creditContractService.deleteCreditContract(element.id!).subscribe({
+      this.creditContractService.deleteCreditContract(element.id).subscribe({
         next: () => {
-          this.removeFromList(element.id!);
+          this.reloadAfterDelete();
           this.notify('Xóa hợp đồng thành công');
         },
         error: (err: HttpErrorResponse) => {
           if (err.status === 404) {
-            // Đã bị xóa từ trước (tab khác, người khác...) -> gỡ khỏi bảng
-            this.removeFromList(element.id!);
+            // Đã bị xóa từ trước (tab khác, người khác...) -> tải lại danh sách
+            this.reloadAfterDelete();
             this.notify('Hợp đồng không còn tồn tại');
           } else if (err.status === 403) {
             this.notify('Bạn không có quyền xóa hợp đồng này');
@@ -164,9 +176,12 @@ export class ListCreditContractComponent implements OnInit {
     });
   }
 
-  private removeFromList(id: number): void {
-    this.listCreditContract = this.listCreditContract.filter(item => item.id !== id);
-    this.dataSource.data = this.listCreditContract; // filter và paginator giữ nguyên
+  // Tải lại trang hiện tại; nếu vừa xóa dòng cuối của trang cuối thì lùi về trang trước
+  private reloadAfterDelete(): void {
+    if (this.dataSource.data.length === 1 && this.pageIndex > 0) {
+      this.pageIndex--;
+    }
+    this.load$.next();
   }
 
   private notify(message: string): void {

@@ -1,0 +1,31 @@
+<div class="container" style="max-width: 450px; margin: 40px auto;">
+  <h2>Thông tin cá nhân</h2>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+
+    <!-- Tên hiển thị -->
+    <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-label>Họ và tên</mat-label>
+      <input matInput formControlName="name">
+      <mat-error *ngIf="profileForm.get('name')?.hasError('required')">Tên không được để trống</mat-error>
+      <mat-error *ngIf="profileForm.get('name')?.hasError('minlength')">Tên phải từ 3 ký tự trở lên</mat-error>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email">
+      <mat-error *ngIf="profileForm.get('email')?.hasError('required')">Email không được để trống</mat-error>
+      <mat-error *ngIf="profileForm.get('email')?.hasError('email')">Email không đúng định dạng</mat-error>
+    </mat-form-field>
+
+    <!-- Thông báo -->
+    <p *ngIf="errorMessage" class="text-danger" style="color: red;">{{ errorMessage }}</p>
+    <p *ngIf="successMessage" class="text-success" style="color: green;">{{ successMessage }}</p>
+
+    <!-- Nút lưu -->
+    <button mat-raised-button color="primary" type="submit" [disabled]="profileForm.invalid" class="w-100" style="width: 100%; padding: 10px;">
+      Lưu thay đổi
+    </button>
+  </form>
+</div>
