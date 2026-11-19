@@ -1,0 +1,20 @@
+.kpi-home { max-width: 1200px; margin: auto; padding: 16px; }
+.kpi-title { margin: 0 0 16px; text-align: left; }
+.kpi-toolbar { display: flex; gap: 16px; align-items: center; margin-bottom: 16px; }
+.kpi-bo-phan { display: flex; gap: 8px; }
+.kpi-table { width: 100%; }
+.dong-kpi { cursor: pointer; }
+.dong-kpi:hover { background: #f5f5f5; }
+.dong-dang-chon { background: #e3f2fd; }
+.khong-co-du-lieu { padding: 24px; text-align: center; color: #666; }
+.diem-am { color: #c62828; }
+.xep-loai { display: inline-block; min-width: 28px; padding: 2px 8px; border-radius: 12px; color: #fff; text-align: center; font-weight: 600; }
+.loai-A { background: #2e7d32; }
+.loai-B { background: #1565c0; }
+.loai-C { background: #ef6c00; }
+.loai-D { background: #c62828; }
+.kpi-chi-tiet { margin-top: 16px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; text-align: left; }
+.chi-tiet-dong { display: grid; grid-template-columns: 2fr 1fr 3fr; padding: 4px 0; }
+.ghi-chu { color: #666; }
+.ly-do-tru { color: #c62828; }
+.kpi-chi-tiet-nut { display: flex; gap: 8px; margin-top: 12px; }

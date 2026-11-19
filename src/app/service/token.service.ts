@@ -70,4 +70,16 @@ export class TokenService {
     const isAminRole = this.getRole().includes('ADMIN')? true : false;
     return isAminRole;
   }
+  getPhone(): string {
+    return sessionStorage.getItem('phone') || '';
+  }
+  setPhone(phone: string): void {
+    sessionStorage.setItem('phone', phone);
+  }
+  getAddress(): string {
+    return sessionStorage.getItem('address') || '';
+  }
+  setAddress(address: string): void {
+    sessionStorage.setItem('address', address);
+  }
 }

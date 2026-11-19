@@ -1,0 +1,254 @@
+<div class="kpi-ketoan">
+  <mat-card>
+    <div class="kpi-header">
+      <button mat-button routerLink="/kpi-management">← Về bảng tổng hợp</button>
+      <h2>KPI Kế Toán</h2>
+    </div>
+
+    <div class="kpi-toolbar">
+      <label>Kỳ:</label>
+      <input type="month" [(ngModel)]="ky" (ngModelChange)="tai()"/>
+    </div>
+
+    <!-- ===== THEO NĂM: Mục tiêu huy động. Mọi người xem được, chỉ ADMIN được sửa ===== -->
+    <div class="muc-tieu-nam">
+      <h4>
+        Mục tiêu huy động vốn năm
+        <span class="ghi-chu" *ngIf="!isAdmin">(chỉ xem, chỉ ADMIN được sửa)</span>
+      </h4>
+
+      <div class="dinh-muc-dong" *ngIf="isAdmin">
+        <label>Năm</label>
+        <input type="number" min="2020" [(ngModel)]="mucTieuForm.nam"/>
+        <label>Mục tiêu dư huy động cuối năm (đồng)</label>
+        <input type="text" inputmode="numeric" appTienInput class="o-muc-tieu"
+               [(ngModel)]="mucTieuForm.mucTieuHuyDong"/>
+        <button mat-raised-button color="primary" (click)="luuMucTieu()">Lưu mục tiêu</button>
+      </div>
+
+      <ng-container *ngIf="data?.mucTieuNam as mt; else chuaCoMucTieu">
+        <table class="kpi-table">
+          <thead>
+          <tr>
+            <th>Năm</th>
+            <th>Mục tiêu cuối năm</th>
+            <th>Dư huy động hiện tại</th>
+            <th>Đã đạt</th>
+            <th>Còn thiếu</th>
+            <th>Cần tăng bình quân/tháng</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>{{ mt.nam }}</td>
+            <td class="so-tien">{{ mt.mucTieuHuyDong | number:'1.0-0' }}</td>
+            <td class="so-tien">{{ mt.duCuoiKy | number:'1.0-0' }}</td>
+            <td>{{ (mt.tyLeDat * 100) | number:'1.0-1' }}%</td>
+            <td class="so-tien">{{ mt.conThieu | number:'1.0-0' }}</td>
+            <td class="so-tien">{{ mt.canTangMoiThang | number:'1.0-0' }}</td>
+          </tr>
+          </tbody>
+        </table>
+        <p class="ghi-chu">
+          Tính theo dư cuối kỳ {{ ky }}, còn {{ mt.soThangConLai }} tháng đến hết năm {{ mt.nam }}.
+        </p>
+      </ng-container>
+      <ng-template #chuaCoMucTieu>
+        <p class="ghi-chu">Chưa đặt mục tiêu huy động.</p>
+      </ng-template>
+    </div>
+
+    <!-- ===== THEO THÁNG: Định mức. Mọi người xem được, chỉ ADMIN được sửa ===== -->
+    <div class="dinh-muc">
+      <h4>
+        Định mức tháng
+        <span class="ghi-chu" *ngIf="!isAdmin">(chỉ xem, chỉ ADMIN được sửa)</span>
+      </h4>
+      <div class="dinh-muc-dong">
+        <label>Số khách</label>
+        <input type="number" min="1" [(ngModel)]="dinhMucForm.dinhMucKhach" [disabled]="!isAdmin"/>
+        <label>Số lượt</label>
+        <input type="number" min="1" [(ngModel)]="dinhMucForm.dinhMucLuot" [disabled]="!isAdmin"/>
+        <label>Huy động tăng ròng, Trụ sở chính (đồng)</label>
+        <input type="text" inputmode="numeric" appTienInput [(ngModel)]="dinhMucForm.dinhMucHuyDong01"
+               [disabled]="!isAdmin"/>
+        <label>Huy động tăng ròng, Phòng giao dịch (đồng)</label>
+        <input type="text" inputmode="numeric" appTienInput [(ngModel)]="dinhMucForm.dinhMucHuyDong02"
+               [disabled]="!isAdmin"/>
+      </div>
+      <div class="dinh-muc-dong">
+        <label>Điểm khách</label>
+        <input type="number" min="0" [(ngModel)]="dinhMucForm.trongSoKhach" [disabled]="!isAdmin"/>
+        <label>Điểm lượt</label>
+        <input type="number" min="0" [(ngModel)]="dinhMucForm.trongSoLuot" [disabled]="!isAdmin"/>
+        <label>Điểm huy động</label>
+        <input type="number" min="0" [(ngModel)]="dinhMucForm.trongSoHuyDong" [disabled]="!isAdmin"/>
+        <span class="ghi-chu">
+          Tổng điểm định lượng:
+          {{ dinhMucForm.trongSoKhach + dinhMucForm.trongSoLuot + dinhMucForm.trongSoHuyDong }} / 50
+        </span>
+      </div>
+      <div class="dinh-muc-dong">
+        <label>Kế toán trưởng (username)</label>
+        <input type="text" [(ngModel)]="dinhMucForm.keToanTruong" [disabled]="!isAdmin"/>
+        <button mat-raised-button color="primary" *ngIf="isAdmin" (click)="luuDinhMuc()">Lưu định mức</button>
+      </div>
+    </div>
+
+    <!-- ===== Phân chi nhánh kế toán: đóng/mở. Mọi người xem được, chỉ ADMIN được sửa ===== -->
+    <div class="phan-chi-nhanh" *ngIf="nhanVien.length">
+      <button mat-button type="button" class="phan-chi-nhanh-tieu-de"
+              [attr.aria-expanded]="moPhanChiNhanh"
+              (click)="moPhanChiNhanh = !moPhanChiNhanh">
+        <span>{{ moPhanChiNhanh ? '▾' : '▸' }}</span>
+        Phân chi nhánh kế toán ({{ nhanVien.length }} người)
+        <span class="canh-bao-chua-phan" *ngIf="soChuaPhan > 0">· {{ soChuaPhan }} chưa phân</span>
+      </button>
+
+      <div *ngIf="moPhanChiNhanh">
+        <p class="ghi-chu" *ngIf="!isAdmin">(chỉ xem, chỉ ADMIN được sửa)</p>
+        <table class="kpi-table">
+          <thead>
+          <tr>
+            <th>STT</th>
+            <th>Kế toán</th>
+            <th>Chi nhánh (tính điểm huy động)</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let nv of nhanVien; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ nv.username }}</td>
+            <td>
+              <select [ngModel]="nv.maChiNhanh ?? ''"
+                      (ngModelChange)="doiChiNhanh(nv, $event)"
+                      [disabled]="!isAdmin">
+                <option value="">Chưa phân</option>
+                <option *ngFor="let cn of dsChiNhanh" [value]="cn.ma">{{ cn.ten }}</option>
+              </select>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== THEO THÁNG: Huy động vốn theo chi nhánh. Mọi người đều xem được ===== -->
+    <div class="huy-dong" *ngIf="data?.huyDong?.length">
+      <h4>Huy động vốn kỳ {{ ky }}</h4>
+      <table class="kpi-table">
+        <thead>
+        <tr>
+          <th>Chi nhánh</th>
+          <th>Huy động đầu kỳ</th>
+          <th>Huy động cuối kỳ</th>
+          <th>Tăng/Giảm</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let h of data!.huyDong">
+          <td>{{ h.tenChiNhanh }}</td>
+          <td class="so-tien">{{ h.duDauKy | number:'1.0-0' }}</td>
+          <td class="so-tien">{{ h.duCuoiKy | number:'1.0-0' }}</td>
+          <td class="so-tien" [class.diem-cong]="h.tangRong > 0" [class.diem-tru]="h.tangRong < 0">
+            {{ h.tangRong > 0 ? '+' : '' }}{{ h.tangRong | number:'1.0-0' }}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===== THEO THÁNG: Bảng điểm KPI. Mọi người đều xem được ===== -->
+    <div class="khung-kpi" *ngIf="data">
+      <h4>Bảng điểm KPI kỳ {{ ky }}</h4>
+      <div class="cuon-ngang">
+        <table class="kpi-table">
+          <thead>
+          <tr>
+            <th>STT</th>
+            <th>Kế Toán</th>
+            <th>Số khách</th>
+            <th>Số lượt</th>
+            <th>Huy động</th>
+            <th>Định lượng (50)</th>
+            <th>Định tính (30)</th>
+            <th>Chuyên môn/Kỷ luật (10)</th>
+            <th>Nhiệm vụ KTT (10)</th>
+            <th>Tổng điểm</th>
+            <th>Xếp loại</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let r of data.rows; let i = index"
+              class="dong-kpi"
+              [class.dong-dang-chon]="usernameChon === r.username"
+              (click)="chon(r)">
+            <td>{{ i + 1 }}</td>
+            <td>{{ r.username }} <span class="nhan-ktt" *ngIf="r.laKeToanTruong">KTT</span></td>
+            <td>
+              {{ r.soKhach }} / {{ data.dinhMuc.dinhMucKhach }} ({{ (r.tyLeKhach * 100) | number:'1.0-0' }}%)
+              <div class="diem-tieu-chi">{{ r.diemKhach | number:'1.0-1' }} / {{ data.dinhMuc.trongSoKhach }} điểm</div>
+            </td>
+            <td>
+              {{ r.soLuot }} / {{ data.dinhMuc.dinhMucLuot }} ({{ (r.tyLeLuot * 100) | number:'1.0-0' }}%)
+              <div class="diem-tieu-chi">{{ r.diemLuot | number:'1.0-1' }} / {{ data.dinhMuc.trongSoLuot }} điểm</div>
+            </td>
+            <td>
+              {{ r.soTangRongHuyDong | number:'1.0-0' }} / {{ r.dinhMucHuyDongApDung | number:'1.0-0' }}
+              ({{ (r.tyLeHuyDong * 100) | number:'1.0-0' }}%)
+              <div class="diem-tieu-chi">{{ r.diemHuyDong | number:'1.0-1' }} / {{ data.dinhMuc.trongSoHuyDong }} điểm</div>
+            </td>
+            <td>
+              {{ r.diemDinhLuong | number:'1.0-1' }}
+              <span class="diem-vuot" *ngIf="r.diemVuot > 0">(+{{ r.diemVuot | number:'1.0-1' }} vượt)</span>
+            </td>
+            <td>{{ r.diemDinhTinh | number:'1.0-1' }}</td>
+            <td>{{ r.diemChuyenMon === null ? '-' : (r.diemChuyenMon | number:'1.0-1') }}</td>
+            <td>{{ r.laKeToanTruong ? (r.diemKeToanTruong | number:'1.0-1') : '-' }}</td>
+            <td><b>{{ r.tongDiem | number:'1.0-1' }}</b></td>
+            <td><span class="xep-loai" [ngClass]="'loai-' + r.xepLoai">{{ r.xepLoai }}</span></td>
+          </tr>
+          <tr *ngIf="data.rows.length === 0">
+            <td colspan="11" class="khong-co-du-lieu">Chưa có dữ liệu cho kỳ {{ ky }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="ghi-chu">Bấm vào một dòng để xem và chấm điểm cộng/trừ cho người đó.</p>
+    </div>
+
+    <!-- ===== Chi tiết cộng/trừ của người đang chọn ===== -->
+    <div class="kpi-chi-tiet" *ngIf="dangChon as dc">
+      <h4>Chi tiết điểm cộng/trừ: {{ dc.username }}</h4>
+
+      <p *ngIf="dc.dieuChinh.length === 0" class="ghi-chu">
+        Chưa có lần cộng/trừ điểm nào trong kỳ này.
+      </p>
+
+      <div class="dieu-chinh-dong" *ngFor="let d of dc.dieuChinh">
+        <span class="nhom">
+          {{ d.nhom === 'DINH_TINH' ? 'Định tính' : (d.nhom === 'CHUYEN_MON' ? 'Chuyên môn' : 'Nhiệm vụ KTT') }}
+        </span>
+        <span [class.diem-cong]="d.diem > 0" [class.diem-tru]="d.diem < 0">
+          {{ d.diem > 0 ? '+' : '' }}{{ d.diem }}
+        </span>
+        <span class="ly-do">{{ d.lyDo }}</span>
+        <span class="ghi-chu">{{ d.nguoiNhap }} · {{ d.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        <button mat-icon-button color="warn" *ngIf="coQuyenChamDiem" (click)="xoaDieuChinh(d.id)">✕</button>
+      </div>
+
+      <!-- Nút + / - và lý do: chỉ người được phân quyền thấy -->
+      <div class="form-cham-diem" *ngIf="coQuyenChamDiem">
+        <select [(ngModel)]="form.nhom">
+          <option value="DINH_TINH">Định tính (30)</option>
+          <option value="CHUYEN_MON">Chuyên môn/Kỷ luật (10)</option>
+          <option value="KE_TOAN_TRUONG" [disabled]="!dc.laKeToanTruong">Nhiệm vụ KTT (10, kế toán trưởng)</option>
+        </select>
+        <input type="number" min="2" max="5" [(ngModel)]="form.diem" class="o-diem"/>
+        <input type="text" [(ngModel)]="form.lyDo" placeholder="Lý do cộng/trừ điểm" class="o-ly-do"/>
+        <button mat-raised-button color="primary" (click)="chamDiem(1)">+ Cộng</button>
+        <button mat-raised-button color="warn" (click)="chamDiem(-1)">− Trừ</button>
+      </div>
+    </div>
+  </mat-card>
+</div>

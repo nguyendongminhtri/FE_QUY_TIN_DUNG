@@ -16,7 +16,8 @@ export class ChangeAvatarComponent {
   successMessage = '';
   loading = false;
 
-  private readonly maxSize = 2 * 1024 * 1024;
+  // Giới hạn dung lượng ảnh: 10MB (nên nhỏ hơn hoặc bằng max-file-size ở Spring Boot)
+  private readonly maxSize = 10 * 1024 * 1024;
   private readonly allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
   constructor(private authService: AuthService,
@@ -41,7 +42,7 @@ export class ChangeAvatarComponent {
       return;
     }
     if (file.size > this.maxSize) {
-      this.errorMessage = 'Ảnh tối đa 2MB';
+      this.errorMessage = `Ảnh tối đa ${this.maxSize / (1024 * 1024)}MB`;
       input.value = '';
       return;
     }

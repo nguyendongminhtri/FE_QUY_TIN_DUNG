@@ -42,6 +42,8 @@ import {UserManagementComponent} from "./form_login/user-management/user-managem
 import {adminGuard} from "./guards/guards/admin.guard";
 import {ContractStatsComponent} from "./content/credit-contract/contract-stats/contract-stats.component";
 import {ChangeProfileComponent} from "./form_login/change-profile/change-profile.component";
+import {KpiManagementComponent} from "./content/kpi/kpi-management/kpi-management.component";
+import {KpiKetoanComponent} from "./content/kpi/kpi-ketoan/kpi-ketoan.component";
 
 
 const routes: Routes = [
@@ -90,8 +92,10 @@ const routes: Routes = [
   {path: 'create-credit-contract', component: CreateCreditContractComponent},
   {path: 'list-credit-contract', component: ListCreditContractComponent},
   {path: 'credit-contract-update/:id', component: CreateCreditContractComponent},
-  { path: 'contract-stats', component: ContractStatsComponent, canActivate: [adminGuard] }
-
+  { path: 'contract-stats', component: ContractStatsComponent, canActivate: [adminGuard] },
+  // KPI
+  { path: 'kpi-management', component: KpiManagementComponent},
+  { path: 'kpi-ketoan', component: KpiKetoanComponent},
 ];
 
 @NgModule({

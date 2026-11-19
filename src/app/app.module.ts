@@ -97,6 +97,9 @@ import { UserManagementComponent } from './form_login/user-management/user-manag
 import { ContractStatsComponent } from './content/credit-contract/contract-stats/contract-stats.component';
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import { ChangeProfileComponent } from './form_login/change-profile/change-profile.component';
+import { KpiManagementComponent } from './content/kpi/kpi-management/kpi-management.component';
+import { KpiKetoanComponent } from './content/kpi/kpi-ketoan/kpi-ketoan.component';
+import { TienInputDirective } from './directive/tien-input.directive';
 @NgModule({
   declarations: [
     AppComponent,
@@ -158,6 +161,9 @@ import { ChangeProfileComponent } from './form_login/change-profile/change-profi
     UserManagementComponent,
     ContractStatsComponent,
     ChangeProfileComponent,
+    KpiManagementComponent,
+    KpiKetoanComponent,
+    TienInputDirective,
   ],
   imports: [
     QuillModule.forRoot(),

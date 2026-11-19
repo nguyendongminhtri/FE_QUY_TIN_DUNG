@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit{
     )
     this.authService.signIn(this.signIpForm).subscribe({
       next: data => {
-        console.log('data', data);
+        console.log('data ==== ', data);
         // @ts-ignore
         if (data.status == 202) {
           this.status = 'Login failed! Please check your account!';
@@ -43,7 +43,10 @@ export class LoginComponent implements OnInit{
           this.tokenService.setToken(data.token);
           // @ts-ignore
           this.tokenService.setEmail(data.email);
-
+          // @ts-ignore
+          this.tokenService.setPhone(data.phone);
+          // @ts-ignore
+          this.tokenService.setAddress(data.address);
           // @ts-ignore
           this.tokenService.setRole(data.roles);
           this.router.navigate(['']).then(() => {

@@ -1,0 +1,315 @@
+.kpi-ketoan { max-width: 1200px; margin: auto; padding: 16px; }
+.kpi-header { display: flex; align-items: center; gap: 16px; }
+.kpi-header h2 { margin: 0; }
+.kpi-toolbar { display: flex; gap: 8px; align-items: center; margin: 16px 0; }
+.dinh-muc { margin-bottom: 16px; padding: 12px; border: 1px dashed #bbb; border-radius: 8px; text-align: left; }
+.dinh-muc h4 { margin: 0 0 8px; }
+.dinh-muc-dong { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.dinh-muc-dong input { width: 100px; }
+.kpi-table { width: 100%; border-collapse: collapse; }
+.kpi-table th { padding: 10px 8px; text-align: left; border-bottom: 2px solid #ddd; }
+.kpi-table td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: left; }
+.dong-kpi { cursor: pointer; }
+.dong-kpi:hover { background: #f5f5f5; }
+.dong-dang-chon { background: #e3f2fd; }
+.khong-co-du-lieu { padding: 24px; text-align: center; color: #666; }
+.nhan-ktt { margin-left: 4px; padding: 1px 6px; border-radius: 8px; background: #6a1b9a; color: #fff; font-size: 11px; }
+.xep-loai { display: inline-block; min-width: 28px; padding: 2px 8px; border-radius: 12px; color: #fff; text-align: center; font-weight: 600; }
+.loai-A { background: #2e7d32; }
+.loai-B { background: #1565c0; }
+.loai-C { background: #ef6c00; }
+.loai-D { background: #c62828; }
+.kpi-chi-tiet { margin-top: 16px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; text-align: left; }
+.kpi-chi-tiet h4 { margin: 0 0 8px; }
+.dieu-chinh-dong { display: grid; grid-template-columns: 90px 50px 1fr 200px 40px; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+.diem-cong { color: #2e7d32; font-weight: 600; }
+.diem-tru { color: #c62828; font-weight: 600; }
+.ghi-chu { color: #666; font-size: 12px; }
+.form-cham-diem { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.o-diem { width: 60px; }
+.o-ly-do { flex: 1; min-width: 220px; }
+.diem-vuot {
+  color: #2e7d32;
+  font-size: 12px;
+  margin-left: 4px;
+}
+/* kpi-ketoan.component.css */
+.huy-dong {
+  margin: 16px 0;
+}
+
+.so-tien {
+  text-align: right;
+}
+.diem-tieu-chi {
+  margin-top: 2px;
+  font-weight: 600;
+  color: #1976d2;
+}
+.muc-tieu-nam {
+  margin: 16px 0;
+}
+.phan-chi-nhanh {
+  margin: 16px 0;
+}
+
+.phan-chi-nhanh-tieu-de {
+  font-weight: 600;
+}
+
+.canh-bao-chua-phan {
+  margin-left: 6px;
+  color: #d32f2f;
+}
+.dinh-muc-dong .o-muc-tieu {
+  width: 240px;
+  max-width: 100%;
+  text-align: right;
+}
+/* =====================================================================
+   Chia khung các phần của màn hình KPI kế toán
+   Dán vào CUỐI file kpi-ketoan.component.css (để ghi đè các quy tắc cũ nếu trùng).
+   Màu viền trái: xanh dương = theo tháng, xanh ngọc = theo năm.
+   ===================================================================== */
+
+/* ---------- Khung chung ---------- */
+.muc-tieu-nam,
+.dinh-muc,
+.phan-chi-nhanh,
+.huy-dong,
+.khung-kpi,
+.kpi-chi-tiet {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #1976d2;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Phần theo năm: viền trái màu khác để phân biệt với phần theo tháng */
+.muc-tieu-nam {
+  border-left-color: #00897b;
+}
+
+/* ---------- Tiêu đề từng khung ---------- */
+.muc-tieu-nam h4,
+.dinh-muc h4,
+.huy-dong h4,
+.khung-kpi h4,
+.kpi-chi-tiet h4 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #263238;
+}
+
+/* Nhãn nhỏ cạnh tiêu đề: THEO NĂM / THEO THÁNG */
+.muc-tieu-nam h4::after,
+.dinh-muc h4::after,
+.huy-dong h4::after,
+.khung-kpi h4::after {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.muc-tieu-nam h4::after {
+  content: "THEO NĂM";
+  color: #00695c;
+  background: #e0f2f1;
+}
+
+.dinh-muc h4::after,
+.huy-dong h4::after,
+.khung-kpi h4::after {
+  content: "THEO THÁNG";
+  color: #1565c0;
+  background: #e3f2fd;
+}
+
+/* Ghi chú nhỏ (chỉ xem, tổng điểm, số tháng còn lại...) */
+.muc-tieu-nam .ghi-chu,
+.dinh-muc .ghi-chu,
+.huy-dong .ghi-chu,
+.phan-chi-nhanh .ghi-chu {
+  font-size: 13px;
+  font-weight: 400;
+  color: #757575;
+}
+
+.muc-tieu-nam p.ghi-chu,
+.phan-chi-nhanh p.ghi-chu {
+  margin: 8px 0 0;
+}
+
+/* ---------- Các hàng nhập liệu (định mức, mục tiêu) ---------- */
+.muc-tieu-nam .dinh-muc-dong,
+.dinh-muc .dinh-muc-dong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 10px;
+}
+
+.muc-tieu-nam .dinh-muc-dong label,
+.dinh-muc .dinh-muc-dong label {
+  font-size: 13px;
+  color: #546e7a;
+}
+
+.muc-tieu-nam .dinh-muc-dong input,
+.dinh-muc .dinh-muc-dong input,
+.phan-chi-nhanh select {
+  padding: 6px 8px;
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.muc-tieu-nam .dinh-muc-dong input:focus,
+.dinh-muc .dinh-muc-dong input:focus,
+.phan-chi-nhanh select:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+}
+
+/* Ô chỉ xem (không phải ADMIN) */
+.muc-tieu-nam input:disabled,
+.dinh-muc input:disabled,
+.phan-chi-nhanh select:disabled {
+  background: #f5f5f5;
+  color: #757575;
+}
+
+/* Ô mục tiêu số lớn */
+.dinh-muc-dong .o-muc-tieu {
+  width: 240px;
+  max-width: 100%;
+  text-align: right;
+}
+
+/* ---------- Bảng trong khung: huy động kỳ, mục tiêu năm, phân chi nhánh ---------- */
+.muc-tieu-nam table,
+.huy-dong table,
+.phan-chi-nhanh table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.muc-tieu-nam th,
+.huy-dong th,
+.phan-chi-nhanh th {
+  background: #f5f7fa;
+  color: #455a64;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.muc-tieu-nam td,
+.huy-dong td,
+.phan-chi-nhanh td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eceff1;
+}
+
+/* Cột số căn phải (từ cột thứ 2 trở đi) */
+.muc-tieu-nam th:not(:first-child),
+.muc-tieu-nam td:not(:first-child),
+.huy-dong th:not(:first-child),
+.huy-dong td:not(:first-child) {
+  text-align: right;
+}
+
+/* Dòng "Toàn quỹ" (dòng cuối bảng huy động) nổi bật */
+.huy-dong tbody tr:last-child td {
+  font-weight: 600;
+  background: #fafafa;
+  border-top: 2px solid #cfd8dc;
+}
+
+/* Tăng/giảm */
+.huy-dong .diem-cong {
+  color: #2e7d32;
+}
+
+.huy-dong .diem-tru {
+  color: #c62828;
+}
+
+/* ---------- Khung bảng điểm KPI ---------- */
+.cuon-ngang {
+  overflow-x: auto;
+}
+
+/* Thanh tiêu đề bấm đóng/mở của khối phân chi nhánh */
+.phan-chi-nhanh-tieu-de {
+  padding-left: 0;
+}
+/* ---------- Bảng điểm KPI trong khung ---------- */
+.khung-kpi .kpi-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.khung-kpi .kpi-table th {
+  background: #f5f7fa;
+  color: #455a64;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  vertical-align: bottom;
+  padding: 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.khung-kpi .kpi-table td {
+  padding: 10px;
+  vertical-align: middle;
+  border-bottom: 1px solid #eceff1;
+}
+
+/* Các cột điểm (từ cột 6 trở đi) căn giữa cho dễ so sánh */
+.khung-kpi .kpi-table th:nth-child(n+6),
+.khung-kpi .kpi-table td:nth-child(n+6) {
+  text-align: center;
+}
+
+/* Dòng bấm được */
+.khung-kpi .dong-kpi {
+  cursor: pointer;
+}
+
+.khung-kpi .dong-kpi:hover {
+  background: #f5faff;
+}
+
+.khung-kpi .dong-dang-chon {
+  background: #e3f2fd;
+}
+
+/* Điểm từng tiêu chí không bị rớt dòng */
+.khung-kpi .diem-tieu-chi {
+  margin-top: 2px;
+  font-weight: 600;
+  color: #1976d2;
+  white-space: nowrap;
+}
+
+.khung-kpi .ghi-chu {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #757575;
+}

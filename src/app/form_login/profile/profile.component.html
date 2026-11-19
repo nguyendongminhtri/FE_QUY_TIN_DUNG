@@ -1,16 +1,60 @@
 <div class="container">
   <div class="row">
-    <div class="col-12" style="max-width: 1200px; margin: auto; text-align: center">
+    <div class="col-12 page-wrapper">
+
+      <!-- Thẻ thông tin người đăng nhập -->
+      <mat-card class="profile-card" *ngIf="name">
+        <div class="profile-header">
+          <img class="profile-avatar" [src]="avatar" alt="Avatar">
+          <div class="profile-title">
+            <h2 class="profile-name">{{ name }}</h2>
+            <span class="profile-role" *ngIf="roleLabel">{{ roleLabel }}</span>
+          </div>
+        </div>
+
+        <div class="profile-body">
+          <div class="profile-item">
+            <mat-icon class="profile-icon">email</mat-icon>
+            <div>
+              <div class="profile-label">Email</div>
+              <div class="profile-value">{{ email || 'Chưa cập nhật' }}</div>
+            </div>
+          </div>
+
+          <div class="profile-item">
+            <mat-icon class="profile-icon">phone</mat-icon>
+            <div>
+              <div class="profile-label">Số điện thoại</div>
+              <div class="profile-value">{{ phone || 'Chưa cập nhật' }}</div>
+            </div>
+          </div>
+
+          <div class="profile-item">
+            <mat-icon class="profile-icon">location_on</mat-icon>
+            <div>
+              <div class="profile-label">Địa chỉ</div>
+              <div class="profile-value">{{ address || 'Chưa cập nhật' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-footer">
+          <a routerLink="/change-profile" mat-stroked-button color="primary">Sửa thông tin</a>
+        </div>
+      </mat-card>
+
+      <!-- Menu chức năng -->
       <mat-card>
         <div class="menu-buttons">
           <button routerLink="/list-credit-contract" mat-raised-button color="primary">
             Màn Quản Lý Hợp Đồng Tín Dụng
           </button>
-          <button routerLink="/kpi-ke-toan" mat-raised-button color="accent">
+          <button routerLink="/kpi-management" mat-raised-button color="accent">
             Màn Quản Lý KPI
           </button>
         </div>
       </mat-card>
+
     </div>
   </div>
 </div>

@@ -1,9 +1,9 @@
 export const environment = {
-  // API: 'http://localhost:8080/api/',
-  // SERVER_URL: 'http://localhost:8080',
+  API: 'http://localhost:8080/api/',
+  SERVER_URL: 'http://localhost:8080',
   // API: 'http://163.223.12.221:8080/quy_tin_dung/',
-  API: 'https://qtdndthaihoc.com/api/',
-  SERVER_URL: 'https://qtdndthaihoc.com',
+  // API: 'https://qtdndthaihoc.com/api/',
+  // SERVER_URL: 'https://qtdndthaihoc.com',
 
   firebaseConfig: {
     apiKey: "AIzaSyAHbXIdiO5i-nOweX-szmiNn4JSyrOjDi4",

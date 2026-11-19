@@ -1,0 +1,105 @@
+<div class="kpi-home">
+  <mat-card>
+    <h2 class="kpi-title">Bảng Tổng Hợp Điểm KPI</h2>
+
+    <!-- Thanh kỳ + nút chuyển sang màn từng bộ phận -->
+    <div class="kpi-toolbar">
+      <input type="month" [(ngModel)]="ky" (change)="taiDuLieu()"/>
+
+      <div class="kpi-bo-phan">
+        <button mat-stroked-button *ngFor="let b of dsBoPhan" (click)="diDenBoPhan(b.ma)">
+          {{ b.ten }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Bảng điểm -->
+    <table mat-table matSort [dataSource]="dataSource" class="kpi-table">
+
+      <ng-container matColumnDef="stt">
+        <th mat-header-cell *matHeaderCellDef>STT</th>
+        <td mat-cell *matCellDef="let r; let i = index">{{ i + 1 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="hoTen">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Họ tên</th>
+        <td mat-cell *matCellDef="let r">{{ r.hoTen }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="boPhan">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Bộ phận</th>
+        <td mat-cell *matCellDef="let r">{{ r.boPhan }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="chucVu">
+        <th mat-header-cell *matHeaderCellDef>Chức vụ</th>
+        <td mat-cell *matCellDef="let r">{{ r.chucVu }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="dinhLuong">
+        <th mat-header-cell *matHeaderCellDef>Định lượng</th>
+        <td mat-cell *matCellDef="let r">{{ r.diemDinhLuong | number:'1.0-1' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="dinhTinh">
+        <th mat-header-cell *matHeaderCellDef>Định tính</th>
+        <td mat-cell *matCellDef="let r">{{ r.diemDinhTinh | number:'1.0-1' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="congTru">
+        <th mat-header-cell *matHeaderCellDef>Cộng/Trừ</th>
+        <td mat-cell *matCellDef="let r" [class.diem-am]="r.diemTru > 0">
+          {{ (r.diemCongThem - r.diemTru) | number:'1.0-1' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="tongDiem">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tổng điểm</th>
+        <td mat-cell *matCellDef="let r"><b>{{ r.tongDiem | number:'1.0-1' }}</b></td>
+      </ng-container>
+
+      <ng-container matColumnDef="xepLoai">
+        <th mat-header-cell *matHeaderCellDef>Xếp loại</th>
+        <td mat-cell *matCellDef="let r">
+          <span class="xep-loai" [ngClass]="'loai-' + r.xepLoai">{{ r.xepLoai }}</span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="cot"></tr>
+      <tr mat-row *matRowDef="let row; columns: cot"
+          class="dong-kpi"
+          [class.dong-dang-chon]="dangMo === row"
+          (click)="moChiTiet(row)"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell khong-co-du-lieu" [attr.colspan]="cot.length">
+          Chưa có dữ liệu KPI cho kỳ {{ ky }}
+        </td>
+      </tr>
+    </table>
+
+    <!-- Chi tiết dòng đang chọn -->
+    <div class="kpi-chi-tiet" *ngIf="dangMo">
+      <h4>Chi tiết: {{ dangMo.hoTen }} ({{ dangMo.chucVu }})</h4>
+
+      <div class="chi-tiet-dong" *ngFor="let c of dangMo.chiTiet">
+        <span>{{ c.ten }}</span>
+        <span>{{ c.diem }} / {{ c.toiDa }}</span>
+        <span class="ghi-chu">{{ c.ghiChu }}</span>
+      </div>
+
+      <p *ngIf="dangMo.lyDoTru" class="ly-do-tru">
+        Lý do trừ điểm: {{ dangMo.lyDoTru }}
+      </p>
+
+      <div class="kpi-chi-tiet-nut">
+        <button mat-stroked-button (click)="diDenManTinh(dangMo)">
+          Xem màn tính điểm
+        </button>
+        <button mat-stroked-button color="warn" *ngIf="coQuyenTruDiem">
+          Trừ điểm định tính
+        </button>
+      </div>
+    </div>
+  </mat-card>
+</div>

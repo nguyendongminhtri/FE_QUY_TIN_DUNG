@@ -208,8 +208,6 @@ export class CreateCreditContractComponent implements OnInit {
       ngayCapCCCDKhachHang: [''],
       diaChiThuongTruKhachHang: [''],
       gtnt: [''],
-      tenNguoiThan: [''],
-      namSinhNguoiThan: [''],
       cccdNguoiThan: [''],
       ngayCapCCCDNguoiThan: [''],
       diaChiThuongTruNguoiThan: [''],
@@ -217,6 +215,8 @@ export class CreateCreditContractComponent implements OnInit {
       tienSo: [''],
       muchDichVay: [''],
       soBBXetDuyetChoVay: [''],
+      namSinhNguoiThan: [''],
+      tenNguoiThan: [''],
       hanMuc: ['12'],
       laiSuat: ['10,0%/năm'],
       ngayKetThucKyHanVay: [''],
@@ -833,14 +833,29 @@ export class CreateCreditContractComponent implements OnInit {
 
 //CẬP NHẬT THÔNG TIN TABLE1  XÁC ĐỊNH GIÁ TRỊ TSBĐ
   updateTable1Row(row: FormGroup) {
-    const col2 = this.parseNumber(row.get('col2')?.value);
-    const col5 = this.parseNumber(row.get('col5')?.value);
+    const col2 = this.parseCurrency(row.get('col2')?.value);
+    const col5 = this.parseArea(row.get('col5')?.value);
 
-    if (!col2 || !col5) return;   // 👈 cùng pattern — bỏ qua khi thiếu dữ liệu, không reset col7
-    const result = col2 * col5;
+    if (!col2 || !col5) return;
+    const result = Math.round(col2 * col5);
     row.get('col7')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
   }
 
+  updateTable2Row(row: FormGroup) {
+    const col7 = this.parseCurrency(row.get('col7')?.value);
+    const col5 = this.parseArea(row.get('col5')?.value);
+
+    const result = col5 > 0 ? Math.round(col7 / col5) : 0;
+    row.get('col2')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
+  }
+
+  updateTable3Row(row: FormGroup) {
+    const col7 = this.parseCurrency(row.get('col7')?.value);
+    const col5 = this.parseArea(row.get('col5')?.value);
+
+    const result = col5 > 0 ? Math.round(col7 / col5) : 0;
+    row.get('col2')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
+  }
 
   private parseArea(val: any): number {
     if (val == null) return 0;
@@ -936,23 +951,6 @@ export class CreateCreditContractComponent implements OnInit {
       }
     });
   }
-
-  updateTable2Row(row: FormGroup) {
-    const col7 = this.parseNumber(row.get('col7')?.value);
-    const col5 = this.parseNumber(row.get('col5')?.value);
-
-    const result = col5 > 0 ? Math.round(col7 / col5) : 0;   // 👈 luôn có nhánh else
-    row.get('col2')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
-  }
-
-  updateTable3Row(row: FormGroup) {
-    const col7 = this.parseNumber(row.get('col7')?.value);
-    const col5 = this.parseNumber(row.get('col5')?.value);
-
-    const result = col5 > 0 ? Math.round(col7 / col5) : 0;   // 👈 luôn có nhánh else
-    row.get('col2')?.setValue(result.toLocaleString('vi-VN'), {emitEvent: false});
-  }
-
 
   private applyConditionalControls(contract: any): void {
     if (contract.checkOption) {

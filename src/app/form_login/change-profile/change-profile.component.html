@@ -19,6 +19,22 @@
       <mat-error *ngIf="profileForm.get('email')?.hasError('email')">Email không đúng định dạng</mat-error>
     </mat-form-field>
 
+    <!-- Số điện thoại -->
+    <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-label>Số điện thoại</mat-label>
+      <input matInput formControlName="phone" type="tel">
+      <mat-error *ngIf="profileForm.get('phone')?.hasError('required')">Số điện thoại không được để trống</mat-error>
+      <mat-error *ngIf="profileForm.get('phone')?.hasError('pattern')">Số điện thoại không hợp lệ (VD: 0912345678)</mat-error>
+    </mat-form-field>
+
+    <!-- Địa chỉ -->
+    <mat-form-field appearance="outline" class="w-100 mb-3">
+      <mat-label>Địa chỉ</mat-label>
+      <textarea matInput formControlName="address" rows="2"></textarea>
+      <mat-error *ngIf="profileForm.get('address')?.hasError('required')">Địa chỉ không được để trống</mat-error>
+      <mat-error *ngIf="profileForm.get('address')?.hasError('maxlength')">Địa chỉ tối đa 255 ký tự</mat-error>
+    </mat-form-field>
+
     <!-- Thông báo -->
     <p *ngIf="errorMessage" class="text-danger" style="color: red;">{{ errorMessage }}</p>
     <p *ngIf="successMessage" class="text-success" style="color: green;">{{ successMessage }}</p>
