@@ -69,12 +69,17 @@
         <input type="number" min="1" [(ngModel)]="dinhMucForm.dinhMucKhach" [disabled]="!isAdmin"/>
         <label>Số lượt</label>
         <input type="number" min="1" [(ngModel)]="dinhMucForm.dinhMucLuot" [disabled]="!isAdmin"/>
-        <label>Huy động tăng ròng, Trụ sở chính (đồng)</label>
-        <input type="text" inputmode="numeric" appTienInput [(ngModel)]="dinhMucForm.dinhMucHuyDong01"
-               [disabled]="!isAdmin"/>
-        <label>Huy động tăng ròng, Phòng giao dịch (đồng)</label>
-        <input type="text" inputmode="numeric" appTienInput [(ngModel)]="dinhMucForm.dinhMucHuyDong02"
-               [disabled]="!isAdmin"/>
+        <div class="o-nhap-nhom">
+          <label>Chỉ tiêu huy động TSC (đồng)</label>
+          <input type="text" inputmode="numeric" appTienInput [(ngModel)]="dinhMucForm.dinhMucHuyDong01"
+                 [disabled]="!isAdmin"/>
+        </div>
+
+        <div class="o-nhap-nhom">
+          <label>Chỉ tiêu huy động, PGD (đồng)</label>
+          <input type="text" inputmode="numeric" appTienInput [(ngModel)]="dinhMucForm.dinhMucHuyDong02"
+                 [disabled]="!isAdmin"/>
+        </div>
       </div>
       <div class="dinh-muc-dong">
         <label>Điểm khách</label>
@@ -112,7 +117,7 @@
           <tr>
             <th>STT</th>
             <th>Kế toán</th>
-            <th>Chi nhánh (tính điểm huy động)</th>
+            <th>Chi nhánh (tính điểm định lượng)</th>
           </tr>
           </thead>
           <tbody>
@@ -158,9 +163,71 @@
       </table>
     </div>
 
-    <!-- ===== THEO THÁNG: Bảng điểm KPI. Mọi người đều xem được ===== -->
+    <!-- ===== THEO THÁNG: Bảng KPI theo chi nhánh = KPI gộp (dùng để chi KPI) ===== -->
+    <div class="khung-kpi" *ngIf="data?.chiNhanh?.length">
+      <h4>Bảng điểm KPI theo chi nhánh kỳ {{ ky }} (KPI gộp, dùng để chi KPI)</h4>
+      <div class="cuon-ngang">
+        <table class="kpi-table">
+          <thead>
+          <tr>
+            <th>Chi nhánh</th>
+            <th>Kế toán</th>
+            <th>Số khách</th>
+            <th>Số lượt</th>
+            <th>Huy động</th>
+            <th>Định lượng (50)</th>
+            <th>Định tính (30)</th>
+            <th>Chuyên môn/Kỷ luật (10)</th>
+            <th>Nhiệm vụ KTT (10)</th>
+            <th>Tổng điểm</th>
+            <th>Xếp loại</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let c of data!.chiNhanh">
+            <td><b>{{ c.tenChiNhanh }}</b></td>
+            <td>
+              {{ c.soNhanVien }} người<span *ngIf="c.soNhanVien > 1"> (có làm thay)</span>
+              <div class="ds-nhan-vien">{{ c.nhanVien.join(', ') }}</div>
+            </td>
+            <td>
+              {{ c.tongKhach | number:'1.0-0' }} / {{ c.dinhMucKhach | number:'1.0-0' }}
+              ({{ (c.tyLeKhach * 100) | number:'1.0-0' }}%)
+              <div class="diem-tieu-chi">{{ c.diemKhach | number:'1.0-1' }} / {{ data!.dinhMuc.trongSoKhach }} điểm</div>
+            </td>
+            <td>
+              {{ c.tongLuot | number:'1.0-0' }} / {{ c.dinhMucLuot | number:'1.0-0' }}
+              ({{ (c.tyLeLuot * 100) | number:'1.0-0' }}%)
+              <div class="diem-tieu-chi">{{ c.diemLuot | number:'1.0-1' }} / {{ data!.dinhMuc.trongSoLuot }} điểm</div>
+            </td>
+            <td>
+              {{ c.tangRong | number:'1.0-0' }} / {{ c.dinhMucHuyDong | number:'1.0-0' }}
+              ({{ (c.tyLeHuyDong * 100) | number:'1.0-0' }}%)
+              <div class="diem-tieu-chi">{{ c.diemHuyDong | number:'1.0-1' }} / {{ data!.dinhMuc.trongSoHuyDong }} điểm</div>
+            </td>
+            <td>
+              {{ c.diemDinhLuong | number:'1.0-1' }}
+              <span class="diem-vuot" *ngIf="c.diemVuot > 0">(+{{ c.diemVuot | number:'1.0-1' }} vượt)</span>
+            </td>
+            <td>{{ c.diemDinhTinh | number:'1.0-1' }}</td>
+            <td>{{ c.diemChuyenMon | number:'1.0-1' }}</td>
+            <td>{{ c.diemKeToanTruong === null ? '-' : (c.diemKeToanTruong | number:'1.0-1') }}</td>
+            <td><b>{{ c.tongDiem | number:'1.0-1' }}</b></td>
+            <td><span class="xep-loai" [ngClass]="'loai-' + c.xepLoai">{{ c.xepLoai }}</span></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="ghi-chu">
+        Mỗi chi nhánh có một kế toán trực nên định mức khách/lượt bằng định mức của một người.
+        Khi có người nghỉ và người khác làm thay, số khách và số lượt của họ được cộng chung.
+        Điểm định tính, chuyên môn và nhiệm vụ KTT của chi nhánh = điểm gốc cộng tổng các lần cộng/trừ của mọi người làm ở chi nhánh đó.
+      </p>
+    </div>
+
+    <!-- ===== THEO THÁNG: Bảng điểm KPI cá nhân (tham khảo). Mọi người đều xem được ===== -->
     <div class="khung-kpi" *ngIf="data">
-      <h4>Bảng điểm KPI kỳ {{ ky }}</h4>
+      <h4>Bảng điểm KPI cá nhân kỳ {{ ky }} (tham khảo)</h4>
       <div class="cuon-ngang">
         <table class="kpi-table">
           <thead>
@@ -169,7 +236,7 @@
             <th>Kế Toán</th>
             <th>Số khách</th>
             <th>Số lượt</th>
-            <th>Huy động</th>
+            <th>Huy động (theo chi nhánh)</th>
             <th>Định lượng (50)</th>
             <th>Định tính (30)</th>
             <th>Chuyên môn/Kỷ luật (10)</th>
@@ -184,7 +251,10 @@
               [class.dong-dang-chon]="usernameChon === r.username"
               (click)="chon(r)">
             <td>{{ i + 1 }}</td>
-            <td>{{ r.username }} <span class="nhan-ktt" *ngIf="r.laKeToanTruong">KTT</span></td>
+            <td>
+              {{ r.username }} <span class="nhan-ktt" *ngIf="r.laKeToanTruong">KTT</span>
+              <div class="ds-nhan-vien">{{ r.tenChiNhanh }}</div>
+            </td>
             <td>
               {{ r.soKhach }} / {{ data.dinhMuc.dinhMucKhach }} ({{ (r.tyLeKhach * 100) | number:'1.0-0' }}%)
               <div class="diem-tieu-chi">{{ r.diemKhach | number:'1.0-1' }} / {{ data.dinhMuc.trongSoKhach }} điểm</div>
@@ -214,7 +284,11 @@
           </tbody>
         </table>
       </div>
-      <p class="ghi-chu">Bấm vào một dòng để xem và chấm điểm cộng/trừ cho người đó.</p>
+      <p class="ghi-chu">
+        Điểm cá nhân chấm theo số khách, số lượt riêng của từng người so với định mức đầy đủ, nên chỉ để tham khảo.
+        Huy động vốn là chỉ tiêu của chi nhánh nên những người cùng chi nhánh có cùng số liệu huy động.
+        KPI dùng để chi theo bảng KPI chi nhánh ở trên. Bấm vào một dòng để xem và chấm điểm cộng/trừ.
+      </p>
     </div>
 
     <!-- ===== Chi tiết cộng/trừ của người đang chọn ===== -->

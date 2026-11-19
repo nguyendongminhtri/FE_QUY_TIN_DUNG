@@ -1,77 +1,3 @@
-.kpi-ketoan { max-width: 1200px; margin: auto; padding: 16px; }
-.kpi-header { display: flex; align-items: center; gap: 16px; }
-.kpi-header h2 { margin: 0; }
-.kpi-toolbar { display: flex; gap: 8px; align-items: center; margin: 16px 0; }
-.dinh-muc { margin-bottom: 16px; padding: 12px; border: 1px dashed #bbb; border-radius: 8px; text-align: left; }
-.dinh-muc h4 { margin: 0 0 8px; }
-.dinh-muc-dong { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.dinh-muc-dong input { width: 100px; }
-.kpi-table { width: 100%; border-collapse: collapse; }
-.kpi-table th { padding: 10px 8px; text-align: left; border-bottom: 2px solid #ddd; }
-.kpi-table td { padding: 10px 8px; border-bottom: 1px solid #eee; text-align: left; }
-.dong-kpi { cursor: pointer; }
-.dong-kpi:hover { background: #f5f5f5; }
-.dong-dang-chon { background: #e3f2fd; }
-.khong-co-du-lieu { padding: 24px; text-align: center; color: #666; }
-.nhan-ktt { margin-left: 4px; padding: 1px 6px; border-radius: 8px; background: #6a1b9a; color: #fff; font-size: 11px; }
-.xep-loai { display: inline-block; min-width: 28px; padding: 2px 8px; border-radius: 12px; color: #fff; text-align: center; font-weight: 600; }
-.loai-A { background: #2e7d32; }
-.loai-B { background: #1565c0; }
-.loai-C { background: #ef6c00; }
-.loai-D { background: #c62828; }
-.kpi-chi-tiet { margin-top: 16px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; text-align: left; }
-.kpi-chi-tiet h4 { margin: 0 0 8px; }
-.dieu-chinh-dong { display: grid; grid-template-columns: 90px 50px 1fr 200px 40px; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
-.diem-cong { color: #2e7d32; font-weight: 600; }
-.diem-tru { color: #c62828; font-weight: 600; }
-.ghi-chu { color: #666; font-size: 12px; }
-.form-cham-diem { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
-.o-diem { width: 60px; }
-.o-ly-do { flex: 1; min-width: 220px; }
-.diem-vuot {
-  color: #2e7d32;
-  font-size: 12px;
-  margin-left: 4px;
-}
-/* kpi-ketoan.component.css */
-.huy-dong {
-  margin: 16px 0;
-}
-
-.so-tien {
-  text-align: right;
-}
-.diem-tieu-chi {
-  margin-top: 2px;
-  font-weight: 600;
-  color: #1976d2;
-}
-.muc-tieu-nam {
-  margin: 16px 0;
-}
-.phan-chi-nhanh {
-  margin: 16px 0;
-}
-
-.phan-chi-nhanh-tieu-de {
-  font-weight: 600;
-}
-
-.canh-bao-chua-phan {
-  margin-left: 6px;
-  color: #d32f2f;
-}
-.dinh-muc-dong .o-muc-tieu {
-  width: 240px;
-  max-width: 100%;
-  text-align: right;
-}
-/* =====================================================================
-   Chia khung các phần của màn hình KPI kế toán
-   Dán vào CUỐI file kpi-ketoan.component.css (để ghi đè các quy tắc cũ nếu trùng).
-   Màu viền trái: xanh dương = theo tháng, xanh ngọc = theo năm.
-   ===================================================================== */
-
 /* ---------- Khung chung ---------- */
 .muc-tieu-nam,
 .dinh-muc,
@@ -84,7 +10,10 @@
   border-left: 4px solid #1976d2;
   border-radius: 8px;
   padding: 14px 16px;
-  margin: 16px 0;
+  margin: 14px auto;
+  width: 100%;
+  max-width: 1180px;
+  box-sizing: border-box;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
@@ -135,18 +64,20 @@
   background: #e3f2fd;
 }
 
-/* Ghi chú nhỏ (chỉ xem, tổng điểm, số tháng còn lại...) */
+/* Ghi chú nhỏ */
 .muc-tieu-nam .ghi-chu,
 .dinh-muc .ghi-chu,
 .huy-dong .ghi-chu,
-.phan-chi-nhanh .ghi-chu {
+.phan-chi-nhanh .ghi-chu,
+.khung-kpi .ghi-chu {
   font-size: 13px;
   font-weight: 400;
   color: #757575;
 }
 
 .muc-tieu-nam p.ghi-chu,
-.phan-chi-nhanh p.ghi-chu {
+.phan-chi-nhanh p.ghi-chu,
+.khung-kpi p.ghi-chu {
   margin: 8px 0 0;
 }
 
@@ -198,38 +129,45 @@
   text-align: right;
 }
 
-/* ---------- Bảng trong khung: huy động kỳ, mục tiêu năm, phân chi nhánh ---------- */
+/* ---------- Bảng trong các khung ---------- */
 .muc-tieu-nam table,
 .huy-dong table,
-.phan-chi-nhanh table {
+.phan-chi-nhanh table,
+.khung-kpi .kpi-table {
   width: 100%;
   border-collapse: collapse;
 }
 
 .muc-tieu-nam th,
 .huy-dong th,
-.phan-chi-nhanh th {
+.phan-chi-nhanh th,
+.khung-kpi .kpi-table th {
   background: #f5f7fa;
   color: #455a64;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   text-align: left;
-  padding: 8px 10px;
+  vertical-align: bottom;
+  padding: 8px;
   border-bottom: 2px solid #e0e0e0;
 }
 
 .muc-tieu-nam td,
 .huy-dong td,
-.phan-chi-nhanh td {
-  padding: 8px 10px;
+.phan-chi-nhanh td,
+.khung-kpi .kpi-table td {
+  padding: 8px;
+  font-size: 13px;
+  vertical-align: middle;
   border-bottom: 1px solid #eceff1;
 }
 
-/* Cột số căn phải (từ cột thứ 2 trở đi) */
+/* Cột số căn phải trong bảng mục tiêu và bảng huy động */
 .muc-tieu-nam th:not(:first-child),
 .muc-tieu-nam td:not(:first-child),
 .huy-dong th:not(:first-child),
-.huy-dong td:not(:first-child) {
+.huy-dong td:not(:first-child),
+.so-tien {
   text-align: right;
 }
 
@@ -240,54 +178,27 @@
   border-top: 2px solid #cfd8dc;
 }
 
-/* Tăng/giảm */
-.huy-dong .diem-cong {
+/* Tăng/giảm, điểm cộng/trừ */
+.diem-cong {
   color: #2e7d32;
 }
 
-.huy-dong .diem-tru {
+.diem-tru {
   color: #c62828;
 }
 
-/* ---------- Khung bảng điểm KPI ---------- */
+/* ---------- Bảng điểm KPI ---------- */
 .cuon-ngang {
+  width: 100%;
   overflow-x: auto;
 }
 
-/* Thanh tiêu đề bấm đóng/mở của khối phân chi nhánh */
-.phan-chi-nhanh-tieu-de {
-  padding-left: 0;
-}
-/* ---------- Bảng điểm KPI trong khung ---------- */
-.khung-kpi .kpi-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.khung-kpi .kpi-table th {
-  background: #f5f7fa;
-  color: #455a64;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: left;
-  vertical-align: bottom;
-  padding: 10px;
-  border-bottom: 2px solid #e0e0e0;
-}
-
-.khung-kpi .kpi-table td {
-  padding: 10px;
-  vertical-align: middle;
-  border-bottom: 1px solid #eceff1;
-}
-
-/* Các cột điểm (từ cột 6 trở đi) căn giữa cho dễ so sánh */
+/* Bảng điểm: các cột điểm (từ cột 6 trở đi) căn giữa */
 .khung-kpi .kpi-table th:nth-child(n+6),
 .khung-kpi .kpi-table td:nth-child(n+6) {
   text-align: center;
 }
 
-/* Dòng bấm được */
 .khung-kpi .dong-kpi {
   cursor: pointer;
 }
@@ -301,15 +212,397 @@
 }
 
 /* Điểm từng tiêu chí không bị rớt dòng */
-.khung-kpi .diem-tieu-chi {
+.diem-tieu-chi {
   margin-top: 2px;
   font-weight: 600;
   color: #1976d2;
   white-space: nowrap;
 }
 
-.khung-kpi .ghi-chu {
-  margin: 8px 0 0;
+/* Số liệu cá nhân khi chi nhánh có người làm thay */
+.ca-nhan {
+  margin-top: 2px;
   font-size: 13px;
-  color: #757575;
+  color: #ef6c00;
+}
+
+/* Tên chi nhánh / danh sách kế toán dưới ô */
+.ds-nhan-vien {
+  margin-top: 2px;
+  font-size: 13px;
+  color: #546e7a;
+}
+
+/* ---------- Khối phân chi nhánh (đóng/mở) ---------- */
+.phan-chi-nhanh-tieu-de {
+  padding-left: 0;
+  font-weight: 600;
+}
+
+.canh-bao-chua-phan {
+  margin-left: 6px;
+  color: #d32f2f;
+}
+
+/* =====================================================================
+   Dễ đọc hơn cho 2 bảng KPI cuối (chi nhánh + cá nhân)
+   ===================================================================== */
+
+.khung-kpi .ds-nhan-vien {
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #00796b;
+}
+
+.khung-kpi .diem-tieu-chi {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 1px 10px;
+  border-radius: 10px;
+  background: #e3f2fd;
+  color: #0d47a1;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.khung-kpi .diem-vuot {
+  margin-left: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.khung-kpi p.ghi-chu {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border-left: 3px solid #092fef;
+  border-radius: 4px;
+  background: #f5f7fa;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #e30a2b;
+}
+
+.khung-kpi .nhan-ktt {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: #6a1b9a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.khung-kpi .kpi-table td:nth-last-child(2) b {
+  font-size: 16px;
+}
+
+.khung-kpi .kpi-table .xep-loai {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.khung-kpi .kpi-table .xep-loai.loai-A {
+  background: #2e7d32;
+}
+
+.khung-kpi .kpi-table .xep-loai.loai-B {
+  background: #1976d2;
+}
+
+.khung-kpi .kpi-table .xep-loai.loai-C {
+  background: #ef6c00;
+}
+
+.khung-kpi .kpi-table .xep-loai.loai-D {
+  background: #c62828;
+}
+
+/* =====================================================================
+   ĐỒNG NHẤT KÍCH CỠ TRÊN DESKTOP
+   ===================================================================== */
+
+@media (min-width: 769px) {
+  .muc-tieu-nam,
+  .dinh-muc,
+  .phan-chi-nhanh,
+  .huy-dong,
+  .khung-kpi,
+  .kpi-chi-tiet {
+    width: 100%;
+    max-width: 1180px;
+    margin: 14px auto;
+  }
+
+  .muc-tieu-nam table,
+  .huy-dong table,
+  .phan-chi-nhanh table,
+  .khung-kpi .kpi-table {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+/* =====================================================================
+   RESPONSIVE CHO DI ĐỘNG & MÀN HÌNH NHỎ
+   ===================================================================== */
+
+@media (max-width: 768px) {
+  .muc-tieu-nam,
+  .dinh-muc,
+  .phan-chi-nhanh,
+  .huy-dong,
+  .khung-kpi,
+  .kpi-chi-tiet {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 6px;
+  }
+
+  .muc-tieu-nam h4,
+  .dinh-muc h4,
+  .huy-dong h4,
+  .khung-kpi h4,
+  .kpi-chi-tiet h4 {
+    font-size: 15px;
+    gap: 6px;
+  }
+
+  .muc-tieu-nam .dinh-muc-dong,
+  .dinh-muc .dinh-muc-dong {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .muc-tieu-nam .dinh-muc-dong label,
+  .dinh-muc .dinh-muc-dong label {
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .muc-tieu-nam .dinh-muc-dong input,
+  .dinh-muc .dinh-muc-dong input,
+  .phan-chi-nhanh select,
+  .dinh-muc-dong .o-muc-tieu {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+  }
+
+  .dinh-muc-dong .o-muc-tieu,
+  .dinh-muc .dinh-muc-dong input[apptieninput] {
+    text-align: right;
+  }
+
+  .cuon-ngang {
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -4px;
+    padding: 0 4px;
+  }
+
+  .muc-tieu-nam table,
+  .huy-dong table,
+  .phan-chi-nhanh table,
+  .khung-kpi .kpi-table {
+    width: 100%;
+    min-width: 680px;
+  }
+
+  .muc-tieu-nam th,
+  .huy-dong th,
+  .phan-chi-nhanh th,
+  .khung-kpi .kpi-table th,
+  .muc-tieu-nam td,
+  .huy-dong td,
+  .phan-chi-nhanh td,
+  .khung-kpi .kpi-table td {
+    padding: 8px;
+    font-size: 12.5px;
+  }
+
+  .khung-kpi .diem-tieu-chi {
+    font-size: 11.5px;
+    padding: 1px 8px;
+  }
+
+  .khung-kpi .kpi-table .xep-loai {
+    width: 28px;
+    height: 28px;
+    font-size: 13.5px;
+  }
+
+  .form-cham-diem {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .form-cham-diem select,
+  .form-cham-diem input,
+  .form-cham-diem button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dieu-chinh-dong {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0;
+    border-bottom: 1px dashed #e0e0e0;
+  }
+}
+
+@media (max-width: 480px) {
+  .muc-tieu-nam,
+  .dinh-muc,
+  .phan-chi-nhanh,
+  .huy-dong,
+  .khung-kpi,
+  .kpi-chi-tiet {
+    padding: 10px;
+  }
+
+  .muc-tieu-nam h4,
+  .dinh-muc h4,
+  .huy-dong h4,
+  .khung-kpi h4,
+  .kpi-chi-tiet h4 {
+    font-size: 14px;
+  }
+
+  .khung-kpi p.ghi-chu {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
+/* =====================================================================
+   CĂN GIỮA & LÀM ĐẸP PHẦN TIÊU ĐỀ + CHỌN KỲ (.kpi-header & .kpi-toolbar)
+   ===================================================================== */
+
+.kpi-header {
+  max-width: 1180px;
+  margin: 12px auto 8px;
+  padding: 0 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.kpi-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.2px;
+}
+
+.kpi-toolbar {
+  max-width: 1180px;
+  margin: 0 auto 14px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  width: fit-content;
+}
+
+.kpi-toolbar label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #455a64;
+  margin: 0;
+}
+
+.kpi-toolbar input[type="month"] {
+  padding: 6px 10px;
+  border: 1px solid #bdbdbd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #263238;
+  background: #fafafa;
+  cursor: pointer;
+}
+
+.kpi-toolbar input[type="month"]:focus {
+  outline: none;
+  border-color: #1976d2;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+}
+
+@media (max-width: 480px) {
+  .kpi-header h2 {
+    font-size: 20px;
+  }
+
+  .kpi-toolbar {
+    width: calc(100% - 8px);
+    box-sizing: border-box;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .kpi-toolbar input[type="month"] {
+    font-size: 13.5px;
+    padding: 5px 8px;
+  }
+}
+.o-nhap-nhom {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.o-nhap-nhom label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #546e7a;
+  line-height: 1.3;
+}
+
+.o-nhap-nhom input {
+  min-width: 190px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .o-nhap-nhom {
+    display: flex;
+    width: 100%;
+  }
+
+  .o-nhap-nhom input {
+    width: 100%;
+    min-width: 0;
+  }
 }

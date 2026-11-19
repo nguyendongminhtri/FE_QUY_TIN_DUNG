@@ -1,6 +1,21 @@
+export interface KpiDinhMuc {
+  id?: number;
+  ky?: string;
+  dinhMucKhach: number;
+  dinhMucLuot: number;
+  dinhMucHuyDong01: number;
+  dinhMucHuyDong02: number;
+  trongSoKhach: number;
+  trongSoLuot: number;
+  trongSoHuyDong: number;
+  keToanTruong: string;
+}
+
 export interface KpiDieuChinh {
   id: number;
-  nhom: 'DINH_TINH' | 'CHUYEN_MON';
+  ky?: string;
+  username?: string;
+  nhom: 'DINH_TINH' | 'CHUYEN_MON' | 'KE_TOAN_TRUONG';
   diem: number;
   lyDo: string;
   nguoiNhap: string;
@@ -10,58 +25,63 @@ export interface KpiDieuChinh {
 export interface KpiKeToanRow {
   username: string;
   laKeToanTruong: boolean;
+  maChiNhanh: string | null;      // '01' | '02' | null (chưa phân)
+  tenChiNhanh: string;
   soKhach: number;
-  soLuot: number;
   tyLeKhach: number;
+  diemKhach: number;
+  soLuot: number;
   tyLeLuot: number;
+  diemLuot: number;
+  soTangRongHuyDong: number;
+  dinhMucHuyDongApDung: number;
+  tyLeHuyDong: number;
+  diemHuyDong: number;
   diemDinhLuong: number;
+  diemVuot: number;
   diemDinhTinh: number;
   diemChuyenMon: number | null;
   diemKeToanTruong: number | null;
   tongDiem: number;
-  xepLoai: 'A' | 'B' | 'C' | 'D';
+  xepLoai: string;
   dieuChinh: KpiDieuChinh[];
-  tyLeHuyDong: number;
-  soTangRongHuyDong: number;        // đồng
-  dinhMucHuyDongApDung: number;     // đồng, định mức theo chi nhánh của người này
-  maChiNhanh: string | null;        // '01' | '02' | 'ALL' | null
-  diemVuot: number;
-  diemKhach: number;
-  diemLuot: number;
-  diemHuyDong: number;
 }
 
-export interface KpiDinhMuc {
-  dinhMucKhach: number;
-  dinhMucLuot: number;
-  dinhMucHuyDong01: number;   // triệu đồng
-  dinhMucHuyDong02: number;   // triệu đồng
-  trongSoKhach: number;
-  trongSoLuot: number;
-  trongSoHuyDong: number;
-  keToanTruong: string;
-}
-
-export interface KpiKeToanResponse {
-  dinhMuc: KpiDinhMuc;
-  rows: KpiKeToanRow[];
-  laAdmin: boolean;
-  coQuyenChamDiem: boolean;
-  huyDong: KpiHuyDongKy[];
-  mucTieuNam: KpiMucTieuNam | null;
-}
 export interface KpiHuyDongKy {
-  maChiNhanh: string;
+  maChiNhanh: string;             // '01' | '02' | 'ALL'
   tenChiNhanh: string;
   duDauKy: number;
   duCuoiKy: number;
   tangRong: number;
 }
-export interface KpiNhanVienChiNhanh {
-  username: string;
-  maChiNhanh: string | null;
-  tenChiNhanh: string | null;
+
+export interface KpiChiNhanhTongHop {
+  maChiNhanh: string;             // '01' | '02'
+  tenChiNhanh: string;
+  soNhanVien: number;
+  nhanVien: string[];
+  tongKhach: number;
+  dinhMucKhach: number;
+  tyLeKhach: number;
+  diemKhach: number;
+  tongLuot: number;
+  dinhMucLuot: number;
+  tyLeLuot: number;
+  diemLuot: number;
+  tangRong: number;
+  dinhMucHuyDong: number;
+  tyLeHuyDong: number;
+  diemHuyDong: number;
+  diemDinhLuong: number;
+  diemVuot: number;
+  diemDinhTinh: number;
+  diemChuyenMon: number;
+  coKeToanTruong: boolean;
+  diemKeToanTruong: number | null;
+  tongDiem: number;
+  xepLoai: string;
 }
+
 export interface KpiMucTieuNam {
   nam: number;
   mucTieuHuyDong: number;
@@ -73,3 +93,17 @@ export interface KpiMucTieuNam {
   nguoiCapNhat: string | null;
 }
 
+export interface KpiNhanVienChiNhanh {
+  username: string;
+  maChiNhanh: string | null;
+  tenChiNhanh: string | null;
+}
+
+export interface KpiKeToanResponse {
+  ky: string;
+  dinhMuc: KpiDinhMuc;
+  rows: KpiKeToanRow[];
+  huyDong: KpiHuyDongKy[];
+  chiNhanh: KpiChiNhanhTongHop[];
+  mucTieuNam: KpiMucTieuNam | null;
+}

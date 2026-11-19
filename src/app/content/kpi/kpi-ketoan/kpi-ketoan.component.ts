@@ -13,22 +13,29 @@ export class KpiKetoanComponent {
   ky = this.thangHienTai();
   data: KpiKeToanResponse | null = null;
   usernameChon: string | null = null;
-  mucTieuForm = {nam: new Date().getFullYear() + 1, mucTieuHuyDong: 0};
+
   // phân quyền: kiểm tra giống navbar
-  isAdmin = false;                 // sửa định mức
+  isAdmin = false;                 // sửa định mức, mục tiêu, phân chi nhánh
   coQuyenChamDiem = false;         // cộng/trừ điểm, nhập lý do
-  moPhanChiNhanh = false;
+
   dinhMucForm: KpiDinhMuc = {
     dinhMucKhach: 250, dinhMucLuot: 350, dinhMucHuyDong01: 0, dinhMucHuyDong02: 0,
     trongSoKhach: 15, trongSoLuot: 20, trongSoHuyDong: 15,
     keToanTruong: ''
   };
   form = {nhom: 'DINH_TINH', diem: 2, lyDo: ''};
+
+  // Mục tiêu huy động năm
+  mucTieuForm = {nam: new Date().getFullYear() + 1, mucTieuHuyDong: 0};
+
+  // Phân chi nhánh cho kế toán
   nhanVien: KpiNhanVienChiNhanh[] = [];
+  moPhanChiNhanh = false;
   dsChiNhanh = [
     {ma: '01', ten: 'Trụ sở chính'},
     {ma: '02', ten: 'Phòng giao dịch'}
   ];
+
   constructor(private route: ActivatedRoute,
               private svc: KpiKetoanService,
               private tokenService: TokenService) {}
@@ -50,21 +57,18 @@ export class KpiKetoanComponent {
   }
 
   get dangChon(): KpiKeToanRow | null {
-    // Thêm ? trước .rows và .find để bảo vệ an toàn tuyệt đối khi rows chưa tồn tại
     return this.data?.rows?.find(r => r.username === this.usernameChon) ?? null;
   }
+
+  get soChuaPhan(): number {
+    return this.nhanVien.filter(nv => !nv.maChiNhanh).length;
+  }
+
   tai(): void {
     this.taiNhanVien();
     this.svc.getKeToan(this.ky).subscribe(res => {
       this.data = res;
-      if (res && res.mucTieuNam) {
-        this.mucTieuForm = {
-          nam: res.mucTieuNam.nam,
-          mucTieuHuyDong: res.mucTieuNam.mucTieuHuyDong
-        };
-      }
-      console.log('data --> ', res);
-      // 👉 Gán dữ liệu định mức vừa lấy được vào dinhMucForm để các ô input hiển thị đúng
+      // Gán dữ liệu định mức vừa lấy được vào dinhMucForm để các ô input hiển thị đúng
       if (res && res.dinhMuc) {
         const dm = res.dinhMuc;
         this.dinhMucForm = {
@@ -78,6 +82,13 @@ export class KpiKetoanComponent {
           keToanTruong: dm.keToanTruong ?? ''
         };
       }
+      // Gán mục tiêu năm vào form (nếu đã có)
+      if (res && res.mucTieuNam) {
+        this.mucTieuForm = {
+          nam: res.mucTieuNam.nam,
+          mucTieuHuyDong: res.mucTieuNam.mucTieuHuyDong
+        };
+      }
     });
   }
 
@@ -87,13 +98,14 @@ export class KpiKetoanComponent {
 
   doiChiNhanh(nv: KpiNhanVienChiNhanh, ma: string): void {
     this.svc.luuChiNhanh(nv.username, ma).subscribe({
-      next: () => this.tai(),   // tải lại để điểm huy động tính theo chi nhánh mới
+      next: () => this.tai(),   // tải lại để điểm tính theo chi nhánh mới
       error: e => {
         alert(e.error?.message || 'Không lưu được chi nhánh');
         this.taiNhanVien();     // trả ô chọn về giá trị cũ
       }
     });
   }
+
   chon(row: KpiKeToanRow): void {
     this.usernameChon = this.usernameChon === row.username ? null : row.username;
     this.form = {nhom: 'DINH_TINH', diem: 2, lyDo: ''};
@@ -102,7 +114,7 @@ export class KpiKetoanComponent {
   luuDinhMuc(): void {
     const f = this.dinhMucForm;
     const tong = Number(f.trongSoKhach) + Number(f.trongSoLuot) + Number(f.trongSoHuyDong);
-    if (tong !== 50) {
+    if (Math.abs(tong - 50) > 0.001) {
       alert(`Tổng điểm định lượng phải bằng 50 (hiện là ${tong})`);
       return;
     }
@@ -121,6 +133,22 @@ export class KpiKetoanComponent {
       error: e => alert(e.error?.message || 'Không lưu được định mức')
     });
   }
+
+  luuMucTieu(): void {
+    const f = this.mucTieuForm;
+    if (!f.nam || !(Number(f.mucTieuHuyDong) > 0)) {
+      alert('Vui lòng nhập năm và mục tiêu lớn hơn 0');
+      return;
+    }
+    this.svc.luuMucTieuNam({nam: Number(f.nam), mucTieuHuyDong: Number(f.mucTieuHuyDong)}).subscribe({
+      next: () => {
+        alert('Lưu mục tiêu thành công!');
+        this.tai();
+      },
+      error: e => alert(e.error?.message || 'Không lưu được mục tiêu')
+    });
+  }
+
   chamDiem(dau: 1 | -1): void {
     const dc = this.dangChon;
     if (!dc) {
@@ -151,22 +179,5 @@ export class KpiKetoanComponent {
   private thangHienTai(): string {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-  }
-  luuMucTieu(): void {
-    const f = this.mucTieuForm;
-    if (!f.nam || !(Number(f.mucTieuHuyDong) > 0)) {
-      alert('Vui lòng nhập năm và mục tiêu lớn hơn 0');
-      return;
-    }
-    this.svc.luuMucTieuNam({nam: Number(f.nam), mucTieuHuyDong: Number(f.mucTieuHuyDong)}).subscribe({
-      next: () => {
-        alert('Lưu mục tiêu thành công!');
-        this.tai();
-      },
-      error: e => alert(e.error?.message || 'Không lưu được mục tiêu')
-    });
-  }
-  get soChuaPhan(): number {
-    return this.nhanVien.filter(nv => !nv.maChiNhanh).length;
   }
 }

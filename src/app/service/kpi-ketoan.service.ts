@@ -9,7 +9,6 @@ import {environment} from "../../environments/environment.development";
   providedIn: 'root'
 })
 export class KpiKetoanService {
-
   private API_KPI_KETOAN = environment.API + 'kpi/ke-toan';
 
   constructor(private http: HttpClient) { }
@@ -20,12 +19,12 @@ export class KpiKetoanService {
     return this.http.get<KpiKeToanResponse>(this.API_KPI_KETOAN, { params });
   }
 
-  // 2. Lưu cấu hình định mức tháng (dùng POST hoặc PUT tùy controller của bạn)
+  // 2. Lưu cấu hình định mức tháng (chỉ ADMIN)
   luuDinhMuc(body: KpiDinhMuc): Observable<KpiDinhMuc> {
     return this.http.post<KpiDinhMuc>(`${this.API_KPI_KETOAN}/dinh-muc`, body);
   }
 
-  // 3. Thêm điểm cộng/trừ định tính hoặc chuyên môn
+  // 3. Thêm điểm cộng/trừ định tính, chuyên môn hoặc nhiệm vụ KTT
   themDieuChinh(body: { ky: string; username: string; nhom: string; diem: number; lyDo: string }): Observable<KpiDieuChinh> {
     return this.http.post<KpiDieuChinh>(`${this.API_KPI_KETOAN}/dieu-chinh`, body);
   }
@@ -35,15 +34,17 @@ export class KpiKetoanService {
     return this.http.delete(`${this.API_KPI_KETOAN}/dieu-chinh/${id}`);
   }
 
-  // 5. (Bổ sung) Lưu phân bổ chi nhánh cho nhân viên (phục vụ bóc tách huy động 01/02)
+  // 5. Lưu phân chi nhánh cho nhân viên (mã rỗng = bỏ phân chi nhánh)
   luuChiNhanh(username: string, maChiNhanh: string): Observable<any> {
     return this.http.post(`${this.API_KPI_KETOAN}/nhan-vien-chi-nhanh`, { username, maChiNhanh });
   }
+
   // 6. Danh sách user kế toán kèm chi nhánh đã gán
   getDanhSachKeToan(ky: string): Observable<KpiNhanVienChiNhanh[]> {
     const params = new HttpParams().set('ky', ky);
     return this.http.get<KpiNhanVienChiNhanh[]>(`${this.API_KPI_KETOAN}/nhan-vien-chi-nhanh`, { params });
   }
+
   // 7. Lưu mục tiêu huy động năm (chỉ ADMIN)
   luuMucTieuNam(body: { nam: number; mucTieuHuyDong: number }): Observable<any> {
     return this.http.post(`${this.API_KPI_KETOAN}/muc-tieu-nam`, body);
