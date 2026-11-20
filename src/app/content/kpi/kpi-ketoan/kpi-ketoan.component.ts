@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {KpiDinhMuc, KpiKeToanResponse, KpiKeToanRow, KpiNhanVienChiNhanh} from "../../../model/KpiKeToanResponse";
 import {ActivatedRoute} from "@angular/router";
 import {KpiKetoanService} from "../../../service/kpi-ketoan.service";
@@ -38,13 +38,18 @@ export class KpiKetoanComponent {
 
   constructor(private route: ActivatedRoute,
               private svc: KpiKetoanService,
-              private tokenService: TokenService) {}
+              private tokenService: TokenService) {
+  }
 
   ngOnInit(): void {
     const roles: any[] = this.tokenService.getRole() || [];
-    const tenRoles: string[] = roles.map(r => r?.authority ?? r);
-    this.isAdmin = tenRoles.includes('ADMIN');
-    this.coQuyenChamDiem = this.isAdmin || tenRoles.includes('PM');   // chỉnh role được chấm điểm tại đây
+    const tenRoles: string[] = roles.map(r => (r?.authority ?? r).replace(/^ROLE_/, ''));
+
+    // Chỉ ADMIN và GD được sửa/lưu mục tiêu năm, định mức tháng, phân chi nhánh
+    this.isAdmin = tenRoles.some(r => ['ADMIN', 'GD'].includes(r));
+
+    // ADMIN, GD, KST, PGDTT, PM được cộng/trừ điểm
+    this.coQuyenChamDiem = tenRoles.some(r => ['ADMIN', 'GD', 'KST', 'PGDTT', 'PM'].includes(r));
 
     this.route.queryParamMap.subscribe(p => {
       const ky = p.get('ky');

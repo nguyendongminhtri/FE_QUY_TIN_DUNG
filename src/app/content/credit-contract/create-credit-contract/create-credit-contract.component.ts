@@ -1,5 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators
+} from "@angular/forms";
 import {CreditContractService} from "../../../service/credit-contract.service";
 import {CreditContract} from "../../../model/CreditContract";
 import {ConvertMoney} from "../../../config/ConvertMoney";
@@ -13,7 +21,16 @@ import {DialogDeleteComponent} from "../../../dialog/dialog-delete/dialog-delete
 import {combineLatest, debounceTime, merge, startWith, Subject, Subscription, takeUntil} from "rxjs";
 
 const COLUMN_ORDER = ['stt', 'danhMuc', 'donVi', 'soLuong', 'donGia'];
-
+export function ddMMyyyyValidator(control: AbstractControl): ValidationErrors | null {
+  const v = control.value;
+  if (!v) return null; // để Validators.required xử lý ô trống
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v);
+  if (!m) return { ddMMyyyy: true };
+  const d = +m[1], mo = +m[2], y = +m[3];
+  const dt = new Date(y, mo - 1, d);
+  const ok = dt.getFullYear() === y && dt.getMonth() === mo - 1 && dt.getDate() === d;
+  return ok ? null : { ddMMyyyy: true };
+}
 @Component({
   selector: 'app-create-credit-contract',
   templateUrl: './create-credit-contract.component.html',
@@ -268,6 +285,7 @@ export class CreateCreditContractComponent implements OnInit {
         chiPhiHangThangTHTD: ['0'],
         noiDungCIC: [''],
         nhanXetCIC: ['Theo kết quả thẩm định và kết quả tra cứu CIC cho thấy khách hàng không có nợ cần chú ý trong 12 tháng gần nhất, không có nợ bán cho VAMC, không có nợ xấu trong 05 năm gần nhất, không bị chậm thanh toán thẻ tín dụng trong 03 năm gần nhất.'],
+        ngayTraCIC: [this.todayDDMMYYYY(), [Validators.required, ddMMyyyyValidator]],
       }),
 
       // // Các bảng phụ
@@ -431,6 +449,7 @@ export class CreateCreditContractComponent implements OnInit {
         noiDungTuLuong: contract.pavvRequest.noiDungTuLuong ?? '',
         noiDungCIC: contract.pavvRequest.noiDungCIC ?? '',
         nhanXetCIC: contract.pavvRequest.nhanXetCIC ?? '',
+        ngayTraCIC: contract.pavvRequest.ngayTraCIC ?? '',
       }
     });
     this.tienChu = contract.tienChu || '';
@@ -3077,5 +3096,11 @@ export class CreateCreditContractComponent implements OnInit {
     if (typeof v === 'number') return v;
     const n = Number(String(v ?? '').replace(/[^\d-]/g, ''));
     return isNaN(n) ? 0 : n;
+  }
+  private todayDDMMYYYY(): string {
+    const t = new Date();
+    const dd = String(t.getDate()).padStart(2, '0');
+    const mm = String(t.getMonth() + 1).padStart(2, '0');
+    return `${dd}/${mm}/${t.getFullYear()}`;
   }
 }

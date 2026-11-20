@@ -1075,6 +1075,18 @@
             <br>
             <div class="form-col">
               <mat-form-field appearance="fill">
+                <mat-label>Ngày tra CIC</mat-label>
+                <input matInput formControlName="ngayTraCIC" placeholder="dd/MM/yyyy" maxlength="10">
+                <mat-error *ngIf="formGroup.get('pavvRequest.ngayTraCIC')?.hasError('required')">
+                  Vui lòng nhập ngày tra CIC
+                </mat-error>
+                <mat-error *ngIf="formGroup.get('pavvRequest.ngayTraCIC')?.hasError('ddMMyyyy')">
+                  Ngày không hợp lệ (định dạng dd/MM/yyyy)
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="form-col">
+              <mat-form-field appearance="fill">
                 <mat-label><span style="color: #09ef1c">Thông tin tra CIC</span></mat-label>
                 <textarea matInput formControlName="noiDungCIC" rows="8"
                           (input)="onCicManualEdit()"></textarea>
